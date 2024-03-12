@@ -88,9 +88,11 @@ public class ChatClient extends AbstractClient {
 					Boolean pay_load_from_srv_bln = (Boolean) arr.get(2);
 					if (pay_load_from_srv_bln) {
 						System.out.println("Succesfull connection");
+						result = true;
 					}
 					else {
 						System.out.println("Failed connection to server");
+						result = false;
 					}
 				}
 			}

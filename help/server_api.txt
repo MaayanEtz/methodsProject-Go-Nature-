@@ -1,0 +1,5 @@
+EndPoint          | expected String in payload-type | expected paylod          | return to client
+
+ConnectToServer   | doesnt metter	            | doesnt metter            | "ConnectToServer", "Boolean", true\false
+
+UserLogin         | "ArrayList<String>"		    | {"username","password"}  | "UserLogin", "Boolean",true\fasle

@@ -1,5 +1,8 @@
 package gui;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import client.ChatClient;
 import client.ClientUI;
 import entity.Order;
@@ -65,49 +68,58 @@ public class FindOrderFrameController {
 			//prepare the window to show the result
 			FXMLLoader loader = new FXMLLoader();
 			Stage primaryStage = new Stage();
+			// Oren Testing
+			String username =  orderNumber.split(",")[0];
+			String password =  orderNumber.split(",")[1];
 			
-			if(orderNumber.trim().isEmpty()) {
-				System.out.println("You must enter an order number");
-				((Node)event.getSource()).getScene().getWindow().hide(); //hiding primary window
-				Pane root = loader.load(getClass().getResource("/gui/FindOrderFrame.fxml").openStream());
-				FindOrderFrameController findOrderFrameController = loader.getController();			
-				findOrderFrameController.loadResul("You must enter an order number");
-				Scene scene = new Scene(root);
-				
-				primaryStage.setTitle("Find Order");
-				primaryStage.setScene(scene);		
-				primaryStage.show();
-			}
-			else {
-				//send order number for searching
-				ClientUI.chat.get(orderNumber);
-				
-				if(ChatClient.order == null) {
-					System.out.println("Order number not found");
-					
-					((Node)event.getSource()).getScene().getWindow().hide(); //hiding primary window	
-					Pane root = loader.load(getClass().getResource("/gui/FindOrderFrame.fxml").openStream());
-					FindOrderFrameController findOrderFrameController = loader.getController();			
-					findOrderFrameController.loadResul("Order number does not exist in the system.");
-					Scene scene = new Scene(root);
-					primaryStage.setTitle("Find Order");
-					primaryStage.setScene(scene);		
-					primaryStage.show();
-				}
-				else {	
-					System.out.println("Order number found");
-					((Node)event.getSource()).getScene().getWindow().hide(); //hiding primary window
-					
-					Pane root = loader.load(getClass().getResource("/gui/OrderForm.fxml").openStream());
-					OrderFrameController orderFrameController = loader.getController();
-					orderFrameController.loadOrder(ChatClient.order);
-					Scene scene = new Scene(root);
-
-					primaryStage.setTitle("Order Form");	
-					primaryStage.setScene(scene);		
-					primaryStage.show();
-				}
-			}		
+			ArrayList<Object> arrmsg = new ArrayList<Object>();
+			arrmsg.add(new String("UserLogin"));
+			arrmsg.add(new String("ArrayList<String>"));
+			arrmsg.add(new ArrayList<String>(Arrays.asList(username,password)));
+			ClientUI.chat.accept(arrmsg);
+			
+//			if(orderNumber.trim().isEmpty()) {
+//				System.out.println("You must enter an order number");
+//				((Node)event.getSource()).getScene().getWindow().hide(); //hiding primary window
+//				Pane root = loader.load(getClass().getResource("/gui/FindOrderFrame.fxml").openStream());
+//				FindOrderFrameController findOrderFrameController = loader.getController();			
+//				findOrderFrameController.loadResul("You must enter an order number");
+//				Scene scene = new Scene(root);
+//				
+//				primaryStage.setTitle("Find Order");
+//				primaryStage.setScene(scene);		
+//				primaryStage.show();
+//			}
+//			else {
+//				//send order number for searching
+//				ClientUI.chat.get(orderNumber);
+//				
+//				if(ChatClient.order == null) {
+//					System.out.println("Order number not found");
+//					
+//					((Node)event.getSource()).getScene().getWindow().hide(); //hiding primary window	
+//					Pane root = loader.load(getClass().getResource("/gui/FindOrderFrame.fxml").openStream());
+//					FindOrderFrameController findOrderFrameController = loader.getController();			
+//					findOrderFrameController.loadResul("Order number does not exist in the system.");
+//					Scene scene = new Scene(root);
+//					primaryStage.setTitle("Find Order");
+//					primaryStage.setScene(scene);		
+//					primaryStage.show();
+//				}
+//				else {	
+//					System.out.println("Order number found");
+//					((Node)event.getSource()).getScene().getWindow().hide(); //hiding primary window
+//					
+//					Pane root = loader.load(getClass().getResource("/gui/OrderForm.fxml").openStream());
+//					OrderFrameController orderFrameController = loader.getController();
+//					orderFrameController.loadOrder(ChatClient.order);
+//					Scene scene = new Scene(root);
+//
+//					primaryStage.setTitle("Order Form");	
+//					primaryStage.setScene(scene);		
+//					primaryStage.show();
+//				}
+//			}		
 		}catch (Exception e) {
 			System.out.println("Error in FindOrderFrameController: pressFindBtn");
 			System.out.println(e.getMessage());

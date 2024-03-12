@@ -69,13 +69,19 @@ public class FindOrderFrameController {
 			FXMLLoader loader = new FXMLLoader();
 			Stage primaryStage = new Stage();
 			// Oren Testing
-			String username =  orderNumber.split(",")[0];
-			String password =  orderNumber.split(",")[1];
+			//String username =  orderNumber.split(",")[0];
+			//String password =  orderNumber.split(",")[1];
+			String visitor_id = orderNumber.split(",")[0];
+			String park_name = orderNumber.split(",")[1];
+			String time_of_visit = orderNumber.split(",")[2];
+			String visitor_number = orderNumber.split(",")[3];
+			String visitor_email = orderNumber.split(",")[4];
+			String visitor_phone = orderNumber.split(",")[5];
 			
 			ArrayList<Object> arrmsg = new ArrayList<Object>();
-			arrmsg.add(new String("UserLogin"));
+			arrmsg.add(new String("OrderCreate"));
 			arrmsg.add(new String("ArrayList<String>"));
-			arrmsg.add(new ArrayList<String>(Arrays.asList(username,password)));
+			arrmsg.add(new ArrayList<String>(Arrays.asList(visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
 			ClientUI.chat.accept(arrmsg);
 			
 //			if(orderNumber.trim().isEmpty()) {
@@ -121,9 +127,7 @@ public class FindOrderFrameController {
 //				}
 //			}		
 		}catch (Exception e) {
-			System.out.println("Error in FindOrderFrameController: pressFindBtn");
-			System.out.println(e.getMessage());
-			System.out.println(e.getCause());
+			e.printStackTrace();
 		}
 
 	}

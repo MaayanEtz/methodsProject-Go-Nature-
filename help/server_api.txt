@@ -1,5 +1,15 @@
-EndPoint          | expected String in payload-type | expected paylod          | return to client
+EndPoint          | expected String in payload-type | expected paylod           | return to client
 
-ConnectToServer   | doesnt metter	            | doesnt metter            | "ConnectToServer", "Boolean", true\false
+ConnectToServer   | doesnt metter	            | doesnt metter             | "ConnectToServer", "Boolean", true\false
 
-UserLogin         | "ArrayList<String>"		    | {"username","password"}  | "UserLogin", "Boolean",true\fasle
+UserLogin         | "ArrayList<String>"		    | {"username","password"}   | "UserLogin", "Boolean",true\fasle
+
+OrderCreate 	  | "ArrayList<String>"		    | {"visitor_id","park_name" | "OrderCreate", "Boolean",true\fasle
+
+						    |,"time_of_visit",          |  
+
+						    |	"visitor_number",	|
+
+						    |	"visitor_email",	|
+
+						    |	"visitor_phone"	}	|

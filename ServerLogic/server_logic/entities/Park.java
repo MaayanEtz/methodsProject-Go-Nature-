@@ -73,6 +73,17 @@ public class Park {
 		this.currentVisitors = currentVisitors;
 	}
 	
+	public ArrayList<String> toArr() {
+		ArrayList<String> arr = new ArrayList<String>();
+		arr.add("" + parkId);
+		arr.add(name);
+		arr.add("" + capacity);
+		arr.add("" + diff);
+		arr.add("" + visitTimeInMinutes);
+		arr.add("" + currentVisitors);
+		return arr;
+	}
+	
 	
 
 }

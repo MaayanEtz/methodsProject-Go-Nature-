@@ -66,15 +66,38 @@ public class ChatClient extends AbstractClient {
 				order = null;
 			}
 		} else if (msg instanceof ArrayList) {
-			ArrayList<String> arr = (ArrayList<String>) msg;
-			System.out.println(arr);
-			System.out.println(arr.isEmpty());
-			// if no such order number in DB -> set order null
-			if (arr.isEmpty())
-				order = null;
-			else {
-				order = new Order(arr);
+//			ArrayList<String> arr = (ArrayList<String>) msg;
+//			System.out.println(arr);
+//			System.out.println(arr.isEmpty());
+//			// if no such order number in DB -> set order null
+//			if (arr.isEmpty())
+//				order = null;
+//			else {
+//				order = new Order(arr);
+//			}
+			ArrayList<Object> arr = (ArrayList<Object>) msg;
+			String endpoint_from_server = (String) arr.get(0);
+			String paylod_type_from_server = (String) arr.get(1);
+			switch (endpoint_from_server) {
+			case "ConnectToServer":
+				switch (paylod_type_from_server) {
+				case "String":
+					String pay_load_from_srv_str = (String) arr.get(2);
+					break;
+				case "Boolean":
+					Boolean pay_load_from_srv_bln = (Boolean) arr.get(2);
+					if (pay_load_from_srv_bln) {
+						System.out.println("Succesfull connection");
+					}
+					else {
+						System.out.println("Failed connection to server");
+					}
+				}
 			}
+				
+					
+			
+			String paylod = (String) arr.get(1);
 		} else if (msg instanceof String) {
 			result = true;
 		} else

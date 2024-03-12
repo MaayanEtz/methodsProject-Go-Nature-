@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import client.*;
+
 import common.ChatIF;
 
 
@@ -63,10 +64,12 @@ public class ClientController implements ChatIF
 
   public void get(String orderNum) {
 	  client.handleMessageFromClientUI(new ArrayList<String>(Arrays.asList("get", orderNum)));
+	  //client.handleMessageFromClientUI(new SerialMessage(ActionType.INFORM, TypeOfObject.StringMessage, Endpoint.cancelOrder, new String("hello")));
   }
   
   public void update(String orderNumber, String parkName, String telephoneNumber) {
 	  client.handleMessageFromClientUI(new ArrayList<String>(Arrays.asList("update", orderNumber, parkName, telephoneNumber)));
+	 // client.handleMessageFromClientUI(new SerialMessage(ActionType.INFORM, TypeOfObject.StringMessage, Endpoint.cancelOrder, new String("hello")));
   }
   
   /**

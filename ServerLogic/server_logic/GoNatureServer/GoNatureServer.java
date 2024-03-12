@@ -6,7 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import GoNatureServer.SerialMessage.*;
+import java.util.Arrays;
+
 import gui.ServerPortFrameController;
 import jdbc.MysqlConnection;
 import ocsf.server.*;
@@ -22,7 +23,9 @@ public class GoNatureServer extends AbstractServer {
 
 	/// time outs ///
 	int db_conn_validation_timeout_milisecs = 10000;
-
+	public GoNatureServer(int port) {
+		super(port);
+	}
 	public GoNatureServer(int port, String db_name, String db_host, String db_user, String db_pass) {
 		super(port);
 		this.db_name= db_name;
@@ -35,6 +38,24 @@ public class GoNatureServer extends AbstractServer {
 	@Override
 	public void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		System.out.println("YEY");
+		/*
+		try {
+			ArrayList<Object> ms = (ArrayList<Object>) msg;
+//			for (Object o : ms) {
+//				System.out.println(o.getClass());
+//			}
+			System.out.println("Casting:");
+			System.out.println((String)ms.get(0));
+			System.out.println((Integer)ms.get(1));
+			System.out.println((ArrayList<String>)ms.get(2));
+			
+			return;
+		}catch (Exception e) {
+			System.out.println("ORENB: Problem with casting");
+			e.printStackTrace();
+		}
+		
+		
 		//////////////////// Test DB Connection ///////////////////////////
 		try {
 			System.out.println("db conn is valid: " + this.db_con.isValid(db_conn_validation_timeout_milisecs));
@@ -155,8 +176,8 @@ public class GoNatureServer extends AbstractServer {
 			return;
 		case getPark:
 			return;
-
-		}
+		 
+		}*/
 	}
 
 	/**
@@ -168,7 +189,7 @@ public class GoNatureServer extends AbstractServer {
 		System.out.println("Server listening for connections on port " + getPort());
 		//////////// Connect to Data Base ///////////////////
 		// ORENB_TODO: DB should stay connected all the time?
-		ms_conn = new MysqlConnection(db_name, db_host, db_user, db_pass);
+		//ms_conn = new MysqlConnection(db_name, db_host, db_user, db_pass);
 		System.out.println("[SERVER]: trying to connect to DataBase");
 		this.db_con = ms_conn.connectDB();
 		if (db_con != null) {
@@ -203,17 +224,21 @@ public class GoNatureServer extends AbstractServer {
 
 	@Override
 	protected void clientConnected(ConnectionToClient client) {
-
-		System.out.println(client.getInetAddress().getHostAddress());
-		System.out.println(client.getInetAddress().getHostName());
-		System.out.println(String.valueOf(client.isAlive()));
-		ServerPortFrameController.client_conn_data.add(client);
+		// DEBUG//////////////
+		//System.out.println(client.getInetAddress().getHostAddress());
+		//System.out.println(client.getInetAddress().getHostName());
+		//System.out.println(String.valueOf(client.isAlive()));
+		//////////////////////
 		
+		ServerPortFrameController.client_conn_data.add(client);
 		System.out.println("[clientConnected|INFO]: clientConnected was called");
 		try {
-			//client.sendToClient(new SerialMessage(ActionType.INFORM, TypeOfObject.StringMessage,
-					//Endpoint.ConnectToServer, new String("Connected Succesfully")));
-			client.sendToClient("Server: client was connected");
+			ArrayList<Object> response_arrlst = new ArrayList<>();
+			response_arrlst.add(new String("ConnectToServer")); // Add Endpoint
+			response_arrlst.add(new String("Boolean")); // Add Payload type
+			response_arrlst.add(new Boolean(true));
+			client.sendToClient(response_arrlst);
+			client.sendToClient(response_arrlst);
 		} catch (IOException e) {
 			System.out
 					.println("[clientConnected|ERROR]: Failed to inform the client that he succesfully connected!");
@@ -221,6 +246,4 @@ public class GoNatureServer extends AbstractServer {
 		}
 		return;
 	}
-
 }
-//End of EchoServer class

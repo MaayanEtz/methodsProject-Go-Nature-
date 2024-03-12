@@ -1,9 +1,10 @@
 package entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Order {
+public class Order implements Serializable {
 	private String parkName;
 	private String orderNumber;
 	private String timeOfVisit;

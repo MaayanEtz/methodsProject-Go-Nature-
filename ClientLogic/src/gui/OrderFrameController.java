@@ -2,6 +2,7 @@ package gui;
 
 import client.ChatClient;
 import client.ClientUI;
+import entity.NextPage;
 import entity.Order;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,7 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
+//import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -56,8 +57,8 @@ public class OrderFrameController{
 	private Button btnClose=null;
 	
 	//Image
-	@FXML
-	private ImageView imgOrderStrip;
+	//@FXML
+	//private ImageView imgOrderStrip;
 	
 	//set text to all fields
 	public void loadOrder(Order order) {
@@ -87,7 +88,7 @@ public class OrderFrameController{
 	}
 	
 	//Event for "Update" button
-	public void pressUpdateBtn(ActionEvent event) throws Exception { 
+	public void pressUpdateBtn(ActionEvent event) throws Exception {
 		try {
 			String parkName = this.txtParkName.getText();
 			String telephoneNumber = this.txtPhone.getText();
@@ -95,59 +96,28 @@ public class OrderFrameController{
 			//send new data for update	
 			ClientUI.chat.update(this.order.getOrderNumber(), parkName, telephoneNumber);
 			
-
-			//to show the changes
-			FXMLLoader loader = new FXMLLoader();
-			((Node)event.getSource()).getScene().getWindow().hide(); //hiding primary window
-			Stage primaryStage = new Stage();
-			Pane root = loader.load(getClass().getResource("/gui/OrderForm.fxml").openStream());
-			
-			OrderFrameController orderFrameController = loader.getController();
-			
 			if(ChatClient.result == true) {
 				//updated successfully
-				orderFrameController.loadLabel("Updated successfully!");
-				Order order = getOrder();
-				ChatClient.order = order;
-			}
-			else {
+				lblResult.setText("Updated successfully!");
+				ChatClient.order = getOrder();
+				loadOrder(ChatClient.order);
+			}else {
 				//update failed
-				orderFrameController.loadLabel("Update failed!");
-			}
-				
-			orderFrameController.loadOrder(ChatClient.order);
-		
-			Scene scene = new Scene(root);	
-			
-			primaryStage.setTitle("Order Form");
-
-			primaryStage.setScene(scene);		
-			primaryStage.show();
+				lblResult.setText("Update failed!");	
+			}	
 		}catch (Exception e) {
 			System.out.println("Error in OrderFrameController: pressUpdateBtn");
 			System.out.println(e.getMessage());
 		}
-
 	}
 	
 	
 	//Event for "Close" button
 	public void pressCloseBtn(ActionEvent event) throws Exception {
 		try {
-			FXMLLoader loader = new FXMLLoader();
 			
-			((Node)event.getSource()).getScene().getWindow().hide(); //hiding primary window
-			Stage primaryStage = new Stage();
-			Pane root = loader.load(getClass().getResource("/gui/FindOrderFrame.fxml").openStream());
-			
-			FindOrderFrameController findOrderFrameController = loader.getController();
-			
-			Scene scene = new Scene(root);
-						
-			primaryStage.setTitle("Home Page");
-
-			primaryStage.setScene(scene);		
-			primaryStage.show();
+	    	NextPage page = new NextPage(event, "/gui/TravellerPage.fxml", "Traveller Page", "TravellerPageController", "pressIdentifyBtn");
+	    	page.Next();
 		}catch(Exception e) {
 			System.out.println("Error in OrderFrameController: pressCloseBtn");
 			System.out.println(e.getMessage());
@@ -170,7 +140,6 @@ public class OrderFrameController{
 		}
 		
 		return order;
-
 	}
 
 

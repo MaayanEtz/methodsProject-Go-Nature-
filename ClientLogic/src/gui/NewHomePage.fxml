@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="428.0" prefWidth="336.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.NewHomePageController">
+   <children>
+      <Label layoutX="75.0" layoutY="150.0" prefHeight="27.0" prefWidth="186.0" text="Welcome to Go Nature" textAlignment="JUSTIFY" textFill="#1e5d38">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Text fill="#196337" layoutX="106.0" layoutY="193.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Park and Recreation" wrappingWidth="124.3236083984375">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Button id="btnExit" fx:id="btnExit" layoutX="261.0" layoutY="371.0" mnemonicParsing="false" onAction="#pressExitBtn" text="Exit" />
+      <Text layoutX="100.0" layoutY="411.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Created By i-Recreation Inc." />
+      <Button fx:id="btnLogin" layoutX="93.0" layoutY="224.0" mnemonicParsing="false" onAction="#pressLoginBtn" prefHeight="26.0" prefWidth="150.0" text="Log in as an employee" />
+      <Button fx:id="btnIdentify" layoutX="93.0" layoutY="266.0" mnemonicParsing="false" onAction="#pressIdentifyBtn" prefHeight="26.0" prefWidth="150.0" text="Identify as a traveller" />
+      <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="93.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Pictures/go_Nature_logo-removebg-preview.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>

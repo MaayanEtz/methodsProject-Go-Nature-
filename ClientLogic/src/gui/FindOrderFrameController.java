@@ -2,7 +2,8 @@ package gui;
 
 import client.ChatClient;
 import client.ClientUI;
-import entity.Order;
+import entity.NextPage;
+//import entity.Order;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,11 +12,17 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
+//import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class FindOrderFrameController {
+	
+	public enum Action {
+		EDIT, CANCEL
+	}
+	
+	private Action action;
 	
 	//labels
 	@FXML
@@ -34,112 +41,75 @@ public class FindOrderFrameController {
 	private Button btnBack=null;
 	
 	//Image
-	@FXML
-	private ImageView imgGoNature;
+	//@FXML
+	//private ImageView imgGoNature;
 	
 	//get entered order number
 	private String getEnteredOrderNum() {
 		return txtEnteredOrderNum.getText();
 	}
 	
-	//set text to Result label
-	public void loadResul (String str) {
-		try {
-			this.lblResult.setText(str);
-		}
-		catch (Exception e) {
-			System.out.println("Error in FindOrderFrameController: loadLabel");
-			System.out.println(e.getMessage());
-		}	
+	public void setAction(Action action) {
+		this.action = action;
 	}
-	
-
 	
 	//Event for "Find" button
 	public void pressFindBtn (ActionEvent event) throws Exception {
+		
 		try {
-			String orderNumber;
-			
-			orderNumber = getEnteredOrderNum();
-			
-			//prepare the window to show the result
-			FXMLLoader loader = new FXMLLoader();
-			Stage primaryStage = new Stage();
+			String orderNumber = getEnteredOrderNum();
 			
 			if(orderNumber.trim().isEmpty()) {
-				System.out.println("You must enter an order number");
-				((Node)event.getSource()).getScene().getWindow().hide(); //hiding primary window
-				Pane root = loader.load(getClass().getResource("/gui/FindOrderFrame.fxml").openStream());
-				FindOrderFrameController findOrderFrameController = loader.getController();			
-				findOrderFrameController.loadResul("You must enter an order number");
-				Scene scene = new Scene(root);
-				
-				primaryStage.setTitle("Find Order");
-				primaryStage.setScene(scene);		
-				primaryStage.show();
-			}
-			else {
+				errorCase("You must enter an order number","You must enter an order number");
+			}else {
 				//send order number for searching
 				ClientUI.chat.get(orderNumber);
 				
 				if(ChatClient.order == null) {
-					System.out.println("Order number not found");
+					errorCase("Order number not found","Order number does not exist in the system.");
+				}else {
 					
-					((Node)event.getSource()).getScene().getWindow().hide(); //hiding primary window	
-					Pane root = loader.load(getClass().getResource("/gui/FindOrderFrame.fxml").openStream());
-					FindOrderFrameController findOrderFrameController = loader.getController();			
-					findOrderFrameController.loadResul("Order number does not exist in the system.");
-					Scene scene = new Scene(root);
-					primaryStage.setTitle("Find Order");
-					primaryStage.setScene(scene);		
-					primaryStage.show();
-				}
-				else {	
 					System.out.println("Order number found");
-					((Node)event.getSource()).getScene().getWindow().hide(); //hiding primary window
 					
-					Pane root = loader.load(getClass().getResource("/gui/OrderForm.fxml").openStream());
-					OrderFrameController orderFrameController = loader.getController();
-					orderFrameController.loadOrder(ChatClient.order);
-					Scene scene = new Scene(root);
-
-					primaryStage.setTitle("Order Form");	
-					primaryStage.setScene(scene);		
-					primaryStage.show();
+					//Find order page is the same page for edit and cancel an order
+					switch(this.action) {
+						case EDIT: {
+					    	NextPage page = new NextPage(event, "/gui/OrderForm.fxml", "Order Form", "OrderFrameController", "pressFindBtn", ChatClient.order);
+					    	page.Next();
+							break;}
+						
+						case CANCEL: {
+					    	NextPage page = new NextPage(event, "/gui/CancelOrderForm.fxml", "Cancel Order Form", "CancelOrderFrameController", "pressFindBtn", ChatClient.order);
+					    	page.Next();
+							break;}
+					}	
 				}
-			}		
+			}			
 		}catch (Exception e) {
 			System.out.println("Error in FindOrderFrameController: pressFindBtn");
 			System.out.println(e.getMessage());
 			System.out.println(e.getCause());
 		}
-
+		
 	}
+
 	
 	//Even for "Back" button
 	public void pressBackBtn(ActionEvent event) throws Exception {
 		try {
-			FXMLLoader loader = new FXMLLoader();
-			
-			((Node)event.getSource()).getScene().getWindow().hide(); //hiding primary window
-			Stage primaryStage = new Stage();
-			Pane root = FXMLLoader.load(getClass().getResource("/gui/HomePage.fxml"));
-			
-			HomePageController homePageController = new HomePageController();
-			loader.setController(homePageController);
-			homePageController.start(primaryStage);
-			
-			Scene scene = new Scene(root);
-			
-			primaryStage.setTitle("Home Page");
-
-			primaryStage.setScene(scene);		
-			primaryStage.show();
+	    	NextPage page = new NextPage(event, "/gui/TravellerPage.fxml", "Traveller Page", "TravellerPageController", "pressBackBtn"); //need to add path and title
+	    	page.Next();
 		}catch (Exception e) {
 			System.out.println("Error in FindOrderFrameController: pressBackBtn");
 			System.out.println(e.getMessage());
 		}
 		
 	}
+	
+    //private method for error cases
+    private void errorCase(String strPrint, String strSet) {
+		System.out.println(strPrint);
+		lblResult.setText(strSet);
+    }
 
 }

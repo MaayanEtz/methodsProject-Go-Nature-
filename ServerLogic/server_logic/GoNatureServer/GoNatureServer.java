@@ -185,8 +185,8 @@ public class GoNatureServer extends AbstractServer {
 					String visitor_email = payload.get(4);
 					String visitor_phone = payload.get(5);
 					System.out.println("[OrderCreate | DEBUG]: extracted: " + payload);
-					
-					// 
+
+					//
 					if (true) { // TODO ORENB: Here will be algorithm for problematic time instead of true
 						// prepare MySQL query prepare
 						prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table
@@ -202,7 +202,7 @@ public class GoNatureServer extends AbstractServer {
 						create_order_test_succeeded = true;
 					}
 
-				// Catch Problems
+					// Catch Problems
 				} catch (ClassCastException e_clas) {
 					System.out.println(
 							"[UserLogin | ERROR]: Client sent payload for UserLogin ep which is not an ArrayList<String>");
@@ -217,7 +217,6 @@ public class GoNatureServer extends AbstractServer {
 					error = e.getMessage();
 				}
 
-				
 				// Response to client
 				try {
 					send_response(client, new String("OrderCreate"), new String("Boolean"),
@@ -233,11 +232,71 @@ public class GoNatureServer extends AbstractServer {
 					send_response(client, new String("UserLogin"), new String("ErrorString"),
 							new String("Client asked UserLogin end point but payload-type was not ArrayList<String>!"));
 				} catch (IOException e) {
-					System.out.println("[UserLogin_ep |ERROR ]: Failed UserLogin response");
+					System.out.println("[UserLogin_ep |ERROR]: Failed UserLogin error response");
 					e.printStackTrace();
 				}
 
 			}
+			return;
+
+		case "OrderCancel":
+			// "DELETE FROM orders WHERE orderId = 5;"
+			if (payload_type.equals("String")) {
+				boolean cancel_order_test_succeeded = false;
+				db_table = "orders";
+				try {
+					// Extract pay-load
+					String payload = (String) arr_msg.get(2);
+					System.out.println("[OrderCancel | DEBUG]: extracted: " + payload);
+
+					// MySQL
+					prepared_statement = db_con.prepareStatement("DELETE FROM " + db_table + " WHERE orderId = ?");
+					prepared_statement.setInt(1, Integer.parseInt(payload));
+					int rowsAffected = prepared_statement.executeUpdate();
+
+					// Cancellation result update check
+					if (rowsAffected != 0) {
+						cancel_order_test_succeeded = true;
+					}
+
+				}
+				// Catch Problems
+				catch (ClassCastException e_clas) {
+					System.out.println(
+							"[UserLogin | ERROR]: Client sent payload for UserLogin ep which is not an ArrayList<String>");
+					error = e_clas.getMessage();
+					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
+				} catch (SQLException e_sql) {
+					System.out.println("[OrderCreate | ERROR]: MySQL query execution error");
+					e_sql.printStackTrace();
+					error = e_sql.getMessage();
+				} catch (Exception e) {
+					e.printStackTrace();
+					error = e.getMessage();
+				}
+				
+				// Response to client
+				try {
+					send_response(client, new String("OrderCancel"), new String("Boolean"),
+							new Boolean(cancel_order_test_succeeded));
+				} catch (IOException e) {
+					System.out.println("[OrderCreate_ep |ERROR ]: Failed OrderCreate response");
+					e.printStackTrace();
+				}
+
+
+			} else {
+				// Client asked OrderCancel end-point but sent bad pay-load-type
+				try {
+					send_response(client, new String("OrderCancel"), new String("ErrorString"),
+							new String("Client asked OrderCancel end point but payload-type was not String!"));
+				} catch (IOException e) {
+					System.out.println("[OrderCancel_ep |ERROR]: Failed OrderCancel error response");
+					e.printStackTrace();
+				}
+			}
+			return;
+			
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");
 		}

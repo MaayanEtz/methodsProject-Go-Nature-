@@ -13,3 +13,5 @@ OrderCreate 	  | "ArrayList<String>"		    | {"visitor_id","park_name" | "OrderCr
 						    |	"visitor_email",	|
 
 						    |	"visitor_phone"	}	|
+
+OrderCancel	  | "String"			    | "order_id"		| "OrderCancel", "Boolean",true\fasle

@@ -2,9 +2,9 @@ EndPoint          | expected String in payload-type | expected paylod           
 
 ConnectToServer   | doesnt metter	            | doesnt metter             | "ConnectToServer", "Boolean", true\false
 
-UserLogin         | "ArrayList<String>"		    | {"username","password"}   | "UserLogin", "Boolean",true\fasle
+UserLogin         | "ArrayList<String>"		    | {"username","password"}   | "UserLogin", "Boolean",true\false
 
-OrderCreate 	  | "ArrayList<String>"		    | {"visitor_id","park_name" | "OrderCreate", "Boolean",true\fasle
+OrderCreate 	  | "ArrayList<String>"		    | {"visitor_id","park_name" | "OrderCreate", "Boolean",true\false
 
 						    |,"time_of_visit",          |  
 
@@ -14,4 +14,4 @@ OrderCreate 	  | "ArrayList<String>"		    | {"visitor_id","park_name" | "OrderCr
 
 						    |	"visitor_phone"	}	|
 
-OrderCancel	  | "String"			    | "order_id"		| "OrderCancel", "Boolean",true\fasle
+OrderCancel	  | "String"			    | "order_id"		| "OrderCancel", "Boolean",true\false

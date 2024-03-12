@@ -5,7 +5,7 @@ import javafx.stage.Stage;
 
 import java.util.Vector;
 import client.ClientController;
-import gui.HomePageController;
+import gui.SettingsPageController;
 
 public class ClientUI extends Application {
 	public static ClientController chat; //only one instance
@@ -19,9 +19,9 @@ public class ClientUI extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		 
 						  		
-		 HomePageController homePageFrame = new HomePageController();
+		 SettingsPageController settingsPageFrame = new SettingsPageController();
 		 
-		 homePageFrame.start(primaryStage);
+		 settingsPageFrame.start(primaryStage);
 	}
 	
 	

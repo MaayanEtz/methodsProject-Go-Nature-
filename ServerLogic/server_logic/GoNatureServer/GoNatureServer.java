@@ -274,7 +274,7 @@ public class GoNatureServer extends AbstractServer {
 					e.printStackTrace();
 					error = e.getMessage();
 				}
-				
+
 				// Response to client
 				try {
 					send_response(client, new String("OrderCancel"), new String("Boolean"),
@@ -283,7 +283,6 @@ public class GoNatureServer extends AbstractServer {
 					System.out.println("[OrderCreate_ep |ERROR ]: Failed OrderCreate response");
 					e.printStackTrace();
 				}
-
 
 			} else {
 				// Client asked OrderCancel end-point but sent bad pay-load-type
@@ -296,6 +295,11 @@ public class GoNatureServer extends AbstractServer {
 				}
 			}
 			return;
+			
+		case "OrderEdit":
+			// UPDATE orders SET park_name="yossi_park" WHERE orderId="4";
+			return;
+			
 			
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");

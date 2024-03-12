@@ -53,7 +53,6 @@ public class HomePageController {
 			Parent root = FXMLLoader.load(getClass().getResource("/gui/HomePage.fxml"));
 			Scene scene = new Scene(root);
 
-
 			primaryStage.setTitle("Home Page");
 			primaryStage.setScene(scene);
 
@@ -64,7 +63,6 @@ public class HomePageController {
 			System.out.println(e.getMessage());
 		}
 	}
-
 
 	// Event for "connect" button
 	public void connectToServer(ActionEvent event) throws Exception {
@@ -77,13 +75,13 @@ public class HomePageController {
 			txtPortNumber.setText("");
 		} else {
 			try {
-			ClientUI.chat = new ClientController(address, Integer.valueOf(portNum));
-			//ClientUI.chat.accept("connect");
-			ArrayList<Object> arrmsg = new ArrayList<Object>();
-			arrmsg.add(new String("ConnectToServer"));
-			arrmsg.add(new String("String"));
-			arrmsg.add(new String("Conect"));
-			ClientUI.chat.accept(arrmsg);
+				ClientUI.chat = new ClientController(address, Integer.valueOf(portNum));
+				// ClientUI.chat.accept("connect");
+				ArrayList<Object> arrmsg = new ArrayList<Object>();
+				arrmsg.add(new String("ConnectToServer"));
+				arrmsg.add(new String("String"));
+				arrmsg.add(new String("Conect"));
+				ClientUI.chat.accept(arrmsg);
 			} catch (Exception e) {
 				System.out.println("you must enter valid ip and port numbers");
 				errorTxt.setText("you must enter valid ip address and valid port number in order to connect to server");

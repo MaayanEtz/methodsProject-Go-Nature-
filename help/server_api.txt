@@ -18,3 +18,13 @@ OrderCancel	  | "String"			    | "order_id"		| "OrderCancel", "Boolean",true\fas
 
 ANNA'S CHANGES: NEED TO ADD TO SERVER
 OrderFind	  | "String"			    | "order_id"		| "OrderFind", "Boolean",true\fasle
+
+OrderUpdate 	  | "ArrayList<String>"		    | {"order_id","park_name" | "OrderUpdate", "Boolean",true\fasle
+
+						    |,"time_of_visit",          |  
+
+						    |	"visitor_number",	|
+
+						    |	"visitor_email",	|
+
+						    |	"visitor_phone"	}	|

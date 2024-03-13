@@ -31,13 +31,12 @@ public class Order implements Serializable {
 	
 	//constructor
 	public Order(ArrayList<String> arr) {
-		this.parkName = arr.get(0);
-		this.orderNumber = arr.get(1);
+		this.orderNumber = arr.get(0);
+		this.parkName = arr.get(1);
 		this.timeOfVisit = arr.get(2);
 		this.numberOfVisitors = arr.get(3);
-		this.telephoneNumber = arr.get(4);
-		this.email = arr.get(5);
-		System.out.println(this);
+		this.email = arr.get(4);
+		this.telephoneNumber = arr.get(5);
 	}
 	
 	//get park name
@@ -111,12 +110,11 @@ public class Order implements Serializable {
 	
 	//set all fields to order from given array
 	public void setAllFields(ArrayList<String> arr) {
-		System.out.println("1");
-		this.parkName = arr.get(0);
-		this.orderNumber = arr.get(1);
+		this.orderNumber = arr.get(0);
+		this.parkName = arr.get(1);
 		this.timeOfVisit = arr.get(2);
 		this.numberOfVisitors = arr.get(3);
-		this.telephoneNumber = arr.get(4);
-		this.email = arr.get(5);
+		this.email = arr.get(4);
+		this.telephoneNumber = arr.get(5);
 	}
 }

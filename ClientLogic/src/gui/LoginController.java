@@ -2,6 +2,8 @@ package gui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import client.ChatClient;
 import client.ClientUI;
 import entity.NextPage;
 import javafx.event.ActionEvent;
@@ -59,13 +61,21 @@ public class LoginController {
     		} else {
     			try {
     				ArrayList<String> loginDetails = new ArrayList<>(Arrays.asList(username, password));
-    				/*OPEN THIS WHEN IT NEEDS*/
-    				//SerialMessage login_user = new SerialMessage(ActionType.GET, TypeOfObject.ArrayList, Endpoint.loginUser, loginDetails);
-    				//ClientUI.chat.accept(login_user);
-    				//result = (Boolean)login_user.getPayload();
+    				
+    				ArrayList<Object> arrmsg = new ArrayList<Object>();
+    				arrmsg.add(new String("UserLogin"));
+    				arrmsg.add(new String("ArrayList<String>"));
+    				arrmsg.add(loginDetails);
+    				ClientUI.chat.accept(arrmsg);
     				
     				/*DELETE THIS BECAUSE IT'S ONLY FOR CHECK NEEDS*/
     				result = true;
+    				
+    				if(ChatClient.result == true) {
+    					//user logged in
+    				}else {
+    					//user not logged in
+    				}
     				
     				} catch (Exception e) {
     					System.out.println("The username or the password are wrong");

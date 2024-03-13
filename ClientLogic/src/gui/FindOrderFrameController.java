@@ -77,6 +77,13 @@ public class FindOrderFrameController {
 					
 					System.out.println("Order number found");
 					
+					//to get the order
+					arrmsg = new ArrayList<Object>();
+					arrmsg.add(new String("OrderGet"));
+					arrmsg.add(new String("String"));
+					arrmsg.add(new String(orderNumber));
+					ClientUI.chat.accept(arrmsg);
+					
 					//Find order page is the same page for edit and cancel an order
 					switch(this.action) {
 						case EDIT: {

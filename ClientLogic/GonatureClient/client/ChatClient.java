@@ -20,7 +20,7 @@ public class ChatClient extends AbstractClient {
 	 * method in the client.
 	 */
 	ChatIF clientUI;
-	public static Order order = new Order(null, null, null, null, null, null);
+	public static Order order;
 	public static boolean result = false;
 	public static boolean awaitResponse = false;
 
@@ -53,10 +53,13 @@ public class ChatClient extends AbstractClient {
 		
 		if (msg instanceof ArrayList) {
 			
+			Boolean pay_load_from_srv_bln;
+			ArrayList<String> pay_load_from_srv_arr_lst;
+			
 			ArrayList<Object> arr = (ArrayList<Object>) msg;
 			String endpoint_from_server = (String) arr.get(0);
 			String paylod_type_from_server = (String) arr.get(1);
-			Boolean pay_load_from_srv_bln;
+
 			switch (endpoint_from_server) {
 				case "ConnectToServer": {
 					switch (paylod_type_from_server) {
@@ -65,77 +68,58 @@ public class ChatClient extends AbstractClient {
 						break;
 					case "Boolean":
 						pay_load_from_srv_bln = (Boolean) arr.get(2);
-						if (pay_load_from_srv_bln) {
-							System.out.println("Succesfull connection");
-							result = true;
-						}
-						else {
-							System.out.println("Failed connection to server");
-							result = false;
-						}
+						caseDecision(pay_load_from_srv_bln, "Succesfull connection", "Failed connection to server");
 					}
+					
+					break;}
+				
+				case "UserLogin": {
+					pay_load_from_srv_bln = (Boolean) arr.get(2);
+					caseDecision(pay_load_from_srv_bln, "User exists", "User not exists");
 					break;}
 				
 				case "OrderFind": {
 					pay_load_from_srv_bln = (Boolean) arr.get(2);
-					if (pay_load_from_srv_bln) {
-						System.out.println("Order found in DB");
-						result = true;
-					}
-					else {
-						System.out.println("Order not found id DB");
-						result = false;
-					}
-					break;
-				}
+					caseDecision(pay_load_from_srv_bln, "Order found in DB", "Order not found id DB");
+					break;}
 				
 				case "OrderUpdate": {
 					pay_load_from_srv_bln = (Boolean) arr.get(2);
-					if (pay_load_from_srv_bln) {
-						System.out.println("Order updated in DB");
-						result = true;
-					}
-					else {
-						System.out.println("Order not updated in DB");
-						result = false;
-					}
-					break;
-				}
+					caseDecision(pay_load_from_srv_bln, "Order updated in DB", "Order not updated in DB");
+					break;}
+				
+				case "OrderGet": {
+					pay_load_from_srv_arr_lst = (ArrayList<String>) arr.get(2);
+					order = new Order(pay_load_from_srv_arr_lst);
+					break;}
+				
+				case "OrderCreate": {
+					pay_load_from_srv_bln = (Boolean) arr.get(2);
+					caseDecision(pay_load_from_srv_bln, "Order created", "Order not created");
+					break;}
+				
+				case "GroupGuideCheck": {
+					pay_load_from_srv_bln = (Boolean) arr.get(2);
+					caseDecision(pay_load_from_srv_bln, "The visitor is group guide", "The visitor is not group guide");
+					break;}
 				
 			}
 			
 		}else
 			System.out.println("Msg is not Boolean or Array in ChatClient: handleMessageFromServer");
 
-		/*System.out.println(msg);
-		if (msg instanceof Boolean) {
-			System.out.println(msg);
-			Boolean booleanMsg = (Boolean) msg;
-			if (booleanMsg) {
-				// case order updated successfully in DB
-				System.out.println("Order updated successfully in DB");
-				result = true;
-				order = null;
-			} else {
-				// case order was not updated in DB
-				System.out.println("Order was not updated in DB");
-				order = null;
-			}
-		} else if (msg instanceof ArrayList) {
-			ArrayList<String> arr = (ArrayList<String>) msg;
-			System.out.println(arr);
-			System.out.println(arr.isEmpty());
-			// if no such order number in DB -> set order null
-			if (arr.isEmpty())
-				order = null;
-			else {
-				order = new Order(arr);
-			}
-		} else if (msg instanceof String) {
+	}
+	
+	//private method for endpoint_from_server Switch-Case
+	private void caseDecision(Boolean load, String trueResult, String falseResult) {
+		if (load) {
+			System.out.println(trueResult);
 			result = true;
-		} else
-			System.out.println("Msg is not Boolean or Array in ChatClient: handleMessageFromServer");*/
-
+		}
+		else {
+			System.out.println(falseResult);
+			result = false;
+		}
 	}
 
 	/**

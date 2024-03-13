@@ -17,4 +17,4 @@ OrderCreate 	  | "ArrayList<String>"		    | {"visitor_id","park_name" | "OrderCr
 OrderCancel	  | "String"			    | "order_id"		| "OrderCancel", "Boolean",true\fasle
 
 ANNA'S CHANGES: NEED TO ADD TO SERVER
-FindOrder	  | "String"			    | "order_id"		| "FindOrder", "Boolean",true\fasle
+OrderFind	  | "String"			    | "order_id"		| "OrderFind", "Boolean",true\fasle

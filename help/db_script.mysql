@@ -1,0 +1,12 @@
+CREATE DATABASE `go_nature_db_oren` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE 
+utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */; use go_nature_db_oren; CREATE 
+TABLE `orders` (
+  `orderId` int NOT NULL AUTO_INCREMENT, `visitor_id` int DEFAULT NULL, `park_name` 
+  varchar(90) DEFAULT NULL, `time_of_visit` datetime DEFAULT NULL, `visitor_number` int 
+  DEFAULT NULL, `visitor_email` varchar(90) DEFAULT NULL, `visitor_phone` varchar(90) 
+  DEFAULT NULL, PRIMARY KEY (`orderId`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci; 
+CREATE TABLE `users` (
+  `username` varchar(80) NOT NULL, `password` varchar(80) DEFAULT NULL, PRIMARY KEY 
+  (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

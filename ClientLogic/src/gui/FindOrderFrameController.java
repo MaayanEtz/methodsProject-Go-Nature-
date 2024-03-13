@@ -1,5 +1,7 @@
 package gui;
 
+import java.util.ArrayList;
+
 import client.ChatClient;
 import client.ClientUI;
 import entity.NextPage;
@@ -63,9 +65,13 @@ public class FindOrderFrameController {
 				errorCase("You must enter an order number","You must enter an order number");
 			}else {
 				//send order number for searching
-				ClientUI.chat.get(orderNumber);
+				ArrayList<Object> arrmsg = new ArrayList<Object>();
+				arrmsg.add(new String("OrderFind"));
+				arrmsg.add(new String("String"));
+				arrmsg.add(new String(orderNumber));
+				ClientUI.chat.accept(arrmsg);
 				
-				if(ChatClient.order == null) {
+				if(ChatClient.result == false) {
 					errorCase("Order number not found","Order number does not exist in the system.");
 				}else {
 					

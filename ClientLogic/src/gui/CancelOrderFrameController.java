@@ -1,5 +1,7 @@
 package gui;
 
+import java.util.ArrayList;
+
 import client.ChatClient;
 import client.ClientUI;
 import entity.NextPage;
@@ -69,18 +71,26 @@ public class CancelOrderFrameController {
     	try {
     		String orderNumber = this.txtOrderNum.getText();
 		
-			//send order number for cancelling	
-			ClientUI.chat.accept(orderNumber);
+			//send order number for cancelling
+			ArrayList<Object> arrmsg = new ArrayList<Object>();
+			arrmsg.add(new String("OrderCancel"));
+			arrmsg.add(new String("String"));
+			arrmsg.add(new String(orderNumber));
+			ClientUI.chat.accept(arrmsg);
 			
 			if(ChatClient.result == true) {
 				//updated successfully
-				lblResult.setText("Cancelled successfully!");
+				//lblResult.setText("Cancelled successfully!");
+				
+		    	NextPage page = new NextPage(event, "/gui/RespondWindow.fxml", "Respond", "RespondWindowController", "pressCancelBtn", new String("Cancelled successfully!"));
+		    	page.Next();
 
-				ChatClient.order = getOrder();
-				loadOrder(ChatClient.order);
 			}else {
 				//update failed
-				lblResult.setText("Cancel failed!");
+				//lblResult.setText("Cancel failed!");
+				
+		    	NextPage page = new NextPage(event, "/gui/RespondWindow.fxml", "Respond", "RespondWindowController", "pressCancelBtn", new String("Cancel failed!"));
+		    	page.Next();
 			}	
     		
     	}catch (Exception e) {

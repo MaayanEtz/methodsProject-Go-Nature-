@@ -61,13 +61,6 @@ public class ClientController implements ChatIF
 	  client.handleMessageFromClientUI(msg);
   }
 
-  public void get(String orderNum) {
-	  client.handleMessageFromClientUI(new ArrayList<String>(Arrays.asList("get", orderNum)));
-  }
-  
-  public void update(String orderNumber, String parkName, String telephoneNumber) {
-	  client.handleMessageFromClientUI(new ArrayList<String>(Arrays.asList("update", orderNumber, parkName, telephoneNumber)));
-  }
   
   /**
    * This method overrides the method in the ChatIF interface.  It
@@ -83,8 +76,6 @@ public class ClientController implements ChatIF
   
   public static void main(String args[]) {
 	  ClientController c =  new ClientController("localhost", 5555);
-	  c.get("111");
-	  c.update("111", "YOssi", "2222");
   }
 }
 //End of ConsoleChat class

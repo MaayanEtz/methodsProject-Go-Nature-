@@ -50,8 +50,64 @@ public class ChatClient extends AbstractClient {
 	public void handleMessageFromServer(Object msg) {
 		System.out.println("--> handleMessageFromServer");
 		awaitResponse = false;
+		
+		if (msg instanceof ArrayList) {
+			
+			ArrayList<Object> arr = (ArrayList<Object>) msg;
+			String endpoint_from_server = (String) arr.get(0);
+			String paylod_type_from_server = (String) arr.get(1);
+			Boolean pay_load_from_srv_bln;
+			switch (endpoint_from_server) {
+				case "ConnectToServer": {
+					switch (paylod_type_from_server) {
+					case "String":
+						String pay_load_from_srv_str = (String) arr.get(2);
+						break;
+					case "Boolean":
+						pay_load_from_srv_bln = (Boolean) arr.get(2);
+						if (pay_load_from_srv_bln) {
+							System.out.println("Succesfull connection");
+							result = true;
+						}
+						else {
+							System.out.println("Failed connection to server");
+							result = false;
+						}
+					}
+					break;}
+				
+				case "OrderFind": {
+					pay_load_from_srv_bln = (Boolean) arr.get(2);
+					if (pay_load_from_srv_bln) {
+						System.out.println("Order found in DB");
+						result = true;
+					}
+					else {
+						System.out.println("Order not found id DB");
+						result = false;
+					}
+					break;
+				}
+				
+				case "OrderUpdate": {
+					pay_load_from_srv_bln = (Boolean) arr.get(2);
+					if (pay_load_from_srv_bln) {
+						System.out.println("Order updated in DB");
+						result = true;
+					}
+					else {
+						System.out.println("Order not updated in DB");
+						result = false;
+					}
+					break;
+				}
+				
+			}
+			
+		}else
+			System.out.println("Msg is not Boolean or Array in ChatClient: handleMessageFromServer");
 
-		System.out.println(msg);
+		/*System.out.println(msg);
 		if (msg instanceof Boolean) {
 			System.out.println(msg);
 			Boolean booleanMsg = (Boolean) msg;
@@ -78,7 +134,7 @@ public class ChatClient extends AbstractClient {
 		} else if (msg instanceof String) {
 			result = true;
 		} else
-			System.out.println("Msg is not Boolean or Array in ChatClient: handleMessageFromServer");
+			System.out.println("Msg is not Boolean or Array in ChatClient: handleMessageFromServer");*/
 
 	}
 

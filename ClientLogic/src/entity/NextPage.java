@@ -88,6 +88,16 @@ public class NextPage {
 			
 			case "CancelOrderFrameController": {
 				CancelOrderFrameController cancelOrderFrameController = loader.getController();
+				if(data instanceof Order)
+					cancelOrderFrameController.loadOrder((Order)data);
+				break;}
+			
+			case "RespondWindowController": {
+				RespondWindowController respondWindowController = loader.getController();
+				if (data instanceof String) {
+					respondWindowController.setImage((String) data);
+					respondWindowController.setLabel((String) data);
+				}
 				break;}
 			
 			default: {System.out.println("No such controller in NextPage: Next");}

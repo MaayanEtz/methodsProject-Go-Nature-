@@ -1,5 +1,7 @@
 package gui;
 
+import java.util.ArrayList;
+
 import client.ChatClient;
 import client.ClientUI;
 import entity.NextPage;
@@ -90,17 +92,27 @@ public class OrderFrameController{
 	//Event for "Update" button
 	public void pressUpdateBtn(ActionEvent event) throws Exception {
 		try {
-			String parkName = this.txtParkName.getText();
-			String telephoneNumber = this.txtPhone.getText();
-			
 			//send new data for update	
-			ClientUI.chat.update(this.order.getOrderNumber(), parkName, telephoneNumber);
+			order = getOrder();
 			
+			ArrayList<String> orderForUpd = new ArrayList<String>();
+			orderForUpd.add(order.getOrderNumber());
+			orderForUpd.add(order.getParkName());
+			orderForUpd.add(order.getTimeOfVisit());
+			orderForUpd.add(order.getNumberOfVisitors());
+			orderForUpd.add(order.getEmail());
+			orderForUpd.add(order.getTelephoneNumber());
+			
+			ArrayList<Object> arrmsg = new ArrayList<Object>();
+			arrmsg.add(new String("OrderUpdate"));
+			arrmsg.add(new String("ArrayList<String>"));
+			arrmsg.add(orderForUpd);
+			ClientUI.chat.accept(arrmsg);
+						
 			if(ChatClient.result == true) {
 				//updated successfully
 				lblResult.setText("Updated successfully!");
-				ChatClient.order = getOrder();
-				loadOrder(ChatClient.order);
+
 			}else {
 				//update failed
 				lblResult.setText("Update failed!");	

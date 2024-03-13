@@ -1,6 +1,7 @@
 package gui;
 
 import java.net.SocketException;
+import java.util.ArrayList;
 
 import client.ChatClient;
 import client.ClientController;
@@ -78,8 +79,13 @@ public class SettingsPageController {
 				txtPortNumber.setText("");
 			} else {
 				try {
-				ClientUI.chat = new ClientController(address, Integer.valueOf(portNum));
-				ClientUI.chat.accept("connect");
+					ArrayList<Object> arrmsg = new ArrayList<Object>();
+					arrmsg.add(new String("ConnectToServer"));
+					arrmsg.add(new String("String"));
+					arrmsg.add(new String("Conect"));
+					ClientUI.chat = new ClientController(address, Integer.valueOf(portNum));
+					ClientUI.chat.accept(arrmsg);
+					
 				} catch (Exception e) {
 					System.out.println("you must enter valid ip and port numbers");
 					errorTxt.setText("you must enter valid ip address and valid port number in order to connect to server");

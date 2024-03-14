@@ -160,20 +160,21 @@ public class CreateOrderFrameController {
     	ArrayList<String> orderArr = new ArrayList<>();
     	orderArr.add(this.visitorId);
     	orderArr.add(this.selectParkCmb.getValue());
-    	orderArr.add(new String(selectedDate + selectedTimeOption));
+    	orderArr.add(new String(selectedDate + " " + selectedTimeOption + ":00"));
     	orderArr.add(this.txtEmail.getText());
     	orderArr.add(this.txtPhoneNumber.getText());
+    	
 	
     	//3. Check if the day and time of visit is available
     	
     	//4. Create new order    	
     	//////REAL CODE: OPEN//////////////
-		ArrayList<Object> arrmsg = new ArrayList<Object>();
-		arrmsg.add(new String("OrderCreate"));
-		arrmsg.add(new String("ArrayList<String>"));
-		arrmsg.add(new String("Get"));
-		ClientUI.chat.accept(arrmsg);		
-		this.selectParkCmb.getItems().addAll(ChatClient.dataFromServer);
+		//ArrayList<Object> arrmsg = new ArrayList<Object>();
+		//arrmsg.add(new String("OrderCreate"));
+		//arrmsg.add(new String("ArrayList<String>"));
+		//arrmsg.add(new String("Get"));
+		//ClientUI.chat.accept(arrmsg);		
+		//this.selectParkCmb.getItems().addAll(ChatClient.dataFromServer);
     	
     	
     }

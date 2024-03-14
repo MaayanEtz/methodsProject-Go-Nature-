@@ -4,8 +4,8 @@ ConnectToServer   | doesn't matter	            | doesn't matter             | "C
 
 UserLogin         | "ArrayList<String>"		    | {"username","password"}   | "UserLogin", "Boolean",true\fasle
 
-OrderCreate 	  | "ArrayList<String>"		    | {"visitor_id","park_name" | "OrderCreate", "Boolean",true\fasle
-
+OrderCreate 	  | "ArrayList<String>"		    | {"visitor_id","park_name" | //NOT GOOD////  "OrderCreate", "Boolean",true\fasle
+											///GOOD///   "OrderCreate", "String", "order_id"
 						    |,"time_of_visit",          |  
 
 						    |	"visitor_number",	|
@@ -17,7 +17,6 @@ OrderCreate 	  | "ArrayList<String>"		    | {"visitor_id","park_name" | "OrderCr
 OrderCancel	  | "String"			    | "order_id"		| "OrderCancel", "Boolean",true\fasle
 
 ANNA'S CHANGES: NEED TO ADD TO SERVER
-OrderFind	  | "String"			    | "order_id"		| "OrderFind", "Boolean",true\fasle
 
 OrderUpdate 	  | "ArrayList<String>"		    | {"order_id","park_name"   | "OrderUpdate", "Boolean",true\fasle
 
@@ -29,7 +28,7 @@ OrderUpdate 	  | "ArrayList<String>"		    | {"order_id","park_name"   | "OrderUp
 
 						    |	"visitor_phone"	}	|
 
-OrderGet 	  | "String"			    | "order_id"		| "OrderGet", "ArrayList<String>", {"order_id",  "park_name",
+OrderGet 	  | "String"			    | "order_id"		| "OrderGet", "ArrayList<String>", {"order_id",  "park_name",		If doesn't exists: "OrderGet", "String", null
 
 						    |				|  					"time_of_visit",
 
@@ -43,12 +42,4 @@ GroupGuideCheck	  | "String"			    | "visitor_id"		| "GroupGuideCheck", "Boolean
 
 ParksListGet 	  | doesn't matter		    | doesn't matter		| "ParksListGet", "ArrayList<String>", {"park_name1", "park_name2", "park_name3"...}
 
-ParkGet 	  | "String"			    | "park_name"		| "ParkGet", "ArrayList<String>", {"park_Id", "park_name",
-
-						    |				|  				"capacity",
-
-						    |				|  				"diff",
-
-						    |				|  				"visit_time_in_minutes",
-
-						    |				|  				"current_visitors"}
+ParkCheckCapacity | "String"			    | "park_name"		| "ParkCheckCapacity", "Boolean", true\fasle 

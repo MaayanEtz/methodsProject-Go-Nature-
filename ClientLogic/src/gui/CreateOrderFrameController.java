@@ -105,6 +105,7 @@ public class CreateOrderFrameController {
 		this.selectTimeCmb.getItems().addAll(times);
     	
     	//4. Load if organized guided group
+		
     	//////REAL CODE: OPEN//////////////
 		//ArrayList<Object> arrmsg = new ArrayList<Object>();
 		//arrmsg.add(new String("GroupGuideCheck"));
@@ -146,37 +147,47 @@ public class CreateOrderFrameController {
     	if (this.guidedChkb.isSelected()) {
     		//the guided group
     		if (Integer.valueOf(this.txtVisitorsNum.getText()) > GUIDED_GROUP_MAX_VISITORS_NUMBER) {
-    			this.lblResult.setText("An organized guided group is limited to 15 participants");
+    			this.lblResult.setText("An organized guided group is limited to 15 participants.");
     			return;
     		}
     	}
     		
-    	
     	//2. Get data
     	String selectedTimeOption = this.selectTimeCmb.getValue();
-    	//LocalDate selectedDate = SelectDayDp.getValue();
     	String selectedDate = SelectDayDp.getValue().toString();
     	
     	ArrayList<String> orderArr = new ArrayList<>();
     	orderArr.add(this.visitorId);
     	orderArr.add(this.selectParkCmb.getValue());
     	orderArr.add(new String(selectedDate + " " + selectedTimeOption + ":00"));
+    	orderArr.add(this.txtVisitorsNum.getText());
     	orderArr.add(this.txtEmail.getText());
     	orderArr.add(this.txtPhoneNumber.getText());
     	
-	
     	//3. Check if the day and time of visit is available
     	
-    	//4. Create new order    	
     	//////REAL CODE: OPEN//////////////
 		//ArrayList<Object> arrmsg = new ArrayList<Object>();
-		//arrmsg.add(new String("OrderCreate"));
-		//arrmsg.add(new String("ArrayList<String>"));
-		//arrmsg.add(new String("Get"));
-		//ClientUI.chat.accept(arrmsg);		
-		//this.selectParkCmb.getItems().addAll(ChatClient.dataFromServer);
+		//arrmsg.add(new String("ParkCheckCapacity"));
+		//arrmsg.add(new String("String"));
+		//arrmsg.add(this.selectParkCmb.getValue());
+		//ClientUI.chat.accept(arrmsg);
     	
-    	
-    }
+    	if(ChatClient.result == false) {
+			//park capacity doesn't allow to order
+			this.lblResult.setText("The park is full in choosen time. Choose other time or day.");
+		}else {	
+	    	//4. Create new order    	
+	    	//////REAL CODE: OPEN//////////////
+			//ArrayList<Object> arrmsg = new ArrayList<Object>();
+			//arrmsg.add(new String("OrderCreate"));
+			//arrmsg.add(new String("ArrayList<String>"));
+			//arrmsg.add(orderArr);
+			//ClientUI.chat.accept(arrmsg);
+			
+			this.lblResult.setText(ChatClient.dataFromServer.get(0));
 
-}
+		}	
+    }//End pressCreateBtn
+
+}//END class

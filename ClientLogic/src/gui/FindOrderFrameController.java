@@ -64,9 +64,9 @@ public class FindOrderFrameController {
 			if(orderNumber.trim().isEmpty()) {
 				errorCase("You must enter an order number","You must enter an order number");
 			}else {
-				//send order number for searching
+				//send order number for searching and get the order
 				ArrayList<Object> arrmsg = new ArrayList<Object>();
-				arrmsg.add(new String("OrderFind"));
+				arrmsg.add(new String("OrderGet"));
 				arrmsg.add(new String("String"));
 				arrmsg.add(new String(orderNumber));
 				ClientUI.chat.accept(arrmsg);
@@ -76,13 +76,6 @@ public class FindOrderFrameController {
 				}else {
 					
 					System.out.println("Order number found");
-					
-					//to get the order
-					arrmsg = new ArrayList<Object>();
-					arrmsg.add(new String("OrderGet"));
-					arrmsg.add(new String("String"));
-					arrmsg.add(new String(orderNumber));
-					ClientUI.chat.accept(arrmsg);
 					
 					//Find order page is the same page for edit and cancel an order
 					switch(this.action) {

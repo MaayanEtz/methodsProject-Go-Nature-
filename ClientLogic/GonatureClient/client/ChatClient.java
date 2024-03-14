@@ -58,23 +58,24 @@ public class ChatClient extends AbstractClient {
 			
 			Boolean pay_load_from_srv_bln;
 			ArrayList<String> pay_load_from_srv_arr_lst;
+			String pay_load_from_srv_str;
 			
 			ArrayList<Object> arr = (ArrayList<Object>) msg;
 			String endpoint_from_server = (String) arr.get(0);
 			String paylod_type_from_server = (String) arr.get(1);
 			
 			//ERROR CASE
-			switch (paylod_type_from_server) {
-			case "String":
-				String pay_load_from_srv_str = (String) arr.get(2);
-				result = false;
-				return;}
+			//switch (paylod_type_from_server) {
+			//case "String":
+			//	pay_load_from_srv_str = (String) arr.get(2);
+			//	result = false;
+			//	return;}
 
 			switch (endpoint_from_server) {
 				case "ConnectToServer": {
 					switch (paylod_type_from_server) {
 					case "String":
-						String pay_load_from_srv_str = (String) arr.get(2);
+						pay_load_from_srv_str = (String) arr.get(2);
 						result = false;
 						break;
 					case "Boolean":
@@ -89,24 +90,37 @@ public class ChatClient extends AbstractClient {
 					caseDecision(pay_load_from_srv_bln, "User exists", "User not exists");
 					break;}
 				
-				case "OrderFind": {
-					pay_load_from_srv_bln = (Boolean) arr.get(2);
-					caseDecision(pay_load_from_srv_bln, "Order found in DB", "Order not found id DB");
-					break;}
-				
 				case "OrderUpdate": {
 					pay_load_from_srv_bln = (Boolean) arr.get(2);
 					caseDecision(pay_load_from_srv_bln, "Order updated in DB", "Order not updated in DB");
 					break;}
-				
-				case "OrderGet": {
-					pay_load_from_srv_arr_lst = (ArrayList<String>) arr.get(2);
-					order = new Order(pay_load_from_srv_arr_lst);
+
+				case "OrderGet": {	
+					switch (paylod_type_from_server) {
+					case "String":
+						System.out.println("DB didn't return the order");
+						pay_load_from_srv_str = (String) arr.get(2);
+						result = false;
+						break;
+					case "ArrayList<String>":
+						System.out.println("DB returned the order");
+						result = true;
+						pay_load_from_srv_arr_lst = (ArrayList<String>) arr.get(2);
+						order = new Order(pay_load_from_srv_arr_lst);
+					}
 					break;}
 				
 				case "OrderCreate": {
-					pay_load_from_srv_bln = (Boolean) arr.get(2);
-					caseDecision(pay_load_from_srv_bln, "Order created", "Order not created");
+					pay_load_from_srv_str = (String) arr.get(2);
+					if(pay_load_from_srv_str != "") {
+						dataFromServer = new ArrayList<>();
+						dataFromServer.add(pay_load_from_srv_str);
+						result = true;
+						System.out.println("Order created");
+					}else {
+						result = false;
+						System.out.println("Order not created");
+					}
 					break;}
 				
 				case "GroupGuideCheck": {
@@ -116,7 +130,13 @@ public class ChatClient extends AbstractClient {
 				
 				case "ParksListGet": {
 					pay_load_from_srv_arr_lst = (ArrayList<String>) arr.get(2);
-					dataFromServer = new ArrayList<String>(pay_load_from_srv_arr_lst);
+					dataFromServer = pay_load_from_srv_arr_lst;
+					//dataFromServer = new ArrayList<String>(pay_load_from_srv_arr_lst);
+					break;}
+				
+				case "ParkCheckCapacity": {
+					pay_load_from_srv_bln = (Boolean) arr.get(2);
+					caseDecision(pay_load_from_srv_bln, "Park capacity allows to order", "Park capacity doesn't allow to order");
 					break;}
 			}
 			

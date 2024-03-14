@@ -108,7 +108,7 @@ public class CancelOrderFrameController {
 	    	NextPage page = new NextPage(event, "/gui/TravellerPage.fxml", "Traveller Page", "TravellerPageController", "pressIdentifyBtn");
 	    	page.Next();
 		}catch(Exception e) {
-			System.out.println("Error in OrderFrameController: pressCloseBtn");
+			System.out.println("Error in CancelOrderFrameController: pressCloseBtn");
 			System.out.println(e.getMessage());
 		}
     }
@@ -124,7 +124,7 @@ public class CancelOrderFrameController {
 			order.setTelephoneNumber(this.txtPhone.getText());
 			order.setEmail(this.txtEmail.getText());
 		}catch (Exception e) {
-			System.out.println("Error in OrderFrameController: getOrder");
+			System.out.println("Error in CancelOrderFrameController: getOrder");
 			System.out.println(e.getMessage());
 		}
 		
@@ -142,7 +142,7 @@ public class CancelOrderFrameController {
 				this.txtPhone.setText(order.getTelephoneNumber());
 				this.txtEmail.setText(order.getEmail());
 			}catch (Exception e) {
-				System.out.println("Error in OrderFrameController: loadOrder");
+				System.out.println("Error in CancelOrderFrameController: loadOrder");
 				System.out.println(e.getMessage());
 			}
 		}

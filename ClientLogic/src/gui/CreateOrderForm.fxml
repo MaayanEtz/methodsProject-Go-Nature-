@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="644.0" prefWidth="497.0" style="-fx-background-color: WHITE;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.CreateOrderFrameController">
+   <children>
+      <Label layoutX="193.0" layoutY="22.0" prefHeight="30.0" prefWidth="196.0" text="New GoNature Order" textFill="#1e5d38">
+         <font>
+            <Font size="20.0" />
+         </font></Label>
+      <Label id="lblName" layoutX="34.0" layoutY="616.0" text="For any queries regarding your booking contact us by email: GoNature@parks.co.il" textFill="#1e5d38" />
+      <Label id="lblSurname" layoutX="24.0" layoutY="202.0" prefHeight="21.0" prefWidth="187.0" text="2. Select day of visit:" textFill="#1e5d38">
+         <font>
+            <Font size="15.0" />
+         </font></Label>
+      <Label fx:id="lblPhone" layoutX="72.0" layoutY="442.0" text="Phone number:" textFill="#1e5d38">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblEmail" layoutX="100.0" layoutY="486.0" text="Email:" textFill="#1e5d38">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <TextField fx:id="txtPhoneNumber" layoutX="215.0" layoutY="440.0" prefHeight="25.0" prefWidth="258.0" promptText="Phone number" />
+      <TextField fx:id="txtEmail" layoutX="215.0" layoutY="484.0" prefHeight="25.0" prefWidth="258.0" promptText="Email" />
+      <TextField fx:id="txtVisitorsNum" alignment="TOP_CENTER" layoutX="265.0" layoutY="318.0" prefHeight="25.0" prefWidth="204.0" text="1" />
+      <Button fx:id="btnClose" layoutX="383.0" layoutY="544.0" mnemonicParsing="false" onAction="#pressCloseBtn" text="Close" />
+      <Button fx:id="btnCreate" layoutX="70.0" layoutY="544.0" mnemonicParsing="false" onAction="#pressCreateBtn" text="Create" />
+      <Label fx:id="lblResult" layoutX="159.0" layoutY="519.0" prefHeight="25.0" prefWidth="164.0" text="    " />
+      <ImageView fitHeight="121.0" fitWidth="135.0" layoutX="29.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Pictures/go_Nature_logo-removebg-preview.png" />
+         </image>
+      </ImageView>
+      <Label id="lblSurname" layoutX="26.0" layoutY="140.0" prefHeight="21.0" prefWidth="99.0" text="1. Select park:" textFill="#1e5d38">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="selectParkCmb" layoutX="265.0" layoutY="138.0" prefHeight="25.0" prefWidth="204.0" promptText="Click to select the park" />
+      <Label id="lblName" layoutX="228.0" layoutY="66.0" text="Please select the desired park. " textFill="#1e5d38" />
+      <Label layoutX="188.0" layoutY="83.0" text="The calendar shows current available days for visit." textFill="#1e5d38" />
+      <DatePicker fx:id="SelectDayDp" layoutX="264.0" layoutY="200.0" prefHeight="25.0" prefWidth="204.0" promptText="Click to select" />
+      <Label id="lblSurname" layoutX="24.0" layoutY="405.0" prefHeight="21.0" prefWidth="232.0" text="5. Enter your contact information:" textFill="#1e5d38">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Label id="lblSurname" layoutX="24.0" layoutY="320.0" prefHeight="21.0" prefWidth="220.0" text="4. Enter the number of visitors *:" textFill="#1e5d38">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Label id="lblName" layoutX="100.0" layoutY="599.0" text="* An organized guided group is limited to 15 participants." textFill="#1e5d38" />
+      <Label id="lblSurname" layoutX="24.0" layoutY="263.0" prefHeight="21.0" prefWidth="150.0" text="3. Select time of visit:" textFill="#1e5d38">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="selectTimeCmb" layoutX="264.0" layoutY="261.0" prefHeight="25.0" prefWidth="204.0" promptText="Click to select the time" />
+      <CheckBox fx:id="guidedChkb" layoutX="262.0" layoutY="368.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="162.0" text="Organized guided group" />
+   </children>
+</AnchorPane>

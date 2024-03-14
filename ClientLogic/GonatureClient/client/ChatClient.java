@@ -4,6 +4,7 @@ import ocsf.client.*;
 import client.*;
 import common.ChatIF;
 import entity.Order;
+import entity.Park;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ public class ChatClient extends AbstractClient {
 	 */
 	ChatIF clientUI;
 	public static Order order;
+	public static Park park;
+	public static ArrayList<String> dataFromServer;
 	public static boolean result = false;
 	public static boolean awaitResponse = false;
 
@@ -59,12 +62,20 @@ public class ChatClient extends AbstractClient {
 			ArrayList<Object> arr = (ArrayList<Object>) msg;
 			String endpoint_from_server = (String) arr.get(0);
 			String paylod_type_from_server = (String) arr.get(1);
+			
+			//ERROR CASE
+			switch (paylod_type_from_server) {
+			case "String":
+				String pay_load_from_srv_str = (String) arr.get(2);
+				result = false;
+				return;}
 
 			switch (endpoint_from_server) {
 				case "ConnectToServer": {
 					switch (paylod_type_from_server) {
 					case "String":
 						String pay_load_from_srv_str = (String) arr.get(2);
+						result = false;
 						break;
 					case "Boolean":
 						pay_load_from_srv_bln = (Boolean) arr.get(2);
@@ -103,6 +114,10 @@ public class ChatClient extends AbstractClient {
 					caseDecision(pay_load_from_srv_bln, "The visitor is group guide", "The visitor is not group guide");
 					break;}
 				
+				case "ParksListGet": {
+					pay_load_from_srv_arr_lst = (ArrayList<String>) arr.get(2);
+					dataFromServer = new ArrayList<String>(pay_load_from_srv_arr_lst);
+					break;}
 			}
 			
 		}else

@@ -49,7 +49,7 @@ public class TravellerPageController {
     //Event for "Placing a new order" button
     @FXML
     void pressNewOrderBtn(ActionEvent event) throws Exception {
-    	NextPage page = new NextPage(event, "", "", "", "pressNewOrderBtn"); //need to add path and title
+    	NextPage page = new NextPage(event, "/gui/CreateOrderForm.fxml", "Create new order", "CreateOrderFrameController", "pressNewOrderBtn"); //need to add path and title
     	page.Next();
     }
     

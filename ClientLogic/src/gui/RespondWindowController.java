@@ -61,7 +61,7 @@ public class RespondWindowController {
 	    	NextPage page = new NextPage(event, "/gui/TravellerPage.fxml", "Traveller Page", "TravellerPageController", "pressIdentifyBtn");
 	    	page.Next();
 		}catch(Exception e) {
-			System.out.println("Error in OrderFrameController: pressCloseBtn");
+			System.out.println("Error in RespondWindowController: pressCloseBtn");
 			System.out.println(e.getMessage());
 		}
     }

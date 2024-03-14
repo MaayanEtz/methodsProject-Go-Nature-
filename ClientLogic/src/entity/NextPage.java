@@ -100,6 +100,11 @@ public class NextPage {
 				}
 				break;}
 			
+			case "CreateOrderFrameController": {
+				CreateOrderFrameController createOrderFrameController = loader.getController();
+				createOrderFrameController.loadData("111");
+				break;}
+			
 			default: {System.out.println("No such controller in NextPage: Next");}
 		}
 		

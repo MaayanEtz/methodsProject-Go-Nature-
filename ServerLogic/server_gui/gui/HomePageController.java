@@ -1,5 +1,6 @@
 package gui;
 
+import GoNatureServer.GoNatureServer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -66,6 +67,7 @@ public class HomePageController {
 
 				ServerPortFrameController controller = loader.getController();
 				controller.setIp();
+				GoNatureServer.controller = controller;
 				primaryStage.setTitle("Connection status");
 				primaryStage.setScene(scene);
 				primaryStage.show();

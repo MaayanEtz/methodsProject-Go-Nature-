@@ -47,8 +47,11 @@ public class ServerPortFrameController {
 	private TableColumn<ConnectionData, String> colStatus;
 	@FXML
 	private Text Ip_text;
+	
+	private ServerPortFrameController me;
+	
 
-	public static ArrayList<ConnectionToClient> client_conn_data = new ArrayList<>();
+	private static ArrayList<ConnectionToClient> client_conn_data = new ArrayList<>();
 
 	public void loadTableData(ObservableList<ConnectionData> connectionData) {
 		try {
@@ -74,32 +77,7 @@ public class ServerPortFrameController {
 	// Event for "Get connected users" button
 	public void pressGetConUsersBtn(ActionEvent event) {
 		try {
-			String ipAddress;
-			String hostName;
-			String connectionStatus;
-
-
-			ObservableList<ConnectionData> connectionData = FXCollections.observableArrayList();
-			if (!client_conn_data.isEmpty()) {
-				for (ConnectionToClient c : client_conn_data) {
-					if (c.isAlive()) {
-						ipAddress = new String(c.getInetAddress().getHostAddress().toString());
-						hostName = new String(c.getInetAddress().getHostName().toString());
-						connectionStatus = new String(String.valueOf(c.isAlive()));
-
-						System.out.println("Client ip: " + c.getInetAddress().getHostAddress().toString());
-						System.out.println("Client host name: " + c.getInetAddress().getHostName().toString());
-						System.out.println("Client stats: " + String.valueOf(c.isAlive()));
-
-						connectionData.add(new ConnectionData(ipAddress, hostName, connectionStatus));
-					} else {
-						System.out.println("c is dead");
-					}
-				}
-			}
-			this.loadTableData(connectionData);
-
-
+			updateTable();
 		} catch (Exception e) {
 			System.out.println("Error in ServerPortFrameController: pressGetConUsersBtn");
 			System.out.println(e.getMessage());
@@ -107,6 +85,42 @@ public class ServerPortFrameController {
 
 	}
 	// End function
+	
+	public void addClient(ConnectionToClient client) {
+		client_conn_data.add(client);
+		updateTable();
+	}
+	
+	public void removeClient (ConnectionToClient client) {
+		client_conn_data.remove(client);
+		updateTable();
+	}
+	
+	public void updateTable() {
+		String ipAddress;
+		String hostName;
+		String connectionStatus;
+		
+		ObservableList<ConnectionData> connectionData = FXCollections.observableArrayList();
+		if (!client_conn_data.isEmpty()) {
+			for (ConnectionToClient c : client_conn_data) {
+				if (c.isAlive()) {
+					ipAddress = new String(c.getInetAddress().getHostAddress().toString());
+					hostName = new String(c.getInetAddress().getHostName().toString());
+					connectionStatus = new String(String.valueOf(c.isAlive()));
+
+					System.out.println("Client ip: " + c.getInetAddress().getHostAddress().toString());
+					System.out.println("Client host name: " + c.getInetAddress().getHostName().toString());
+					System.out.println("Client stats: " + String.valueOf(c.isAlive()));
+
+					connectionData.add(new ConnectionData(ipAddress, hostName, connectionStatus));
+				} else {
+					System.out.println("c is dead");
+				}
+			}
+		}
+		this.loadTableData(connectionData);
+	}
 
 	// private class for connected clients data
 	private class ConnectionData {

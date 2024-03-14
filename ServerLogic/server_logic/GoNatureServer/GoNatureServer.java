@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -20,6 +22,7 @@ public class GoNatureServer extends AbstractServer {
 	private String db_host;
 	private String db_user;
 	private String db_pass;
+	public static ServerPortFrameController controller;
 
 	/// time outs ///
 	int db_conn_validation_timeout_milisecs = 10000;
@@ -70,7 +73,7 @@ public class GoNatureServer extends AbstractServer {
 			arr_msg = (ArrayList<Object>) msg;
 			System.out.println("[handleMessageFromClient | DEBUG]: converted msg to arr list");
 		} catch (ClassCastException e_clas) {
-			ServerPortFrameController.client_conn_data.remove(client);
+			controller.removeClient(client);
 			System.out.println(
 					"[handleMessageFromClient | ERROR]: msg from client is not ArrayList<Object> removing client from list");
 			// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
@@ -187,7 +190,7 @@ public class GoNatureServer extends AbstractServer {
 					System.out.println("[OrderCreate | DEBUG]: extracted: " + payload);
 
 					//
-					if (true) { // TODO ORENB: Here will be algorithm for problematic time instead of true
+					if (checkOrderTime(payload)) { // TODO ORENB: Here will be algorithm for problematic time instead of true
 						// prepare MySQL query prepare
 						prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table
 								+ " (`visitor_id`, `park_name`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`)"
@@ -200,6 +203,9 @@ public class GoNatureServer extends AbstractServer {
 						prepared_statement.setString(6, visitor_phone);
 						prepared_statement.executeUpdate();
 						create_order_test_succeeded = true;
+					}
+					else {
+						create_order_test_succeeded = false;
 					}
 
 					// Catch Problems
@@ -295,15 +301,66 @@ public class GoNatureServer extends AbstractServer {
 				}
 			}
 			return;
-			
+
 		case "OrderEdit":
 			// UPDATE orders SET park_name="yossi_park" WHERE orderId="4";
 			return;
-			
-			
+
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");
 		}
+	}
+
+	/**
+	 * method that checks db that order is valid
+	 * 
+	 * @param arr - array list of string containing order parameters
+	 * @return boolean - order is valid
+	 */
+	private boolean checkOrderTime(ArrayList<String> arr) {
+		try {
+			System.out.println("Debug: " + arr);
+			int visitorNum = Integer.valueOf(arr.get(3));
+			// get parks time of visit, and capacity of park
+			PreparedStatement ps = db_con.prepareStatement("SELECT visitTimeInMinutes, capacity, diff FROM parks WHERE parkName = ?");
+			ps.setString(1, arr.get(1));
+			ResultSet rs = ps.executeQuery();
+			System.out.println("Debug: " + rs);
+			if (!rs.next()) {
+				System.out.println("Debug: couldnt find park?");
+				throw new IllegalArgumentException("invalid park name");
+			}
+			// found park
+			int timeToAdd = rs.getInt("visitTimeInMinutes");
+			int parkCapacity = rs.getInt("capacity");
+			int capacityDiff = rs.getInt("diff");
+			int actual = parkCapacity - capacityDiff;
+			System.out.println("Debug: actual capacity is: " + actual);
+
+			// get amount of orders in timeframe
+			String startTime = arr.get(2);
+			ps = db_con.prepareStatement("SELECT SUM(visitor_number) AS sum FROM orders WHERE time_of_visit BETWEEN ? AND ?");
+			ps.setString(1, startTime);
+			DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			LocalDateTime endTime = LocalDateTime.parse(startTime, f);
+			endTime = endTime.plusMinutes(timeToAdd);
+			String endTimeFormatted = endTime.format(f);
+			ps.setString(2, endTimeFormatted);
+			rs = ps.executeQuery();
+			if (!rs.next()) {
+				System.out.println("couldnt sum?");
+				throw new Exception("couldnt sum");
+			}
+			int sum = rs.getInt("sum");
+			System.out.println("Debug: sum came to " + sum);
+			int availableSpace = actual - sum;
+			return ((availableSpace - visitorNum) > 0);
+			
+		} catch (Exception e) {
+			System.out.println("error in checkOrderTime(): ");
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	/**
@@ -356,7 +413,15 @@ public class GoNatureServer extends AbstractServer {
 		// System.out.println(String.valueOf(client.isAlive()));
 		//////////////////////
 		System.out.println("[clientConnected|INFO]: adding client to gui list");
-		ServerPortFrameController.client_conn_data.add(client);
+		controller.addClient(client);
+		return;
+	}
+
+	@Override
+	synchronized protected void clientDisconnected(ConnectionToClient client) { // supposed to be called when client
+																				// disconnects...
+		System.out.println("[clientConnected|INFO]: removing client from gui list");
+		controller.removeClient(client);
 		return;
 	}
 }

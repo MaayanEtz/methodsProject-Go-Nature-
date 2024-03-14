@@ -94,6 +94,11 @@ public class ChatClient extends AbstractClient {
 					pay_load_from_srv_bln = (Boolean) arr.get(2);
 					caseDecision(pay_load_from_srv_bln, "Order updated in DB", "Order not updated in DB");
 					break;}
+				
+				case "OrderCancel": {
+					pay_load_from_srv_bln = (Boolean) arr.get(2);
+					caseDecision(pay_load_from_srv_bln, "Order cancelled", "Order not cancelled");
+					break;}
 
 				case "OrderGet": {	
 					switch (paylod_type_from_server) {

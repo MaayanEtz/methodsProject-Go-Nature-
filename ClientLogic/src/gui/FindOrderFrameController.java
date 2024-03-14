@@ -1,10 +1,13 @@
 package gui;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import client.ChatClient;
 import client.ClientUI;
 import entity.NextPage;
+import entity.Order;
 //import entity.Order;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -48,7 +51,7 @@ public class FindOrderFrameController {
 	
 	//get entered order number
 	private String getEnteredOrderNum() {
-		return txtEnteredOrderNum.getText();
+        return txtEnteredOrderNum.getText();
 	}
 	
 	public void setAction(Action action) {
@@ -59,17 +62,36 @@ public class FindOrderFrameController {
 	public void pressFindBtn (ActionEvent event) throws Exception {
 		
 		try {
+			
 			String orderNumber = getEnteredOrderNum();
 			
 			if(orderNumber.trim().isEmpty()) {
 				errorCase("You must enter an order number","You must enter an order number");
-			}else {
+			}else {		
+				// Check if the string contains any digit
+		        Pattern pattern = Pattern.compile("\\d");
+		        Matcher matcher = pattern.matcher(orderNumber);
+		        
+		        if (matcher.find()) {
+		            System.out.println("String contains numbers.");
+		        } else {
+		            errorCase("String does not contain numbers.","Order number should contain only numbers.");
+		            throw new Exception();
+		        }
+					
 				//send order number for searching and get the order
 				ArrayList<Object> arrmsg = new ArrayList<Object>();
 				arrmsg.add(new String("OrderGet"));
 				arrmsg.add(new String("String"));
 				arrmsg.add(new String(orderNumber));
-				ClientUI.chat.accept(arrmsg);
+				
+			    /////ANNA: OPEN////////////////
+				//ClientUI.chat.accept(arrmsg);
+				
+			    /////ANNA: Check////////////////
+				ChatClient.result = true; //order found
+				ChatClient.order = new Order("St James Park","111", "2023-02-11 12:00:00", "3", "0587126782", "GA@gmail.com");
+				//ChatClient.result = false; //order not found
 				
 				if(ChatClient.result == false) {
 					errorCase("Order number not found","Order number does not exist in the system.");

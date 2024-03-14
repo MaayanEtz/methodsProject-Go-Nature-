@@ -107,7 +107,13 @@ public class OrderFrameController{
 			arrmsg.add(new String("OrderUpdate"));
 			arrmsg.add(new String("ArrayList<String>"));
 			arrmsg.add(orderForUpd);
-			ClientUI.chat.accept(arrmsg);
+			
+		    /////ANNA: OPEN////////////////
+			//ClientUI.chat.accept(arrmsg);
+			
+		    /////ANNA: Check////////////////
+			ChatClient.result = true; //order updated
+			//ChatClient.result = false; //order not updated
 						
 			if(ChatClient.result == true) {
 				//updated successfully

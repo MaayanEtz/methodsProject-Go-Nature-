@@ -71,13 +71,9 @@ public class FindOrderFrameController {
 				// Check if the string contains any digit
 		        Pattern pattern = Pattern.compile("\\d");
 		        Matcher matcher = pattern.matcher(orderNumber);
-		        
-		        if (matcher.find()) {
-		            System.out.println("String contains numbers.");
-		        } else {
-		            errorCase("String does not contain numbers.","Order number should contain only numbers.");
-		            throw new Exception();
-		        }
+		        if (!matcher.find())
+		            throw new IllegalArgumentException();   
+
 					
 				//send order number for searching and get the order
 				ArrayList<Object> arrmsg = new ArrayList<Object>();
@@ -86,11 +82,11 @@ public class FindOrderFrameController {
 				arrmsg.add(new String(orderNumber));
 				
 			    /////ANNA: OPEN////////////////
-				//ClientUI.chat.accept(arrmsg);
+				ClientUI.chat.accept(arrmsg);
 				
 			    /////ANNA: Check////////////////
-				ChatClient.result = true; //order found
-				ChatClient.order = new Order("St James Park","111", "2023-02-11 12:00:00", "3", "0587126782", "GA@gmail.com");
+				//ChatClient.result = true; //order found
+				//ChatClient.order = new Order("St James Park","111", "2023-02-11 12:00:00", "3", "0587126782", "GA@gmail.com");
 				//ChatClient.result = false; //order not found
 				
 				if(ChatClient.result == false) {
@@ -113,6 +109,8 @@ public class FindOrderFrameController {
 					}	
 				}
 			}			
+		}catch (IllegalArgumentException e1) {
+			errorCase("String does not contain numbers.","Order number should contain only numbers.");
 		}catch (Exception e) {
 			System.out.println("Error in FindOrderFrameController: pressFindBtn");
 			System.out.println(e.getMessage());

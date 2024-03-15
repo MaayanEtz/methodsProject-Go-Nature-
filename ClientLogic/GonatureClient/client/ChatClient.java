@@ -4,7 +4,6 @@ import ocsf.client.*;
 import client.*;
 import common.ChatIF;
 import entity.Order;
-import entity.Park;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -22,7 +21,6 @@ public class ChatClient extends AbstractClient {
 	 */
 	ChatIF clientUI;
 	public static Order order;
-	public static Park park;
 	public static ArrayList<String> dataFromServer;
 	public static boolean result = false;
 	public static boolean awaitResponse = false;
@@ -64,13 +62,6 @@ public class ChatClient extends AbstractClient {
 			String endpoint_from_server = (String) arr.get(0);
 			String paylod_type_from_server = (String) arr.get(1);
 			
-			//ERROR CASE
-			//switch (paylod_type_from_server) {
-			//case "String":
-			//	pay_load_from_srv_str = (String) arr.get(2);
-			//	result = false;
-			//	return;}
-
 			switch (endpoint_from_server) {
 				case "ConnectToServer": {
 					switch (paylod_type_from_server) {
@@ -116,15 +107,20 @@ public class ChatClient extends AbstractClient {
 					break;}
 				
 				case "OrderCreate": {
-					pay_load_from_srv_str = (String) arr.get(2);
-					if(pay_load_from_srv_str != "") {
-						dataFromServer = new ArrayList<>();
-						dataFromServer.add(pay_load_from_srv_str);
-						result = true;
-						System.out.println("Order created");
-					}else {
-						result = false;
-						System.out.println("Order not created");
+					switch (paylod_type_from_server) {
+						case "String": {
+							pay_load_from_srv_str = (String) arr.get(2);
+							result = false;
+							break;
+						}
+						case "Integer": {
+							pay_load_from_srv_str = ((Integer) arr.get(2)).toString();
+							dataFromServer = new ArrayList<>();
+							dataFromServer.add(pay_load_from_srv_str);
+							result = true;
+							System.out.println("Order created");
+							break;
+						}
 					}
 					break;}
 				
@@ -136,7 +132,6 @@ public class ChatClient extends AbstractClient {
 				case "ParksListGet": {
 					pay_load_from_srv_arr_lst = (ArrayList<String>) arr.get(2);
 					dataFromServer = pay_load_from_srv_arr_lst;
-					//dataFromServer = new ArrayList<String>(pay_load_from_srv_arr_lst);
 					break;}
 				
 				case "ParkCheckCapacity": {

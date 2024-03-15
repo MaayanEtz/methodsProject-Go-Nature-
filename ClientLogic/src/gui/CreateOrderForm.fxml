@@ -35,9 +35,9 @@
       <TextField fx:id="txtPhoneNumber" layoutX="215.0" layoutY="440.0" prefHeight="25.0" prefWidth="258.0" promptText="Phone number" />
       <TextField fx:id="txtEmail" layoutX="215.0" layoutY="484.0" prefHeight="25.0" prefWidth="258.0" promptText="Email" />
       <TextField fx:id="txtVisitorsNum" alignment="TOP_CENTER" layoutX="265.0" layoutY="318.0" prefHeight="25.0" prefWidth="204.0" text="1" />
-      <Button fx:id="btnClose" layoutX="383.0" layoutY="550.0" mnemonicParsing="false" onAction="#pressCloseBtn" text="Close" />
-      <Button fx:id="btnCreate" layoutX="74.0" layoutY="550.0" mnemonicParsing="false" onAction="#pressCreateBtn" text="Create" />
-      <Label fx:id="lblResult" layoutX="72.0" layoutY="520.0" prefHeight="25.0" prefWidth="368.0" text="    " textFill="RED" />
+      <Button fx:id="btnClose" layoutX="383.0" layoutY="556.0" mnemonicParsing="false" onAction="#pressCloseBtn" text="Close" />
+      <Button fx:id="btnCreate" layoutX="74.0" layoutY="556.0" mnemonicParsing="false" onAction="#pressCreateBtn" text="Create" />
+      <Label fx:id="lblResult" alignment="CENTER" layoutX="14.0" layoutY="520.0" prefHeight="25.0" prefWidth="469.0" text="    " textAlignment="CENTER" textFill="RED" />
       <ImageView fitHeight="121.0" fitWidth="135.0" layoutX="29.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@Pictures/go_Nature_logo-removebg-preview.png" />

@@ -64,19 +64,23 @@ public class CreateOrderFrameController {
 			
 			//1. Load Parks List  	
 			//////REAL CODE: OPEN//////////////
-			//ArrayList<Object> arrmsg = new ArrayList<Object>();
-			//arrmsg.add(new String("ParksListGet"));
-			//arrmsg.add(new String("Get"));
-			//arrmsg.add(new String("Get"));
-			//ClientUI.chat.accept(arrmsg);		
-			//this.selectParkCmb.getItems().addAll(ChatClient.dataFromServer);
+			ArrayList<Object> arrmsg = new ArrayList<Object>();
+			arrmsg.add(new String("ParksListGet"));
+			arrmsg.add(new String("Get"));
+			arrmsg.add(new String("Get"));
+			ClientUI.chat.accept(arrmsg);
+			
+			if (ChatClient.dataFromServer.equals(null))
+				throw new NullPointerException("The parks list doesn't exists.");
+			
+			this.selectParkCmb.getItems().addAll(ChatClient.dataFromServer);
 			
 			////////////ONLY FOR CHECK////////////////
-			ArrayList<String> parks = new ArrayList<>();
-			parks.add("Kew gardens");
-			parks.add("St. James park");
-			parks.add("Hyde park");
-			this.selectParkCmb.getItems().addAll(parks);
+			//ArrayList<String> parks = new ArrayList<>();
+			//parks.add("Kew gardens");
+			//parks.add("St. James park");
+			//parks.add("Hyde park");
+			//this.selectParkCmb.getItems().addAll(parks);
 			
 
 			//2. Load available visit days
@@ -110,10 +114,10 @@ public class CreateOrderFrameController {
 			//4. Load if organized guided group
 			
 			//////REAL CODE: OPEN//////////////
-			//ArrayList<Object> arrmsg = new ArrayList<Object>();
-			//arrmsg.add(new String("GroupGuideCheck"));
-			//arrmsg.add(new String("String"));
-			//arrmsg.add(visitorId);
+			arrmsg = new ArrayList<Object>();
+			arrmsg.add(new String("GroupGuideCheck"));
+			arrmsg.add(new String("String"));
+			arrmsg.add(visitorId);
 			//ClientUI.chat.accept(arrmsg);
 			
 			
@@ -179,7 +183,8 @@ public class CreateOrderFrameController {
 		        else {
 		        	System.out.println("String does not contain numbers.");
 		        	throw new Exception("You have entered wrong format information. Check again.");
-		        }				
+		        }
+		          
 				if(Integer.valueOf(visitorsNum) < 1)
 					throw new Exception("The number of visitors should be greater then 0.");
 				
@@ -227,19 +232,22 @@ public class CreateOrderFrameController {
 				arrmsg.add(orderArr);
 				
 			    /////ANNA: OPEN////////////////
-				//ClientUI.chat.accept(arrmsg);
+				ClientUI.chat.accept(arrmsg);
 				
 			    /////ANNA: Check////////////////
-				ChatClient.result = true; //order created
+				//ChatClient.result = true; //order created
 				//ChatClient.result = false; //order not created
 				
 			    /////ANNA: OPEN////////////////
-				//this.lblResult.setText(ChatClient.dataFromServer.get(0));
+				if(ChatClient.result == false)
+					this.lblResult.setText(new String("Unfortunately, order not created!"));
+				else
+					this.lblResult.setText(new String("Order successfuly created! Your order number: " + ChatClient.dataFromServer.get(0)));
 				
 			    /////ANNA: Check////////////////
-				ChatClient.dataFromServer = new ArrayList<>();
-				ChatClient.dataFromServer.add("555");
-				this.lblResult.setText(ChatClient.dataFromServer.get(0));
+				//ChatClient.dataFromServer = new ArrayList<>();
+				//ChatClient.dataFromServer.add("555");
+				//this.lblResult.setText(ChatClient.dataFromServer.get(0));
 
 			}
 		} catch (Exception e) {

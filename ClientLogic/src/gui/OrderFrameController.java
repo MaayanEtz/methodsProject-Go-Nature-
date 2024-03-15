@@ -109,10 +109,10 @@ public class OrderFrameController{
 			arrmsg.add(orderForUpd);
 			
 		    /////ANNA: OPEN////////////////
-			//ClientUI.chat.accept(arrmsg);
+			ClientUI.chat.accept(arrmsg);
 			
 		    /////ANNA: Check////////////////
-			ChatClient.result = true; //order updated
+			//ChatClient.result = true; //order updated
 			//ChatClient.result = false; //order not updated
 						
 			if(ChatClient.result == true) {

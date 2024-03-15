@@ -80,6 +80,8 @@ public class NextPage {
 			
 			case "TravellerPageController": {
 				TravellerPageController travellerPageController = loader.getController();
+				if (data instanceof String)
+					travellerPageController.setVisitorID((String)data);
 				break;}
 			
 			case "SettingsPageController": {
@@ -102,7 +104,8 @@ public class NextPage {
 			
 			case "CreateOrderFrameController": {
 				CreateOrderFrameController createOrderFrameController = loader.getController();
-				createOrderFrameController.loadData("111");
+				if (data instanceof String)
+					createOrderFrameController.loadData((String) data);
 				break;}
 			
 			default: {System.out.println("No such controller in NextPage: Next");}

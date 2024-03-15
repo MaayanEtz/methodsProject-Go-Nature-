@@ -18,7 +18,7 @@
             <Font size="18.0" />
          </font></Label>
       <TextField fx:id="txtEnteredOrderNum" layoutX="70.0" layoutY="202.0" prefHeight="25.0" prefWidth="195.0" />
-      <Label fx:id="lblResult" layoutX="60.0" layoutY="309.0" prefHeight="17.0" prefWidth="255.0" text="        " />
+      <Label fx:id="lblResult" alignment="CENTER" layoutX="10.0" layoutY="309.0" prefHeight="17.0" prefWidth="317.0" text="        " textAlignment="CENTER" textFill="RED" />
       <Text layoutX="94.0" layoutY="409.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Created By i-Recreation Inc." />
       <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="92.0" pickOnBounds="true" preserveRatio="true">
          <image>

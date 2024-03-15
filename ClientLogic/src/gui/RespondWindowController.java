@@ -2,7 +2,6 @@ package gui;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 
 import entity.NextPage;
 import javafx.event.ActionEvent;
@@ -26,18 +25,15 @@ public class RespondWindowController {
     //Setting image to the image view
     public void setImage(String result) {
     	try {
-    		InputStream stream;
     		Image image;
     		
 			if (result.equals("Cancelled successfully!")) {
-				stream = new FileInputStream("/ClientLogic/src/gui/Pictures/V.png");
-			    image = new Image(stream);
+			    image = new Image(getClass().getResourceAsStream("Pictures/V.png"));
 			}else {
-				stream = new FileInputStream("/ClientLogic/src/gui/Pictures/X.png");
-			    image = new Image(stream);
+			    image = new Image(getClass().getResourceAsStream("Pictures/X.png"));
 			}
 			resultImg.setImage(image);
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			System.out.println("Error in RespondWindowController: setImage");
 			System.out.println(e.getMessage());
 		}

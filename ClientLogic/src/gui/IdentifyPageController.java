@@ -1,6 +1,9 @@
 package gui;
 
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import entity.NextPage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,13 +36,27 @@ public class IdentifyPageController {
 	    @FXML
 	    void pressIdentifyBtn(ActionEvent event) {
 	    	try {
+	    		String identNum = this.identify_id.getText();
+	    		if (identNum.trim().isEmpty())
+	    			throw new NullPointerException("You should enter an identification number.");
 	    		
-	    		//ADD CHECK FOR IDENTIFICATION NUMBER
+				// Check if the string contains any digit
+		        Pattern pattern = Pattern.compile("\\d");
+		        Matcher matcher = pattern.matcher(identNum);  
+		        if (!matcher.find())
+		        	throw new IllegalArgumentException("Identification number should contain only numbers.");
 	    		
-		    	NextPage page = new NextPage(event, "/gui/TravellerPage.fxml", "Traveller Page", "TravellerPageController", "pressIdentifyBtn");
+		    	NextPage page = new NextPage(event, "/gui/TravellerPage.fxml", "Traveller Page", "TravellerPageController", "pressIdentifyBtn", new String(identNum));
 		    	page.Next();
+		    	
+	    	}catch (NullPointerException e) {
+    			System.out.println("Identification number not entered.");
+    			this.errorTxt.setText(e.getMessage());
+	    	}catch (IllegalArgumentException e) {
+	    		System.out.println("Identification number wrong.");
+	    		this.errorTxt.setText(e.getMessage());
 	    	}catch (Exception e) {
-	    		System.out.println("Error in IdentifyPageController: pressBackBtn");
+	    		System.out.println("Error in IdentifyPageController: pressIdentifyBtn");
 	    	}
 	    }
 	    

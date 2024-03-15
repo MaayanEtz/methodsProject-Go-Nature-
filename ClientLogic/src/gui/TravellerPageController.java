@@ -26,6 +26,12 @@ public class TravellerPageController {
 
     @FXML
     private ImageView goIMG;
+    
+    private String visitorID;
+    
+    public void setVisitorID(String visitorID) {
+    	this.visitorID = visitorID;
+    }
 
     //Event for "Cancelling an order" button
     @FXML
@@ -49,7 +55,7 @@ public class TravellerPageController {
     //Event for "Placing a new order" button
     @FXML
     void pressNewOrderBtn(ActionEvent event) throws Exception {
-    	NextPage page = new NextPage(event, "/gui/CreateOrderForm.fxml", "Create new order", "CreateOrderFrameController", "pressNewOrderBtn"); //need to add path and title
+    	NextPage page = new NextPage(event, "/gui/CreateOrderForm.fxml", "Create new order", "CreateOrderFrameController", "pressNewOrderBtn", visitorID);
     	page.Next();
     }
     

@@ -78,10 +78,10 @@ public class CancelOrderFrameController {
 			arrmsg.add(new String(orderNumber));
 			
 			/////ANNA: OPEN////////////////
-			//ClientUI.chat.accept(arrmsg);
+			ClientUI.chat.accept(arrmsg);
 			
 		    /////ANNA: Check////////////////
-			ChatClient.result = true; //order cancelled
+			//ChatClient.result = true; //order cancelled
 			//ChatClient.result = false; //order cancelled
 			
 			if(ChatClient.result == true) {

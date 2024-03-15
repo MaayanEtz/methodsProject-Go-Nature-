@@ -67,6 +67,7 @@ public class GoNatureServer extends AbstractServer {
 		String endpoint;
 		String payload_type;
 		ArrayList<Object> arr_msg;
+		ArrayList<String> arr = new ArrayList<String>();
 
 		// Convert to ArrayList test
 		try {
@@ -311,7 +312,7 @@ public class GoNatureServer extends AbstractServer {
 			if (!payload_type.equals("String")) {
 				System.out.println("[OrderGet | ERROR]: Client sent payload for OrderGet ep which is not a String");
 				try {
-					//send error to client
+					// send error to client
 					send_response(client, new String("OrderGet"), new String("ErrorString"),
 							new String("Client asked OrderGet end point but payload-type was not String!"));
 				} catch (IOException e) {
@@ -320,7 +321,6 @@ public class GoNatureServer extends AbstractServer {
 				}
 				return;
 			}
-			ArrayList<String> arr = new ArrayList<String>();
 			try {
 				PreparedStatement ps = db_con.prepareStatement("SELECT * FROM orders WHERE orderId = ?");
 				ps.setString(1, (String) arr_msg.get(2));
@@ -346,8 +346,26 @@ public class GoNatureServer extends AbstractServer {
 				System.out.println("[OrderGet | ERROR]: SQLException was thrown!");
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				System.out.println("[OrderGet | ERROR]: IOException was thrown!");
+				e.printStackTrace();
+			}
+
+		case "ParksListGet":
+			try {
+				PreparedStatement ps = db_con.prepareStatement("Select parkName FROM parks");
+				ResultSet rs = ps.executeQuery();
+				while (rs.next()) {
+					arr.add(rs.getString("parkName"));
+				}
+				if (arr.isEmpty()) {
+					//no Parks???
+				}
+				send_response(client, new String("ParksListGet"), new String("ArrayList<String>"), arr);
+			} catch (SQLException e) {
+				System.out.println("[ParksListGet | ERROR]: SQLException was thrown!");
+				e.printStackTrace();
+			} catch (IOException e) {
+				System.out.println("[ParksListGet | ERROR]: IOException was thrown!");
 				e.printStackTrace();
 			}
 

@@ -176,8 +176,8 @@ public class GoNatureServer extends AbstractServer {
 			return;
 
 		case "OrderCreate":
+			int orderId = -1;
 			if (payload_type.equals("ArrayList<String>")) {
-				boolean create_order_test_succeeded = false;
 				db_table = "orders";
 				try {
 					// Extract pay-load
@@ -204,9 +204,15 @@ public class GoNatureServer extends AbstractServer {
 						prepared_statement.setString(5, visitor_email);
 						prepared_statement.setString(6, visitor_phone);
 						prepared_statement.executeUpdate();
-						create_order_test_succeeded = true;
-					} else {
-						create_order_test_succeeded = false;
+						prepared_statement = null;
+						prepared_statement = db_con.prepareStatement("SELECT MAX(orderId) AS max FROM orders");
+						result_set = prepared_statement.executeQuery();
+						if (!result_set.next()) {
+							System.out.println("[OrderCreate | ERROR]: couldnt get max id!");
+							send_response(client, new String("OrderCreate"), new String("ErrorString"),
+									new String("couldnt get max from DB"));
+						}
+						orderId = result_set.getInt("max");
 					}
 
 					// Catch Problems
@@ -226,8 +232,8 @@ public class GoNatureServer extends AbstractServer {
 
 				// Response to client
 				try {
-					send_response(client, new String("OrderCreate"), new String("Boolean"),
-							new Boolean(create_order_test_succeeded));
+					send_response(client, new String("OrderCreate"), new String("Integer"),
+							new Integer(orderId));
 				} catch (IOException e) {
 					System.out.println("[OrderCreate_ep |ERROR ]: Failed OrderCreate response");
 					e.printStackTrace();
@@ -358,7 +364,7 @@ public class GoNatureServer extends AbstractServer {
 					arr.add(rs.getString("parkName"));
 				}
 				if (arr.isEmpty()) {
-					//no Parks???
+					// no Parks???
 				}
 				send_response(client, new String("ParksListGet"), new String("ArrayList<String>"), arr);
 			} catch (SQLException e) {

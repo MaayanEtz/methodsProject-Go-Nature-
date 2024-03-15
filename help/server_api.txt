@@ -4,7 +4,7 @@ ConnectToServer   | doesnt metter	            | doesnt metter             | "Con
 
 UserLogin         | "ArrayList<String>"		    | {"username","password"}   | "UserLogin", "Boolean",true\false
 
-OrderCreate 	  | "ArrayList<String>"		    | {"visitor_id","park_name" | "OrderCreate", "Boolean",true\false
+OrderCreate 	  | "ArrayList<String>"		    | {"visitor_id","park_name" | "OrderCreate", "Integer",orderId or -1 in case order was not created
 
 						    |,"time_of_visit",          |  
 
@@ -15,3 +15,10 @@ OrderCreate 	  | "ArrayList<String>"		    | {"visitor_id","park_name" | "OrderCr
 						    |	"visitor_phone"	}	|
 
 OrderCancel	  | "String"			    | "order_id"		| "OrderCancel", "Boolean",true\false
+
+OrderGet      | "String"                | "orderId"         | "OrderGet", "ArrayList<String>", {orderId, park_name, time_of_visit
+																								visitor_number, visitor_email, 
+																								visitor_phone}
+																								if order does not exist
+															| "OrderGet", "String", "null"
+ParksListGet  | "null"                  | - 				| "ParksListGet", "ArrayList<String>", {park_name 1...}

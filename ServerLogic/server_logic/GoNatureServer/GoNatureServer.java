@@ -190,7 +190,8 @@ public class GoNatureServer extends AbstractServer {
 					System.out.println("[OrderCreate | DEBUG]: extracted: " + payload);
 
 					//
-					if (checkOrderTime(payload)) { // TODO ORENB: Here will be algorithm for problematic time instead of true
+					if (checkOrderTime(payload)) { // TODO ORENB: Here will be algorithm for problematic time instead of
+													// true
 						// prepare MySQL query prepare
 						prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table
 								+ " (`visitor_id`, `park_name`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`)"
@@ -203,8 +204,7 @@ public class GoNatureServer extends AbstractServer {
 						prepared_statement.setString(6, visitor_phone);
 						prepared_statement.executeUpdate();
 						create_order_test_succeeded = true;
-					}
-					else {
+					} else {
 						create_order_test_succeeded = false;
 					}
 
@@ -306,6 +306,51 @@ public class GoNatureServer extends AbstractServer {
 			// UPDATE orders SET park_name="yossi_park" WHERE orderId="4";
 			return;
 
+		case "OrderGet":
+			System.out.println("[OrderGet|INFO]: OrderGet enpoint trigered");
+			if (!payload_type.equals("String")) {
+				System.out.println("[OrderGet | ERROR]: Client sent payload for OrderGet ep which is not a String");
+				try {
+					//send error to client
+					send_response(client, new String("OrderGet"), new String("ErrorString"),
+							new String("Client asked OrderGet end point but payload-type was not String!"));
+				} catch (IOException e) {
+					System.out.println("[OrderCancel_ep |ERROR]: Failed OrderCancel error response");
+					e.printStackTrace();
+				}
+				return;
+			}
+			ArrayList<String> arr = new ArrayList<String>();
+			try {
+				PreparedStatement ps = db_con.prepareStatement("SELECT * FROM orders WHERE orderId = ?");
+				ps.setString(1, (String) arr_msg.get(2));
+				ResultSet rs = ps.executeQuery();
+				if (!rs.next()) { // order not found in DB
+					System.out.println(
+							"[OrderGet | ERROR]: order_id not found in DB, sending order not found response to client");
+					send_response(client, new String("OrderGet"), new String("String"), new String("null"));
+					return;
+				}
+				// add order parameters to ArrayList to send to client
+				arr.add(new String("" + rs.getInt("orderId")));
+				arr.add(new String(rs.getString("park_name")));
+				arr.add(new String(rs.getString("time_of_visit")));
+				arr.add(new String("" + rs.getInt("visitor_number")));
+				arr.add(new String(rs.getString("visitor_email")));
+				arr.add(new String(rs.getString("visitor_phone")));
+				// send Order to Client
+				send_response(client, new String("OrderGet"), new String("ArrayList<String>"), arr);
+				System.out.println("[OrderGet|INFO]: OrderGet sent response of ArrayList<>");
+				System.out.println(arr);
+			} catch (SQLException e) {
+				System.out.println("[OrderGet | ERROR]: SQLException was thrown!");
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				System.out.println("[OrderGet | ERROR]: IOException was thrown!");
+				e.printStackTrace();
+			}
+
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");
 		}
@@ -322,7 +367,8 @@ public class GoNatureServer extends AbstractServer {
 			System.out.println("Debug: " + arr);
 			int visitorNum = Integer.valueOf(arr.get(3));
 			// get parks time of visit, and capacity of park
-			PreparedStatement ps = db_con.prepareStatement("SELECT visitTimeInMinutes, capacity, diff FROM parks WHERE parkName = ?");
+			PreparedStatement ps = db_con
+					.prepareStatement("SELECT visitTimeInMinutes, capacity, diff FROM parks WHERE parkName = ?");
 			ps.setString(1, arr.get(1));
 			ResultSet rs = ps.executeQuery();
 			System.out.println("Debug: " + rs);
@@ -339,7 +385,8 @@ public class GoNatureServer extends AbstractServer {
 
 			// get amount of orders in timeframe
 			String startTime = arr.get(2);
-			ps = db_con.prepareStatement("SELECT SUM(visitor_number) AS sum FROM orders WHERE time_of_visit BETWEEN ? AND ?");
+			ps = db_con.prepareStatement(
+					"SELECT SUM(visitor_number) AS sum FROM orders WHERE time_of_visit BETWEEN ? AND ?");
 			ps.setString(1, startTime);
 			DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			LocalDateTime endTime = LocalDateTime.parse(startTime, f);
@@ -355,7 +402,7 @@ public class GoNatureServer extends AbstractServer {
 			System.out.println("Debug: sum came to " + sum);
 			int availableSpace = actual - sum;
 			return ((availableSpace - visitorNum) > 0);
-			
+
 		} catch (Exception e) {
 			System.out.println("error in checkOrderTime(): ");
 			e.printStackTrace();

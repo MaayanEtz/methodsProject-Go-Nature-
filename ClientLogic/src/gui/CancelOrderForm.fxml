@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="428.0" prefWidth="336.0" style="-fx-background-color: WHITE;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.CancelOrderFrameController">
+<AnchorPane prefHeight="428.0" prefWidth="336.0" stylesheets="@design.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.CancelOrderFrameController">
    <children>
       <Label fx:id="lblOrderNum" layoutX="29.0" layoutY="77.0" text="Order number" textFill="#1e5d38">
          <font>

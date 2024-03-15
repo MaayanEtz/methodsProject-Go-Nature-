@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="644.0" prefWidth="497.0" style="-fx-background-color: WHITE;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.CreateOrderFrameController">
+<AnchorPane prefHeight="644.0" prefWidth="497.0" stylesheets="@design.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.CreateOrderFrameController">
    <children>
       <Label layoutX="193.0" layoutY="22.0" prefHeight="30.0" prefWidth="196.0" text="New GoNature Order" textFill="#1e5d38">
          <font>

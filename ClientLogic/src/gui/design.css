@@ -1,0 +1,16 @@
+.root {
+    -fx-background-color: #FFFFFF;
+}
+
+.button {
+	-fx-background-color:  B2E29C;
+	-fx-border-color: #1e5d38;
+}
+
+
+.button:hover {
+	-fx-background-color: #FFFFFF;
+	-fx-text-fill:   #1e5d38;
+	-fx-border-color: #1e5d38
+	
+}

@@ -207,11 +207,11 @@ public class CreateOrderFrameController {
 			
 			//3. Check if the day and time of visit is available
 			
-			//////REAL CODE: OPEN//////////////
+			//////REAL CODE: CHANGE AND OPEN//////////////
 			ArrayList<Object> arrmsg = new ArrayList<Object>();
-			arrmsg.add(new String("ParkCheckCapacity"));
-			arrmsg.add(new String("String"));
-			arrmsg.add(this.selectParkCmb.getValue());
+			//arrmsg.add(new String("ParkCheckCapacity"));
+			//arrmsg.add(new String("String"));
+			//arrmsg.add(this.selectParkCmb.getValue());
 				
 			/////ANNA: OPEN////////////////
 			//ClientUI.chat.accept(arrmsg);

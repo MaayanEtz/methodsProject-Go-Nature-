@@ -75,7 +75,7 @@ public class NextPage {
 			case "OrderFrameController": {
 				OrderFrameController orderFrameController = loader.getController();
 				if(data instanceof Order)
-					orderFrameController.loadOrder((Order)data);
+					orderFrameController.loadData((Order)data);
 				break;}
 			
 			case "TravellerPageController": {

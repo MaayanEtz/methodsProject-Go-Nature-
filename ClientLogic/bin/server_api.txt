@@ -42,4 +42,5 @@ GroupGuideCheck	  | "String"			    | "visitor_id"		| "GroupGuideCheck", "Boolean
 
 ParksListGet 	  | doesn't matter		    | doesn't matter		| "ParksListGet", "ArrayList<String>", {"park_name1", "park_name2", "park_name3"...}
 
-ParkCheckCapacity | "String"			    | "park_name"		| "ParkCheckCapacity", "Boolean", true\fasle 
+ParkCheckCapacity | "ArrayList<String>"			    | {"park_name",		| "ParkCheckCapacity", "Boolean", true\fasle 
+													|  "visitor_number"}|

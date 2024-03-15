@@ -10,7 +10,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 
 public class CancelOrderFrameController {
 	
@@ -47,22 +46,17 @@ public class CancelOrderFrameController {
 
     //text fields
     @FXML
-    private TextField txtEmail;
-
+    private Label txtEmail;
     @FXML
-    private TextField txtOrderNum;
-
+    private Label txtOrderNum;
     @FXML
-    private TextField txtParkName;
-
+    private Label txtParkName;
     @FXML
-    private TextField txtPhone;
-
+    private Label txtPhone;
     @FXML
-    private TextField txtVisitTime;
-
+    private Label txtVisitTime;
     @FXML
-    private TextField txtVisitorsNum;
+    private Label txtVisitorsNum;
 
     
     //Event for "Cancel order" button

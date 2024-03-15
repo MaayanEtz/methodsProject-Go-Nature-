@@ -22,9 +22,9 @@
          </font>
       </Text>
       <TextField fx:id="identify_id" layoutX="93.0" layoutY="224.0" promptText="Identification number" />
-      <Button id="btnExit" fx:id="btnExit" layoutX="261.0" layoutY="371.0" mnemonicParsing="false" onAction="#pressExitBtn" text="Exit" />
+      <Button id="btnExit" fx:id="btnExit" layoutX="240.0" layoutY="371.0" mnemonicParsing="false" onAction="#pressExitBtn" prefHeight="27.0" prefWidth="58.0" text="Exit" />
       <Button fx:id="btnIdntefy" layoutX="140.0" layoutY="266.0" mnemonicParsing="false" onAction="#pressIdentifyBtn" text="Identify" />
-      <Button fx:id="btnBack" layoutX="35.0" layoutY="370.0" mnemonicParsing="false" onAction="#pressBackBtn" prefHeight="26.0" prefWidth="42.0" text="Back" />
+      <Button fx:id="btnBack" layoutX="35.0" layoutY="370.0" mnemonicParsing="false" onAction="#pressBackBtn" prefHeight="27.0" prefWidth="58.0" text="Back" />
       <Text layoutX="100.0" layoutY="411.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Created By i-Recreation Inc." />
       <Text fx:id="errorTxt" fill="#f20909" layoutX="15.0" layoutY="326.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="305.99999737739563" />
       <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="93.0" pickOnBounds="true" preserveRatio="true">

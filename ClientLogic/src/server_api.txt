@@ -2,7 +2,7 @@ EndPoint          | expected String in payload-type | expected paylod           
 
 ConnectToServer   | doesn't matter	            | doesn't matter             | "ConnectToServer", "Boolean", true\false
 
-UserLogin         | "ArrayList<String>"		    | {"username","password"}   | "UserLogin", "Boolean",true\fasle
+UserLogin         | "ArrayList<String>"		    | {"username","password"}   | "UserLogin", "String", "user_type" \ "null"
 
 OrderCreate 	  | "ArrayList<String>"		    | {"visitor_id","park_name" | //NOT GOOD////  "OrderCreate", "Boolean",true\fasle
 											///GOOD///   "OrderCreate", "String", "order_id"

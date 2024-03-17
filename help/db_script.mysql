@@ -1,12 +1,68 @@
-CREATE DATABASE `go_nature_db_oren` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE 
-utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */; use go_nature_db_oren; CREATE 
-TABLE `orders` (
-  `orderId` int NOT NULL AUTO_INCREMENT, `visitor_id` int DEFAULT NULL, `park_name` 
-  varchar(90) DEFAULT NULL, `time_of_visit` datetime DEFAULT NULL, `visitor_number` int 
-  DEFAULT NULL, `visitor_email` varchar(90) DEFAULT NULL, `visitor_phone` varchar(90) 
-  DEFAULT NULL, PRIMARY KEY (`orderId`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci; 
-CREATE TABLE `users` (
-  `username` varchar(80) NOT NULL, `password` varchar(80) DEFAULT NULL, PRIMARY KEY 
-  (`username`)
+CREATE DATABASE `go_nature` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+use go_nature;
+
+CREATE TABLE `guides` (
+
+  `visitor_id` int NOT NULL,
+
+  PRIMARY KEY (`visitor_id`)
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `parks` (
+
+  `parkName` varchar(255) NOT NULL,
+
+  `capacity` int DEFAULT NULL,
+
+  `diff` int DEFAULT NULL,
+
+  `visitTimeInMinutes` int DEFAULT NULL,
+
+  `currentVisitors` int DEFAULT NULL,
+
+  PRIMARY KEY (`parkName`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `users` (
+
+  `username` varchar(80) NOT NULL,
+
+  `password` varchar(80) DEFAULT NULL,
+
+  `type` varchar(80) DEFAULT NULL,
+
+  PRIMARY KEY (`username`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `orders` (
+
+  `orderId` int NOT NULL AUTO_INCREMENT,
+
+  `visitor_id` int DEFAULT NULL,
+
+  `park_name` varchar(90) DEFAULT NULL,
+
+  `time_of_visit` datetime DEFAULT NULL,
+
+  `visitor_number` int DEFAULT NULL,
+
+  `visitor_email` varchar(90) DEFAULT NULL,
+
+  `visitor_phone` varchar(90) DEFAULT NULL,
+
+  `status` varchar(45) DEFAULT NULL,
+
+  PRIMARY KEY (`orderId`),
+
+  KEY `park_name` (`park_name`),
+
+  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`park_name`) REFERENCES `parks` (`parkName`)
+
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

@@ -69,28 +69,58 @@ public class FindOrderFrameController {
 			FXMLLoader loader = new FXMLLoader();
 			Stage primaryStage = new Stage();
 			// Oren Testing Connect
-			//String username =  orderNumber.split(",")[0];
-			//String password =  orderNumber.split(",")[1];
+			String username =  orderNumber.split(",")[0];
+			String password =  orderNumber.split(",")[1];
+			ArrayList<Object> arrmsg = new ArrayList<>();
+			arrmsg.add(new String("UserLogin"));
+			arrmsg.add(new String("ArrayList<String>"));
+			arrmsg.add(new ArrayList<String>(Arrays.asList(username,password)));
 			
-			// Testing Create
-			String visitor_id = orderNumber.split(",")[0];
-			String park_name = orderNumber.split(",")[1];
-			String time_of_visit = orderNumber.split(",")[2];
-			String visitor_number = orderNumber.split(",")[3];
-			String visitor_email = orderNumber.split(",")[4];
-			String visitor_phone = orderNumber.split(",")[5];
 			
 			
 			// Testing Delete
 			//String order_id_to_del = orderNumber.split(",")[0];
 			
 			// Testing Delete
-			String update_test = orderNumber.split(",")[0];
+			//String update_test = orderNumber.split(",")[0];
+			// Testing Create
 			
-			ArrayList<Object> arrmsg = new ArrayList<Object>();
-			arrmsg.add(new String("OrderCreate"));
-			arrmsg.add(new String("ArrayList<String>"));
-			arrmsg.add(new ArrayList<String>(Arrays.asList(visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
+			//String order_id = orderNumber.split(",")[0];
+			
+			// CREAT TEST
+//			String visitor_id = orderNumber.split(",")[0];
+//			String park_name = orderNumber.split(",")[1];
+//			String time_of_visit = orderNumber.split(",")[2];
+//			String visitor_number = orderNumber.split(",")[3];
+//			String visitor_email = orderNumber.split(",")[4];
+//			String visitor_phone = orderNumber.split(",")[5];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("OrderCreate"));
+//			arrmsg.add(new String("ArrayList<String>"));
+//			arrmsg.add(new ArrayList<String>(Arrays.asList(visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
+//			//
+			
+			// UPDATE TEST
+//			String order_id = orderNumber.split(",")[0];
+//			String visitor_id = orderNumber.split(",")[1];
+//			String park_name = orderNumber.split(",")[2];
+//			String time_of_visit = orderNumber.split(",")[3];
+//			String visitor_number = orderNumber.split(",")[4];
+//			String visitor_email = orderNumber.split(",")[5];
+//			String visitor_phone = orderNumber.split(",")[6];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("OrderUpdate"));
+//			arrmsg.add(new String("ArrayList<String>"));
+//			arrmsg.add(new ArrayList<String>(Arrays.asList(order_id,visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
+			//
+			
+			// Test Guid
+//			arrmsg.add(new String("GroupGuideCheck"));
+//			arrmsg.add(new String("String"));
+//			arrmsg.add(update_test);
+			
+			
+			// TEST HERE
 			ClientUI.chat.accept(arrmsg);
 			
 //			if(orderNumber.trim().isEmpty()) {

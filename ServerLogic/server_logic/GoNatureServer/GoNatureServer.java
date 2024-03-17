@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -20,6 +22,7 @@ public class GoNatureServer extends AbstractServer {
 	private String db_host;
 	private String db_user;
 	private String db_pass;
+	public static ServerPortFrameController controller;
 
 	/// time outs ///
 	int db_conn_validation_timeout_milisecs = 10000;
@@ -64,13 +67,14 @@ public class GoNatureServer extends AbstractServer {
 		String endpoint;
 		String payload_type;
 		ArrayList<Object> arr_msg;
+		ArrayList<String> arr = new ArrayList<String>();
 
 		// Convert to ArrayList test
 		try {
 			arr_msg = (ArrayList<Object>) msg;
 			System.out.println("[handleMessageFromClient | DEBUG]: converted msg to arr list");
 		} catch (ClassCastException e_clas) {
-			ServerPortFrameController.client_conn_data.remove(client);
+			//controller.removeClient(client);
 			System.out.println(
 					"[handleMessageFromClient | ERROR]: msg from client is not ArrayList<Object> removing client from list");
 			// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
@@ -172,8 +176,8 @@ public class GoNatureServer extends AbstractServer {
 			return;
 
 		case "OrderCreate":
+			int orderId = -1;
 			if (payload_type.equals("ArrayList<String>")) {
-				boolean create_order_test_succeeded = false;
 				db_table = "orders";
 				try {
 					// Extract pay-load
@@ -187,7 +191,8 @@ public class GoNatureServer extends AbstractServer {
 					System.out.println("[OrderCreate | DEBUG]: extracted: " + payload);
 
 					//
-					if (true) { // TODO ORENB: Here will be algorithm for problematic time instead of true
+					if (checkOrderTime(payload)) { // TODO ORENB: Here will be algorithm for problematic time instead of
+													// true
 						// prepare MySQL query prepare
 						prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table
 								+ " (`visitor_id`, `park_name`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`)"
@@ -199,7 +204,15 @@ public class GoNatureServer extends AbstractServer {
 						prepared_statement.setString(5, visitor_email);
 						prepared_statement.setString(6, visitor_phone);
 						prepared_statement.executeUpdate();
-						create_order_test_succeeded = true;
+						prepared_statement = null;
+						prepared_statement = db_con.prepareStatement("SELECT MAX(orderId) AS max FROM orders");
+						result_set = prepared_statement.executeQuery();
+						if (!result_set.next()) {
+							System.out.println("[OrderCreate | ERROR]: couldnt get max id!");
+							send_response(client, new String("OrderCreate"), new String("ErrorString"),
+									new String("couldnt get max from DB"));
+						}
+						orderId = result_set.getInt("max");
 					}
 
 					// Catch Problems
@@ -219,8 +232,8 @@ public class GoNatureServer extends AbstractServer {
 
 				// Response to client
 				try {
-					send_response(client, new String("OrderCreate"), new String("Boolean"),
-							new Boolean(create_order_test_succeeded));
+					send_response(client, new String("OrderCreate"), new String("Integer"),
+							new Integer(orderId));
 				} catch (IOException e) {
 					System.out.println("[OrderCreate_ep |ERROR ]: Failed OrderCreate response");
 					e.printStackTrace();
@@ -295,15 +308,130 @@ public class GoNatureServer extends AbstractServer {
 				}
 			}
 			return;
-			
+
 		case "OrderEdit":
 			// UPDATE orders SET park_name="yossi_park" WHERE orderId="4";
 			return;
-			
-			
+
+		case "OrderGet":
+			System.out.println("[OrderGet|INFO]: OrderGet enpoint trigered");
+			if (!payload_type.equals("String")) {
+				System.out.println("[OrderGet | ERROR]: Client sent payload for OrderGet ep which is not a String");
+				try {
+					// send error to client
+					send_response(client, new String("OrderGet"), new String("ErrorString"),
+							new String("Client asked OrderGet end point but payload-type was not String!"));
+				} catch (IOException e) {
+					System.out.println("[OrderCancel_ep |ERROR]: Failed OrderCancel error response");
+					e.printStackTrace();
+				}
+				return;
+			}
+			try {
+				PreparedStatement ps = db_con.prepareStatement("SELECT * FROM orders WHERE orderId = ?");
+				ps.setString(1, (String) arr_msg.get(2));
+				ResultSet rs = ps.executeQuery();
+				if (!rs.next()) { // order not found in DB
+					System.out.println(
+							"[OrderGet | ERROR]: order_id not found in DB, sending order not found response to client");
+					send_response(client, new String("OrderGet"), new String("String"), new String("null"));
+					return;
+				}
+				// add order parameters to ArrayList to send to client
+				arr.add(new String("" + rs.getInt("orderId")));
+				arr.add(new String(rs.getString("park_name")));
+				arr.add(new String(rs.getString("time_of_visit")));
+				arr.add(new String("" + rs.getInt("visitor_number")));
+				arr.add(new String(rs.getString("visitor_email")));
+				arr.add(new String(rs.getString("visitor_phone")));
+				// send Order to Client
+				send_response(client, new String("OrderGet"), new String("ArrayList<String>"), arr);
+				System.out.println("[OrderGet|INFO]: OrderGet sent response of ArrayList<>");
+				System.out.println(arr);
+			} catch (SQLException e) {
+				System.out.println("[OrderGet | ERROR]: SQLException was thrown!");
+				e.printStackTrace();
+			} catch (IOException e) {
+				System.out.println("[OrderGet | ERROR]: IOException was thrown!");
+				e.printStackTrace();
+			}
+
+		case "ParksListGet":
+			try {
+				PreparedStatement ps = db_con.prepareStatement("Select parkName FROM parks");
+				ResultSet rs = ps.executeQuery();
+				while (rs.next()) {
+					arr.add(rs.getString("parkName"));
+				}
+				if (arr.isEmpty()) {
+					// no Parks???
+				}
+				send_response(client, new String("ParksListGet"), new String("ArrayList<String>"), arr);
+			} catch (SQLException e) {
+				System.out.println("[ParksListGet | ERROR]: SQLException was thrown!");
+				e.printStackTrace();
+			} catch (IOException e) {
+				System.out.println("[ParksListGet | ERROR]: IOException was thrown!");
+				e.printStackTrace();
+			}
+
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");
 		}
+	}
+
+	/**
+	 * method that checks db that order is valid
+	 * 
+	 * @param arr - array list of string containing order parameters
+	 * @return boolean - order is valid
+	 */
+	private boolean checkOrderTime(ArrayList<String> arr) {
+		try {
+			System.out.println("Debug: " + arr);
+			int visitorNum = Integer.valueOf(arr.get(3));
+			// get parks time of visit, and capacity of park
+			PreparedStatement ps = db_con
+					.prepareStatement("SELECT visitTimeInMinutes, capacity, diff FROM parks WHERE parkName = ?");
+			ps.setString(1, arr.get(1));
+			ResultSet rs = ps.executeQuery();
+			System.out.println("Debug: " + rs);
+			if (!rs.next()) {
+				System.out.println("Debug: couldnt find park?");
+				throw new IllegalArgumentException("invalid park name");
+			}
+			// found park
+			int timeToAdd = rs.getInt("visitTimeInMinutes");
+			int parkCapacity = rs.getInt("capacity");
+			int capacityDiff = rs.getInt("diff");
+			int actual = parkCapacity - capacityDiff;
+			System.out.println("Debug: actual capacity is: " + actual);
+
+			// get amount of orders in timeframe
+			String startTime = arr.get(2);
+			ps = db_con.prepareStatement(
+					"SELECT SUM(visitor_number) AS sum FROM orders WHERE time_of_visit BETWEEN ? AND ?");
+			ps.setString(1, startTime);
+			DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			LocalDateTime endTime = LocalDateTime.parse(startTime, f);
+			endTime = endTime.plusMinutes(timeToAdd);
+			String endTimeFormatted = endTime.format(f);
+			ps.setString(2, endTimeFormatted);
+			rs = ps.executeQuery();
+			if (!rs.next()) {
+				System.out.println("couldnt sum?");
+				throw new Exception("couldnt sum");
+			}
+			int sum = rs.getInt("sum");
+			System.out.println("Debug: sum came to " + sum);
+			int availableSpace = actual - sum;
+			return ((availableSpace - visitorNum) > 0);
+
+		} catch (Exception e) {
+			System.out.println("error in checkOrderTime(): ");
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	/**
@@ -356,7 +484,15 @@ public class GoNatureServer extends AbstractServer {
 		// System.out.println(String.valueOf(client.isAlive()));
 		//////////////////////
 		System.out.println("[clientConnected|INFO]: adding client to gui list");
-		ServerPortFrameController.client_conn_data.add(client);
+		//controller.addClient(client);
+		return;
+	}
+
+	@Override
+	synchronized protected void clientDisconnected(ConnectionToClient client) { // supposed to be called when client
+																				// disconnects...
+		System.out.println("[clientConnected|INFO]: removing client from gui list");
+		//controller.removeClient(client);
 		return;
 	}
 }

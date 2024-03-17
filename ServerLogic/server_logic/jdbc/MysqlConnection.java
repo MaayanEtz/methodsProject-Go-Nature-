@@ -21,7 +21,7 @@ public class MysqlConnection {
 		try {
 			//Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/test?serverTimezone=IST", "root", "Aa123456");
 			
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/go_nature_db?serverTimezone=IST","root","Ob55280772zazi!");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/go_nature?serverTimezone=IST","root","Ob55280772zazi!");
 			System.out.println("SQL connection succeed");
 			return conn;
 		} catch (SQLException ex) {/* handle any errors */

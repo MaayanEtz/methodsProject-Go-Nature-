@@ -72,22 +72,25 @@ public class FindOrderFrameController {
 			//String username =  orderNumber.split(",")[0];
 			//String password =  orderNumber.split(",")[1];
 			
-			/* Testing Create
+			// Testing Create
 			String visitor_id = orderNumber.split(",")[0];
 			String park_name = orderNumber.split(",")[1];
 			String time_of_visit = orderNumber.split(",")[2];
 			String visitor_number = orderNumber.split(",")[3];
 			String visitor_email = orderNumber.split(",")[4];
 			String visitor_phone = orderNumber.split(",")[5];
-			*/
+			
 			
 			// Testing Delete
-			String order_id_to_del = orderNumber.split(",")[0];
+			//String order_id_to_del = orderNumber.split(",")[0];
+			
+			// Testing Delete
+			String update_test = orderNumber.split(",")[0];
 			
 			ArrayList<Object> arrmsg = new ArrayList<Object>();
-			arrmsg.add(new String("OrderCancel"));
-			arrmsg.add(new String("String"));
-			arrmsg.add(order_id_to_del);
+			arrmsg.add(new String("OrderCreate"));
+			arrmsg.add(new String("ArrayList<String>"));
+			arrmsg.add(new ArrayList<String>(Arrays.asList(visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
 			ClientUI.chat.accept(arrmsg);
 			
 //			if(orderNumber.trim().isEmpty()) {

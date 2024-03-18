@@ -395,7 +395,6 @@ public class GoNatureServer extends AbstractServer {
 					.prepareStatement("SELECT visitTimeInMinutes, capacity, diff FROM parks WHERE parkName = ?");
 			ps.setString(1, arr.get(1));
 			ResultSet rs = ps.executeQuery();
-			System.out.println("Debug: " + rs);
 			if (!rs.next()) {
 				System.out.println("Debug: couldnt find park?");
 				throw new IllegalArgumentException("invalid park name");
@@ -425,8 +424,21 @@ public class GoNatureServer extends AbstractServer {
 			int sum = rs.getInt("sum");
 			System.out.println("Debug: sum came to " + sum);
 			int availableSpace = actual - sum;
-			return ((availableSpace - visitorNum) > 0);
-
+			boolean validOrder = (availableSpace - visitorNum) > 0; 
+			LocalDateTime preStart = LocalDateTime.parse(startTime, f);
+			preStart = preStart.minusMinutes(timeToAdd);
+			String preStartFormatted = preStart.format(f);
+			ps = db_con.prepareStatement("SELECT SUM(visitor_number) AS sum FROM orders WHERE time_of_visit BETWEEN ? AND ?");
+			ps.setString(1, preStartFormatted);
+			ps.setString(2, startTime);
+			rs = ps.executeQuery();
+			if (!rs.next()) {
+				System.out.println("couldnt sum?");
+				throw new Exception("couldnt sum");
+			}
+			sum = rs.getInt("sum");
+			availableSpace = actual - sum;
+			return validOrder && ((availableSpace - visitorNum) > 0);
 		} catch (Exception e) {
 			System.out.println("error in checkOrderTime(): ");
 			e.printStackTrace();

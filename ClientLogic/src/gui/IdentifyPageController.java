@@ -4,12 +4,12 @@ package gui;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import client.ChatClient;
 import entity.NextPage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-//import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 
 public class IdentifyPageController {
@@ -25,9 +25,6 @@ public class IdentifyPageController {
 
 	    @FXML
 	    private Text errorTxt;
-
-	    //@FXML
-	    //private ImageView goIMG;
 
 	    @FXML
 	    private TextField identify_id;
@@ -45,8 +42,9 @@ public class IdentifyPageController {
 		        Matcher matcher = pattern.matcher(identNum);  
 		        if (!matcher.find())
 		        	throw new IllegalArgumentException("Identification number should contain only numbers.");
-	    		
-		    	NextPage page = new NextPage(event, "/gui/TravellerPage.fxml", "Traveller Page", "TravellerPageController", "pressIdentifyBtn", new String(identNum));
+		        
+		        ChatClient.visitorID = identNum;
+		        NextPage page = new NextPage(event, "/gui/TravellerPage.fxml", "Traveller Page", "TravellerPageController", "pressIdentifyBtn");
 		    	page.Next();
 		    	
 	    	}catch (NullPointerException e) {
@@ -64,6 +62,8 @@ public class IdentifyPageController {
 	    @FXML
 	    void pressBackBtn(ActionEvent event) throws Exception {
 	    	try {
+		    	//set visitor ID as ""
+		    	ChatClient.visitorID = "";
 		    	NextPage page = new NextPage(event, "/gui/NewHomePage.fxml", "Home Page", "NewHomePageController", "pressBackBtn");
 		    	page.Next();
 	    	}catch (Exception e) {

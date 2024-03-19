@@ -20,6 +20,7 @@ public class ChatClient extends AbstractClient {
 	 * method in the client.
 	 */
 	ChatIF clientUI;
+	public static String visitorID;
 	public static Order order;
 	public static ArrayList<String> dataFromServer;
 	public static boolean result = false;
@@ -139,6 +140,11 @@ public class ChatClient extends AbstractClient {
 					case "ParkCheckCapacity": {
 						pay_load_from_srv_bln = (Boolean) arr.get(2);
 						caseDecision(pay_load_from_srv_bln, "Park capacity allows to order", "Park capacity doesn't allow to order");
+						break;}
+					
+					case "OrderedEnter": {
+						pay_load_from_srv_bln = (Boolean) arr.get(2);
+						caseDecision(pay_load_from_srv_bln, "The visitors succesfully entered the park", "The visitors not entered the park");
 						break;}
 				}
 				

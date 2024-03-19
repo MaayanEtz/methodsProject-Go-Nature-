@@ -67,3 +67,10 @@ ParksListGet 	  | doesn't matter		    | doesn't matter		| "ParksListGet", "Array
 ParkCheckCapacity | "ArrayList<String>"		    | {"park_name",		| "ParkCheckCapacity", "Boolean", true\false 
 
 						    |  "visitor_number"}        |
+						    
+GuideRegistration   | "ArrayList<String>"		    | "guide_id"		| "GuideRegistration", "Boolean",true\false
+
+OrderedEnter	  | "String"			    | "order_number"		| "OrderedEnter", "Boolean", true\false
+
+UnplannedEnter	  | "ArrayList<String>"			    | {"park_name","visitors_num"}		| "UnplannedEnter", "Boolean", true\false
+

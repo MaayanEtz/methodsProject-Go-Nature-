@@ -54,16 +54,12 @@ public class CreateOrderFrameController {
     @FXML
     private TextField txtPhoneNumber;
     
-    private String visitorId;
-    
     //load data
-    public void loadData(String visitorId) {
+    public void loadData() {
     	
     	try {
-			this.visitorId = visitorId;
 			
 			//1. Load Parks List  	
-			//////REAL CODE: OPEN//////////////
 			ArrayList<Object> arrmsg = new ArrayList<Object>();
 			arrmsg.add(new String("ParksListGet"));
 			arrmsg.add(new String("Get"));
@@ -104,12 +100,10 @@ public class CreateOrderFrameController {
 			this.selectTimeCmb.getItems().addAll(times);
 			
 			//4. Load if organized guided group
-			
-			//////REAL CODE: OPEN//////////////
 			arrmsg = new ArrayList<Object>();
 			arrmsg.add(new String("GroupGuideCheck"));
 			arrmsg.add(new String("String"));
-			arrmsg.add(visitorId);
+			arrmsg.add(ChatClient.visitorID);
 			ClientUI.chat.accept(arrmsg);
 			
 			
@@ -134,7 +128,6 @@ public class CreateOrderFrameController {
     @FXML
     void pressCloseBtn(ActionEvent event) {
 		try {
-			
 	    	NextPage page = new NextPage(event, "/gui/TravellerPage.fxml", "Traveller Page", "TravellerPageController", "pressIdentifyBtn");
 	    	page.Next();
 		}catch(Exception e) {
@@ -181,7 +174,7 @@ public class CreateOrderFrameController {
 					throw new Exception("The number of visitors should be greater then 0.");
 				
 				orderArr = new ArrayList<>();
-				orderArr.add(this.visitorId);
+				orderArr.add(ChatClient.visitorID);
 				orderArr.add(this.selectParkCmb.getValue());
 				orderArr.add(new String(selectedDate + " " + selectedTimeOption + ":00"));	
 				orderArr.add(visitorsNum);

@@ -14,3 +14,11 @@
 	-fx-border-color: #1e5d38
 	
 }
+
+.tab-pane>*.tab-header-area>*.tab-header-background 
+{
+   -fx-background-color: -fx-outer-border, -fx-text-box-border, #1e5d38;
+}
+
+
+

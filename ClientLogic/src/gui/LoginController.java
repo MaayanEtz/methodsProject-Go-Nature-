@@ -8,23 +8,12 @@ import client.ClientUI;
 import entity.NextPage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-//import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
+
 
 public class LoginController {
-
-	// Image
-    //@FXML
-    //private ImageView goIMG;
-    
     // buttons
     @FXML
     private Button btnExit = null;
@@ -53,10 +42,10 @@ public class LoginController {
     		
     		if (username.trim().isEmpty() || password.trim().isEmpty()) {
     			//if user name or password are empty
-    			/*System.out.println("You must enter username and password");
-    			errorTxt.setText("You must enter username and password in order to login");
-    			username_id.setText("");
-    			password_id.setText("");*/
+    			//System.out.println("You must enter username and password");
+    			//errorTxt.setText("You must enter username and password in order to login");
+    			//username_id.setText("");
+    			//password_id.setText("");
     			errorCase("You must enter username and password","You must enter username and password in order to login");
     		} else {
     			try {
@@ -68,7 +57,7 @@ public class LoginController {
     				arrmsg.add(loginDetails);
     				ClientUI.chat.accept(arrmsg);
     				
-    				/*DELETE THIS BECAUSE IT'S ONLY FOR CHECK NEEDS*/
+    				////DELETE THIS BECAUSE IT'S ONLY FOR CHECK NEEDS////
     				result = true;
     				
     				if(ChatClient.result == true) {
@@ -88,10 +77,10 @@ public class LoginController {
     			    	NextPage page = new NextPage(event, "", "", "", "Login"); //need to add path and title
     			    	page.Next();
     				} else { //catch and else same code
-    					/*System.out.println("The username or the password are wrong");
-    					errorTxt.setText("The username or the password are wrong, Please try again");
-    					username_id.setText("");
-    					password_id.setText("");*/
+    					//System.out.println("The username or the password are wrong");
+    					//errorTxt.setText("The username or the password are wrong, Please try again");
+    					//username_id.setText("");
+    					//password_id.setText("");
     					
     					errorCase("The username or the password are wrong", "The username or the password are wrong, Please try again");
     					return;
@@ -99,7 +88,7 @@ public class LoginController {
     		}	
     	}catch (Exception e) {
     		System.out.println("Error in LoginController: Login");
-    	}	
+    	}
     }
     
     

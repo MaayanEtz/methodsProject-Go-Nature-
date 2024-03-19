@@ -22,7 +22,6 @@ public class FindOrderFrameController {
 	}
 	
 	private Action action;
-	private String visitorID;
 	
 	//labels
 	@FXML
@@ -49,12 +48,7 @@ public class FindOrderFrameController {
 	public void setAction(Action action) {
 		this.action = action;
 	}
-	
-	//set visitor ID
-	public void setVisitorID(String visitorID) {
-		this.visitorID = visitorID;
-	}
-	
+
 	//Event for "Find" button
 	public void pressFindBtn (ActionEvent event) throws Exception {
 		
@@ -88,8 +82,7 @@ public class FindOrderFrameController {
 					//Find order page is the same page for edit and cancel an order
 					switch(this.action) {
 						case EDIT: {
-							//visitorID instead of method
-					    	NextPage page = new NextPage(event, "/gui/OrderForm.fxml", "Order Form", "OrderFrameController", this.visitorID, ChatClient.order);
+							NextPage page = new NextPage(event, "/gui/OrderForm.fxml", "Order Form", "OrderFrameController", "pressFindBtn", ChatClient.order);
 					    	page.Next();
 							break;}
 						
@@ -114,7 +107,7 @@ public class FindOrderFrameController {
 	//Even for "Back" button
 	public void pressBackBtn(ActionEvent event) throws Exception {
 		try {
-	    	NextPage page = new NextPage(event, "/gui/TravellerPage.fxml", "Traveller Page", "TravellerPageController", "pressBackBtn"); //need to add path and title
+	    	NextPage page = new NextPage(event, "/gui/TravellerPage.fxml", "Traveller Page", "TravellerPageController", "pressBackBtn");
 	    	page.Next();
 		}catch (Exception e) {
 			System.out.println("Error in FindOrderFrameController: pressBackBtn");

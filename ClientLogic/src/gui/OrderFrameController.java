@@ -52,12 +52,6 @@ public class OrderFrameController{
     private TextField txtPhoneNumber;
     
     private Order order;
-    private String visitorID;
-    
-    //set visitor ID
-    public void setVisitorID(String visitorID) {
-    	this.visitorID = visitorID;
-    }
     
     //load data
     public void loadData(Order order) {
@@ -66,7 +60,6 @@ public class OrderFrameController{
 			this.order = order;
 			
 			//1. Load Parks List  	
-			//////REAL CODE: OPEN//////////////
 			ArrayList<Object> arrmsg = new ArrayList<Object>();
 			arrmsg.add(new String("ParksListGet"));
 			arrmsg.add(new String("Get"));
@@ -138,7 +131,6 @@ public class OrderFrameController{
     @FXML
     void pressCloseBtn(ActionEvent event) {
 		try {
-			
 	    	NextPage page = new NextPage(event, "/gui/TravellerPage.fxml", "Traveller Page", "TravellerPageController", "pressIdentifyBtn");
 	    	page.Next();
 		}catch(Exception e) {
@@ -178,7 +170,7 @@ public class OrderFrameController{
 				
 				orderArr = new ArrayList<>();
 				orderArr.add(order.getOrderNumber());
-				orderArr.add(this.visitorID);
+				orderArr.add(ChatClient.visitorID);
 				orderArr.add(this.selectParkCmb.getValue());
 				orderArr.add(new String(selectedDate + " " + selectedTimeOption + ":00"));	
 				orderArr.add(visitorsNum);
@@ -214,20 +206,12 @@ public class OrderFrameController{
 				this.lblResult.setText("The park is full in choosen time. Choose other time or day.");
 			}else {	
 				//3. Update order    	
-				//////REAL CODE: OPEN//////////////
 				arrmsg = new ArrayList<Object>();
 				arrmsg.add(new String("OrderUpdate"));
 				arrmsg.add(new String("ArrayList<String>"));
 				arrmsg.add(orderArr);
-				
-			    /////ANNA: OPEN////////////////
 				ClientUI.chat.accept(arrmsg);
-				
-			    /////ANNA: Check////////////////
-				//ChatClient.result = true; //order updated
-				//ChatClient.result = false; //order not updated
-				
-			    /////ANNA: OPEN////////////////
+
 				if(ChatClient.result == false)
 					this.lblResult.setText(new String("Unfortunately, order not updated!"));
 				else

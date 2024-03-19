@@ -1,5 +1,6 @@
 package gui;
 
+import client.ChatClient;
 import entity.NextPage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,19 +27,18 @@ public class TravellerPageController {
 
     @FXML
     private ImageView goIMG;
-    
-    private String visitorID;
-    
-    public void setVisitorID(String visitorID) {
-    	this.visitorID = visitorID;
-    }
 
     //Event for "Cancelling an order" button
     @FXML
     void pressCancellingBtn(ActionEvent event) throws Exception {
-    	//visitorID instead of method
-    	NextPage page = new NextPage(event, "/gui/FindOrderFrame.fxml", "Find order", "FindOrderFrameController", this.visitorID, FindOrderFrameController.Action.CANCEL);
-    	page.Next();
+    	try {
+			//visitorID instead of method
+			NextPage page = new NextPage(event, "/gui/FindOrderFrame.fxml", "Find order", "FindOrderFrameController", "pressCancellingBtn", FindOrderFrameController.Action.CANCEL);
+			page.Next();
+		} catch (Exception e) {
+    		System.out.println("Error in TravellerPageController: pressCancellingBtn");
+    		System.out.println(e.getMessage());
+		}
     }
     
     //Event for "Checking and editing an existing order" button
@@ -46,7 +46,7 @@ public class TravellerPageController {
     void pressCheckingBtn(ActionEvent event) throws Exception {
     	try {
     		//visitorID instead of method
-        	NextPage page = new NextPage(event, "/gui/FindOrderFrame.fxml", "Find order", "FindOrderFrameController", this.visitorID, FindOrderFrameController.Action.EDIT);
+    		NextPage page = new NextPage(event, "/gui/FindOrderFrame.fxml", "Find order", "FindOrderFrameController", "pressCheckingBtn", FindOrderFrameController.Action.EDIT);
         	page.Next();
     	}catch (Exception e) {
     		System.out.println("Error in TravellerPageController: pressCheckingBtn");
@@ -57,13 +57,15 @@ public class TravellerPageController {
     //Event for "Placing a new order" button
     @FXML
     void pressNewOrderBtn(ActionEvent event) throws Exception {
-    	NextPage page = new NextPage(event, "/gui/CreateOrderForm.fxml", "Create new order", "CreateOrderFrameController", "pressNewOrderBtn", visitorID);
+    	NextPage page = new NextPage(event, "/gui/CreateOrderForm.fxml", "Create new order", "CreateOrderFrameController", "pressNewOrderBtn");
     	page.Next();
     }
     
     //Event for "Back" button
     @FXML
     void pressBackBtn(ActionEvent event) throws Exception {
+    	//set visitor ID as ""
+    	ChatClient.visitorID = "";
     	NextPage page = new NextPage(event, "/gui/NewHomePage.fxml", "Home Page", "NewHomePageController", "pressBackBtn"); 
     	page.Next();
     }

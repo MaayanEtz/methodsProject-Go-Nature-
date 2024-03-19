@@ -39,10 +39,8 @@ public class NextPage {
 	//function for changing pages
 	public void Next() throws Exception {
 		try{
-    	//FXMLLoader loader = new FXMLLoader();
 		((Node) event.getSource()).getScene().getWindow().hide(); // hiding primary window
 		Stage primaryStage = new Stage();
-		//Pane root = loader.load(getClass().getResource(path).openStream());
 		
 		
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
@@ -57,8 +55,6 @@ public class NextPage {
 
 				if(data == FindOrderFrameController.Action.CANCEL)
 					findOrderFrameController.setAction(FindOrderFrameController.Action.CANCEL);
-				//visitor ID instead of method
-				findOrderFrameController.setVisitorID(method);
 				break;}
 			
 			case "IdentifyPageController": {
@@ -77,14 +73,10 @@ public class NextPage {
 				OrderFrameController orderFrameController = loader.getController();
 				if(data instanceof Order)
 					orderFrameController.loadData((Order)data);
-				//visitorID instead of method
-				orderFrameController.setVisitorID(method);
 				break;}
 			
 			case "TravellerPageController": {
 				TravellerPageController travellerPageController = loader.getController();
-				if (data instanceof String)
-					travellerPageController.setVisitorID((String)data);
 				break;}
 			
 			case "SettingsPageController": {
@@ -107,13 +99,17 @@ public class NextPage {
 			
 			case "CreateOrderFrameController": {
 				CreateOrderFrameController createOrderFrameController = loader.getController();
-				if (data instanceof String)
-					createOrderFrameController.loadData((String) data);
+				createOrderFrameController.loadData();
 				break;}
 			
-//			case "ServiceWorkerController":{
-//				ServiceWorkerController ServiceWorkerController = loader.getController();
-//				break;}
+			//ServiceWorkerController
+			case "ParkWorkerController":{
+				ParkWorkerMenuController parkWorkerMenuController = loader.getController();
+				break;}
+			
+			case "InvoiceController": {
+				InvoiceController invoiceController = loader.getController();
+				break;}
 //			
 //			case "DepartmentManagerController":{
 //				DepartmentManagerController DepartmentManagerController = loader.getController();

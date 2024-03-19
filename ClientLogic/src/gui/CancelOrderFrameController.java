@@ -70,14 +70,8 @@ public class CancelOrderFrameController {
 			arrmsg.add(new String("OrderCancel"));
 			arrmsg.add(new String("String"));
 			arrmsg.add(new String(orderNumber));
-			
-			/////ANNA: OPEN////////////////
 			ClientUI.chat.accept(arrmsg);
-			
-		    /////ANNA: Check////////////////
-			//ChatClient.result = true; //order cancelled
-			//ChatClient.result = false; //order cancelled
-			
+
 			if(ChatClient.result == true) {
 				//updated successfully
 				//lblResult.setText("Cancelled successfully!");

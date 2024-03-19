@@ -22,3 +22,5 @@ OrderGet      | "String"                | "orderId"         | "OrderGet", "Array
 																								if order does not exist
 															| "OrderGet", "String", "null"
 ParksListGet  | "null"                  | - 				| "ParksListGet", "ArrayList<String>", {park_name 1...}
+
+EnterWaitList | "ArrayList<String>"     | same as OrderCreate | "EnterWaitList" , "Boolean", true/false

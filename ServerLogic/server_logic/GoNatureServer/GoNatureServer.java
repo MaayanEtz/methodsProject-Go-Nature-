@@ -191,8 +191,7 @@ public class GoNatureServer extends AbstractServer {
 					System.out.println("[OrderCreate | DEBUG]: extracted: " + payload);
 
 					//
-					if (checkOrderTime(payload)) { // TODO ORENB: Here will be algorithm for problematic time instead of
-													// true
+					if (checkOrderTime(payload)) {
 						// prepare MySQL query prepare
 						prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table
 								+ " (`visitor_id`, `park_name`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`)"
@@ -232,8 +231,7 @@ public class GoNatureServer extends AbstractServer {
 
 				// Response to client
 				try {
-					send_response(client, new String("OrderCreate"), new String("Integer"),
-							new Integer(orderId));
+					send_response(client, new String("OrderCreate"), new String("Integer"), new Integer(orderId));
 				} catch (IOException e) {
 					System.out.println("[OrderCreate_ep |ERROR ]: Failed OrderCreate response");
 					e.printStackTrace();
@@ -355,6 +353,7 @@ public class GoNatureServer extends AbstractServer {
 				System.out.println("[OrderGet | ERROR]: IOException was thrown!");
 				e.printStackTrace();
 			}
+			return;
 
 		case "ParksListGet":
 			try {
@@ -372,6 +371,61 @@ public class GoNatureServer extends AbstractServer {
 				e.printStackTrace();
 			} catch (IOException e) {
 				System.out.println("[ParksListGet | ERROR]: IOException was thrown!");
+				e.printStackTrace();
+			}
+			return;
+
+		/*
+		 * case "GetAvailableTable": //payload = ArrayList<String> = {orderTime,
+		 * visitorNumber} if (!payload_type.equals("ArrayList<String>")) { System.out.
+		 * println("[GetAvailableTable | ERROR]: Client sent payload for GetAvailableTable ep which is not an ArrayList<String>"
+		 * ); try { // send error to client send_response(client, new
+		 * String("GetAvailableTable"), new String("ErrorString"), new
+		 * String("Client asked GetAvailableTable end point but payload-type was not ArrayList<String>!"
+		 * )); } catch (IOException e) { System.out.
+		 * println("[GetAvailableTable_ep |ERROR]: Failed GetAvailableTable error response"
+		 * ); e.printStackTrace(); } return; } ArrayList<String> payload =
+		 * (ArrayList<String>) arr_msg.get(2); DateTimeFormatter f =
+		 * DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); LocalDateTime orderTime =
+		 * LocalDateTime.parse(payload.get(0), f); int visitorNumber =
+		 * Integer.valueOf(payload.get(1)); //LocalDateTime testTime = TODO: need to
+		 * think how to do that
+		 */
+
+		case "EnterWaitList":
+			try {
+				checkType(client, payload_type, "ArrayList<String>", endpoint);
+			} catch (IOException e) {
+				System.out.println("checkType failed in EnterWaitList");
+				e.printStackTrace();
+				return;
+			}
+			// get payload
+			arr = (ArrayList<String>) arr_msg.get(2);
+			// insert order in payload as waitlist
+			try {
+				PreparedStatement ps = db_con.prepareStatement(
+						"INSERT INTO `orders`(`visitor_id`, `park_name`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`) VALUES (?,?, ?, ?, ?, ?, 'WaitList');");
+				ps.setInt(1, Integer.valueOf(arr.get(0)));
+				ps.setString(2, arr.get(1));
+				ps.setString(3, arr.get(2));
+				ps.setInt(4, Integer.valueOf(arr.get(3)));
+				ps.setString(5, arr.get(4));
+				ps.setString(6, arr.get(5));
+				if (ps.executeUpdate() != 1) {
+					System.out.println("[EnterWaitList | ERROR]: couldnt insert order to orders table");
+					send_response(client, endpoint, new String("ErrorString"),
+							new String("couldnt insert order into orders table as waitList"));
+				} else {
+					send_response(client, endpoint, "Boolean", new Boolean(true));
+					System.out.println("[EnterWaitList | INFO]: sent client answear of true");
+				}
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -424,11 +478,12 @@ public class GoNatureServer extends AbstractServer {
 			int sum = rs.getInt("sum");
 			System.out.println("Debug: sum came to " + sum);
 			int availableSpace = actual - sum;
-			boolean validOrder = (availableSpace - visitorNum) > 0; 
+			boolean validOrder = (availableSpace - visitorNum) > 0;
 			LocalDateTime preStart = LocalDateTime.parse(startTime, f);
 			preStart = preStart.minusMinutes(timeToAdd);
 			String preStartFormatted = preStart.format(f);
-			ps = db_con.prepareStatement("SELECT SUM(visitor_number) AS sum FROM orders WHERE time_of_visit BETWEEN ? AND ?");
+			ps = db_con.prepareStatement(
+					"SELECT SUM(visitor_number) AS sum FROM orders WHERE time_of_visit BETWEEN ? AND ?");
 			ps.setString(1, preStartFormatted);
 			ps.setString(2, startTime);
 			rs = ps.executeQuery();
@@ -444,6 +499,24 @@ public class GoNatureServer extends AbstractServer {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	private void checkType(ConnectionToClient client, String payloadType, String expected, String ep)
+			throws IOException {
+		if (!payloadType.equals(expected)) {
+			System.out.println(
+					String.format("[rp | ERROR]: Client sent payload for %s ep which is not a %s", ep, payloadType));
+			try {
+				// send error to client
+				send_response(client, ep, new String("ErrorString"), new String(
+						String.format("Client asked %s end point but payload-type was not %s!", ep, payloadType)));
+			} catch (IOException e) {
+				System.out.println(String.format("[%s |ERROR]: Failed %s error response", ep, ep));
+				e.printStackTrace();
+				throw e;
+			}
+			return;
+		}
 	}
 
 	/**

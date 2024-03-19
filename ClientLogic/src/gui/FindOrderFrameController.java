@@ -77,8 +77,14 @@ public class FindOrderFrameController {
 //			arrmsg.add(new ArrayList<String>(Arrays.asList(username,password)));
 			
 			// OREN TESTING GET
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("OrderGet"));
+//			arrmsg.add(new String("String"));
+//			arrmsg.add("21");
+			
+			// OREN TESTING OrderedEnter
 			ArrayList<Object> arrmsg = new ArrayList<>();
-			arrmsg.add(new String("OrderGet"));
+			arrmsg.add(new String("OrderedEnter"));
 			arrmsg.add(new String("String"));
 			arrmsg.add("21");
 			

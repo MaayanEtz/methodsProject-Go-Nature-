@@ -1,71 +1,97 @@
 EndPoint          | expected String in payload-type | expected paylod           | return to client
 
 
-ConnectToServer   | doesn't matter	            | doesn't matter             | "ConnectToServer", "Boolean", true\false
+
+ConnectToServer   | doesn't matter                  | doesn't matter             | "ConnectToServer", "Boolean", true\false
 
 
-UserLogin         | "ArrayList<String>"		    | {"username","password"}   | "UserLogin", "String",  type("ServiceWorker", "DepartmentManager", or "ParkManager")\"null"
+
+UserLogin         | "ArrayList<String>"             | {"username","password"}   | "UserLogin", "String",  type("ServiceWorker", "DepartmentManager", or "ParkManager")\"null"
 
 
-OrderCreate 	  | "ArrayList<String>"		    | {"visitor_id","park_name" | //NOT GOOD////  "OrderCreate", "Boolean",true\fasle
 
-											///GOOD///   "OrderCreate", "String", "order_id"
-
-						    |,"time_of_visit",          |  
+OrderCreate       | "ArrayList<String>"             | {"visitor_id","park_name" | //NOT GOOD////  "OrderCreate", "Boolean",true\fasle
 
 
-						    |	"visitor_number",	|
+                                                                                        ///GOOD///   "OrderCreate", "String", "order_id"
 
 
-						    |	"visitor_email",	|
+                                                    |,"time_of_visit",          |  
 
 
-						    |	"visitor_phone"	}	|
+
+                                                    |   "visitor_number",       |
 
 
-OrderCancel	  | "String"			    | "order_id"		| "OrderCancel", "Boolean",true\fasle
+
+                                                    |   "visitor_email",        |
+
+
+
+                                                    |   "visitor_phone" }       |
+
+
+
+OrderCancel       | "String"                        | "order_id"                | "OrderCancel", "Boolean",true\fasle
+
 
 
 ANNA'S CHANGES: NEED TO ADD TO SERVER
 
 
-OrderUpdate 	  | "ArrayList<String>"		    | {"order_id","park_name"   | "OrderUpdate", "Boolean",true\fasle
+
+OrderUpdate       | "ArrayList<String>"             | {"order_id","park_name"   | "OrderUpdate", "Boolean",true\fasle
 
 
-						    |,"time_of_visit",          |  
+
+                                                    |,"time_of_visit",          |  
 
 
-						    |	"visitor_number",	|
+
+                                                    |   "visitor_number",       |
 
 
-						    |	"visitor_email",	|
+
+                                                    |   "visitor_email",        |
 
 
-						    |	"visitor_phone"	}	|
+
+                                                    |   "visitor_phone" }       |
 
 
-OrderGet 	  | "String"			    | "order_id"		| "OrderGet", "ArrayList<String>", {"order_id",  "park_name",		If doesn't exists: "OrderGet", "String", null
+
+OrderGet          | "String"                        | "order_id"                | "OrderGet", "ArrayList<String>", {"order_id",  "park_name",           If doesn't exists: "OrderGet", "String", null
 
 
-						    |				|  					"time_of_visit",
+
+                                                    |                           |                                       "time_of_visit",
 
 
-						    |				|					"visitor_number",
+
+                                                    |                           |                                       "visitor_number",
 
 
-						    |				|					"visitor_email",
+
+                                                    |                           |                                       "visitor_email",
 
 
-						    |				|					"visitor_phone"	}
+
+                                                    |                           |                                       "visitor_phone" }
 
 
-GroupGuideCheck	  | "String"			    | "visitor_id"		| "GroupGuideCheck", "Boolean",true\fasle
+
+GroupGuideCheck   | "String"                        | "visitor_id"              | "GroupGuideCheck", "Boolean",true\fasle
 
 
-ParksListGet 	  | doesn't matter		    | doesn't matter		| "ParksListGet", "ArrayList<String>", {"park_name1", "park_name2", "park_name3"...}
+
+ParksListGet      | doesn't matter                  | doesn't matter            | "ParksListGet", "ArrayList<String>", {"park_name1", "park_name2", "park_name3"...}
 
 
-ParkCheckCapacity | "ArrayList<String>"		    | {"park_name",		| "ParkCheckCapacity", "Boolean", true\fasle 
 
-						    |  "visitor_number"}        |
+ParkCheckCapacity | "ArrayList<String>"             | {"park_name",             | "ParkCheckCapacity", "Boolean", true\fasle
+
+
+                                                    |  "visitor_number"}        |
+
+OrderedEnter	  | "String"			    | "order_number"		| "OrderedEnter", "Boolean", true\false
 

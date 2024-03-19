@@ -27,10 +27,9 @@ public class GoNatureServer extends AbstractServer {
 	private String db_user;
 	private String db_pass;
 	public static ServerPortFrameController controller;
-	
-	
+
 	private Map<String, ConnectionToClient> logged_in_clients = new HashMap<>();
-	
+
 	/// time outs ///
 	int db_conn_validation_timeout_milisecs = 10000;
 
@@ -124,7 +123,7 @@ public class GoNatureServer extends AbstractServer {
 			if (payload_type.equals("ArrayList<String>")) {
 				boolean user_test_succeeded = false;
 				db_table = "users";
-				
+
 				try {
 					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
 
@@ -135,8 +134,7 @@ public class GoNatureServer extends AbstractServer {
 					String password_from_client = payload.get(1);
 					System.out.println(
 							"[UserLogin|DEBUG]: extracted password: " + password_from_client + " from clients payload");
-					
-					
+
 					// prepare MySQL query prepare
 					prepared_statement = db_con
 							.prepareStatement("SELECT type FROM " + db_table + " WHERE username=? AND password=?;");
@@ -152,18 +150,15 @@ public class GoNatureServer extends AbstractServer {
 
 					} else {
 						user_type = result_set.getString("type");
-						System.out.println(
-								"[loginUser|INFO]:ResultSet is not empty " + username_from_client + " was found returning to client: " + user_type);
-						
-						
-						
+						System.out.println("[loginUser|INFO]:ResultSet is not empty " + username_from_client
+								+ " was found returning to client: " + user_type);
+
 						/// LOGIN and already logged in test
 						if (logged_in_clients.get(username_from_client) == null) {
 							logged_in_clients.put(username_from_client, client);
 							System.out.println("[UserLogin | info]: logged-in: " + username_from_client);
 							user_test_succeeded = true;
-						}
-						else {
+						} else {
 							System.out.println("[UserLogin | ERROR]: User alrady logged-in");
 							try {
 								send_response(client, new String("UserLogin"), new String("ErrorString"),
@@ -188,8 +183,7 @@ public class GoNatureServer extends AbstractServer {
 
 				// Response to client
 				try {
-					send_response(client, new String("UserLogin"), new String("String"),
-							user_type);
+					send_response(client, new String("UserLogin"), new String("String"), user_type);
 				} catch (IOException e) {
 					System.out.println("[UserLogin_ep |ERROR ]: Failed UserLogin");
 					e.printStackTrace();
@@ -498,10 +492,11 @@ public class GoNatureServer extends AbstractServer {
 //				arr.add(new String(rs.getString("visitor_email")));
 //				arr.add(new String(rs.getString("visitor_phone")));
 				// send Order to Client
-				send_response(client, new String("OrderGet"), new String("ArrayList<String>"), new ArrayList<String>(Arrays.asList("yossi")));
+				send_response(client, new String("OrderGet"), new String("ArrayList<String>"),
+						new ArrayList<String>(Arrays.asList("yossi")));
 				System.out.println("[OrderGet|INFO]: OrderGet sent response of ArrayList<>");
 				System.out.println(arr);
-				
+
 			} catch (SQLException e) {
 				System.out.println("[OrderGet | ERROR]: SQLException was thrown!");
 				e.printStackTrace();
@@ -511,8 +506,8 @@ public class GoNatureServer extends AbstractServer {
 			}
 			return;
 
-			// -------------------------------------------------------------------------------------
-			// PARK
+		// -------------------------------------------------------------------------------------
+		// PARK
 		case "ParksListGet":
 			try {
 				PreparedStatement ps = db_con.prepareStatement("Select parkName FROM parks");
@@ -588,6 +583,92 @@ public class GoNatureServer extends AbstractServer {
 				}
 			}
 			return;
+
+		case "OrderedEnter":
+			System.out.println("[OrderedEnter|INFO]: OrderedEnter enpoint trigered");
+			if (payload_type.equals("String")) {
+				boolean ordered_enterance_test_succeeded = false;
+				db_table = "orders";
+				try {
+					String payload = (String) arr_msg.get(2);
+
+					// prepare MySQL query prepare
+					prepared_statement = db_con
+							.prepareStatement("SELECT park_name,visitor_number  FROM " + db_table + " WHERE orderId=?;");
+					prepared_statement.setString(1, payload);
+					result_set = prepared_statement.executeQuery();
+
+					// Check MySql Result
+					if (!result_set.next()) { // ResultSet is empty
+						System.out.println("[OrderedEnter|INFO]: ResultSet is empty - didnt not find the orderId: "
+								+ payload);
+
+					} else {
+						System.out.println("[OrderedEnter|INFO]:ResultSet is not empty " + payload + " was found");
+						String parkNameExtracted = result_set.getString(1);
+						String visitor_number_extracted =result_set.getString(2);
+						System.out.println("[OrderedEnter|DEBUG]:extacted park name: " + parkNameExtracted);
+						db_table = "parks";
+
+						// prepare MySQL query
+						PreparedStatement preparedStatement = db_con.prepareStatement(
+								"UPDATE " + db_table + " SET currentVisitors = currentVisitors + ? WHERE parkName=?;");
+						preparedStatement.setInt(1, Integer.parseInt(visitor_number_extracted));
+						preparedStatement.setString(2, parkNameExtracted);
+						int rowsAffected = preparedStatement.executeUpdate();
+						if (rowsAffected > 0) {
+							System.out
+									.println("[OrderedEnter|INFO]: updated parks, rows effected: " + rowsAffected);
+							ordered_enterance_test_succeeded = true;
+
+						} else {
+							System.out.println(
+									"[OrderedEnter|ERROR]:failed to update parks, rows effected: " + rowsAffected);
+						}
+					}
+
+					// Catch problematic Payload
+				} catch (ClassCastException e_clas) {
+					System.out.println(
+							"[OrderedEnter | ERROR]: Client sent payload for OrderedEnter ep which is not an String");
+					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+
+				// Response to client
+				try {
+					send_response(client, new String("OrderedEnter"), new String("Boolean"), ordered_enterance_test_succeeded);
+				} catch (IOException e) {
+					System.out.println("[OrderedEnter |ERROR ]: Failed sending message to client");
+					e.printStackTrace();
+				}
+
+			} else {
+				// Client asked GroupGuideCheck end-point but sent bad payload-type
+				try {
+					send_response(client, new String("OrderedEnter"), new String("ErrorString"),
+							new String("Client asked OrderedEnter end point but payload-type was not String!"));
+				} catch (IOException e) {
+					System.out.println("[OrderedEnter_ep |ERROR ]: Failed sending ErrorString to client");
+					e.printStackTrace();
+				}
+			}
+
+			return;
+			
+		case "SurpriseEnter":
+			System.out.println("[SurpriseEnter|INFO]: SurpriseEnter enpoint trigered");
+			// TODO - maayan should implement a function which returns if suprise visit is possible
+			return;
+			
+			
+			
+		
+
+		// ---------------------- DEFUALT CASE ---------------------------
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");
 		}

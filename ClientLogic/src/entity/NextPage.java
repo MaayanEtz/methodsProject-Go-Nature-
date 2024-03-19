@@ -57,7 +57,8 @@ public class NextPage {
 
 				if(data == FindOrderFrameController.Action.CANCEL)
 					findOrderFrameController.setAction(FindOrderFrameController.Action.CANCEL);
-
+				//visitor ID instead of method
+				findOrderFrameController.setVisitorID(method);
 				break;}
 			
 			case "IdentifyPageController": {
@@ -76,6 +77,8 @@ public class NextPage {
 				OrderFrameController orderFrameController = loader.getController();
 				if(data instanceof Order)
 					orderFrameController.loadData((Order)data);
+				//visitorID instead of method
+				orderFrameController.setVisitorID(method);
 				break;}
 			
 			case "TravellerPageController": {
@@ -107,6 +110,18 @@ public class NextPage {
 				if (data instanceof String)
 					createOrderFrameController.loadData((String) data);
 				break;}
+			
+//			case "ServiceWorkerController":{
+//				ServiceWorkerController ServiceWorkerController = loader.getController();
+//				break;}
+//			
+//			case "DepartmentManagerController":{
+//				DepartmentManagerController DepartmentManagerController = loader.getController();
+//				break;}
+//			
+//			case "ParkManagerController":{
+//				ParkManagerController ParkManagerController = loader.getController();
+//				break;}
 			
 			default: {System.out.println("No such controller in NextPage: Next");}
 		}

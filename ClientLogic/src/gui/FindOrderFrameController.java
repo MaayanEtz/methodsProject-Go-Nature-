@@ -8,18 +8,12 @@ import client.ChatClient;
 import client.ClientUI;
 import entity.NextPage;
 import entity.Order;
-//import entity.Order;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-//import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
+
 
 public class FindOrderFrameController {
 	
@@ -28,6 +22,7 @@ public class FindOrderFrameController {
 	}
 	
 	private Action action;
+	private String visitorID;
 	
 	//labels
 	@FXML
@@ -44,18 +39,20 @@ public class FindOrderFrameController {
 	private Button btnFind=null;
 	@FXML
 	private Button btnBack=null;
-	
-	//Image
-	//@FXML
-	//private ImageView imgGoNature;
-	
+
 	//get entered order number
 	private String getEnteredOrderNum() {
         return txtEnteredOrderNum.getText();
 	}
 	
+	//set action EDIT or CANCEL
 	public void setAction(Action action) {
 		this.action = action;
+	}
+	
+	//set visitor ID
+	public void setVisitorID(String visitorID) {
+		this.visitorID = visitorID;
 	}
 	
 	//Event for "Find" button
@@ -80,15 +77,8 @@ public class FindOrderFrameController {
 				arrmsg.add(new String("OrderGet"));
 				arrmsg.add(new String("String"));
 				arrmsg.add(new String(orderNumber));
-				
-			    /////ANNA: OPEN////////////////
-				ClientUI.chat.accept(arrmsg);
-				
-			    /////ANNA: Check////////////////
-				//ChatClient.result = true; //order found
-				//ChatClient.order = new Order("St James Park","111", "2023-02-11 12:00:00", "3", "0587126782", "GA@gmail.com");
-				//ChatClient.result = false; //order not found
-				
+				ClientUI.chat.accept(arrmsg);			
+			
 				if(ChatClient.result == false) {
 					errorCase("Order number not found","Order number does not exist in the system.");
 				}else {
@@ -98,7 +88,8 @@ public class FindOrderFrameController {
 					//Find order page is the same page for edit and cancel an order
 					switch(this.action) {
 						case EDIT: {
-					    	NextPage page = new NextPage(event, "/gui/OrderForm.fxml", "Order Form", "OrderFrameController", "pressFindBtn", ChatClient.order);
+							//visitorID instead of method
+					    	NextPage page = new NextPage(event, "/gui/OrderForm.fxml", "Order Form", "OrderFrameController", this.visitorID, ChatClient.order);
 					    	page.Next();
 							break;}
 						

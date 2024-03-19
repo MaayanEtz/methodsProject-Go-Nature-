@@ -36,7 +36,8 @@ public class TravellerPageController {
     //Event for "Cancelling an order" button
     @FXML
     void pressCancellingBtn(ActionEvent event) throws Exception {
-    	NextPage page = new NextPage(event, "/gui/FindOrderFrame.fxml", "Find order", "FindOrderFrameController", "pressCheckingBtn", FindOrderFrameController.Action.CANCEL);
+    	//visitorID instead of method
+    	NextPage page = new NextPage(event, "/gui/FindOrderFrame.fxml", "Find order", "FindOrderFrameController", this.visitorID, FindOrderFrameController.Action.CANCEL);
     	page.Next();
     }
     
@@ -44,7 +45,8 @@ public class TravellerPageController {
     @FXML
     void pressCheckingBtn(ActionEvent event) throws Exception {
     	try {
-        	NextPage page = new NextPage(event, "/gui/FindOrderFrame.fxml", "Find order", "FindOrderFrameController", "pressCheckingBtn", FindOrderFrameController.Action.EDIT);
+    		//visitorID instead of method
+        	NextPage page = new NextPage(event, "/gui/FindOrderFrame.fxml", "Find order", "FindOrderFrameController", this.visitorID, FindOrderFrameController.Action.EDIT);
         	page.Next();
     	}catch (Exception e) {
     		System.out.println("Error in TravellerPageController: pressCheckingBtn");

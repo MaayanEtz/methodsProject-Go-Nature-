@@ -9,7 +9,7 @@
 <AnchorPane prefHeight="428.0" prefWidth="336.0" stylesheets="@design.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.RespondWindowController">
    <children>
       <Button fx:id="btnClose" layoutX="244.0" layoutY="381.0" mnemonicParsing="false" onAction="#pressCloseBtn" text="Close" />
-      <Label fx:id="lblResult" alignment="CENTER" layoutX="103.0" layoutY="195.0" prefHeight="25.0" prefWidth="164.0" text="    " textAlignment="CENTER">
+      <Label fx:id="lblResult" alignment="CENTER" contentDisplay="CENTER" layoutX="19.0" layoutY="195.0" prefHeight="27.0" prefWidth="304.0" text="    " textAlignment="CENTER">
          <font>
             <Font size="18.0" />
          </font></Label>

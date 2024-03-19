@@ -49,99 +49,105 @@ public class ChatClient extends AbstractClient {
 	 * @param msg The message from the server.
 	 */
 	public void handleMessageFromServer(Object msg) {
-		System.out.println("--> handleMessageFromServer");
-		awaitResponse = false;
-		
-		if (msg instanceof ArrayList) {
+		try {
+			System.out.println("--> handleMessageFromServer");
+			awaitResponse = false;
 			
-			Boolean pay_load_from_srv_bln;
-			ArrayList<String> pay_load_from_srv_arr_lst;
-			String pay_load_from_srv_str;
-			
-			ArrayList<Object> arr = (ArrayList<Object>) msg;
-			String endpoint_from_server = (String) arr.get(0);
-			String paylod_type_from_server = (String) arr.get(1);
-			
-			switch (endpoint_from_server) {
-				case "ConnectToServer": {
-					switch (paylod_type_from_server) {
-					case "String":
-						pay_load_from_srv_str = (String) arr.get(2);
-						result = false;
-						break;
-					case "Boolean":
-						pay_load_from_srv_bln = (Boolean) arr.get(2);
-						caseDecision(pay_load_from_srv_bln, "Succesfull connection", "Failed connection to server");
-					}
-					
-					break;}
+			if (msg instanceof ArrayList) {
 				
-				case "UserLogin": {
-					pay_load_from_srv_bln = (Boolean) arr.get(2);
-					caseDecision(pay_load_from_srv_bln, "User exists", "User not exists");
-					break;}
+				Boolean pay_load_from_srv_bln;
+				ArrayList<String> pay_load_from_srv_arr_lst;
+				String pay_load_from_srv_str;
 				
-				case "OrderUpdate": {
-					pay_load_from_srv_bln = (Boolean) arr.get(2);
-					caseDecision(pay_load_from_srv_bln, "Order updated in DB", "Order not updated in DB");
-					break;}
+				ArrayList<Object> arr = (ArrayList<Object>) msg;
+				String endpoint_from_server = (String) arr.get(0);
+				String paylod_type_from_server = (String) arr.get(1);
 				
-				case "OrderCancel": {
-					pay_load_from_srv_bln = (Boolean) arr.get(2);
-					caseDecision(pay_load_from_srv_bln, "Order cancelled", "Order not cancelled");
-					break;}
-
-				case "OrderGet": {	
-					switch (paylod_type_from_server) {
-					case "String":
-						System.out.println("DB didn't return the order");
-						pay_load_from_srv_str = (String) arr.get(2);
-						result = false;
-						break;
-					case "ArrayList<String>":
-						System.out.println("DB returned the order");
-						result = true;
-						pay_load_from_srv_arr_lst = (ArrayList<String>) arr.get(2);
-						order = new Order(pay_load_from_srv_arr_lst);
-					}
-					break;}
-				
-				case "OrderCreate": {
-					switch (paylod_type_from_server) {
-						case "String": {
+				switch (endpoint_from_server) {
+					case "ConnectToServer": {
+						switch (paylod_type_from_server) {
+						case "String":
 							pay_load_from_srv_str = (String) arr.get(2);
 							result = false;
 							break;
+						case "Boolean":
+							pay_load_from_srv_bln = (Boolean) arr.get(2);
+							caseDecision(pay_load_from_srv_bln, "Succesfull connection", "Failed connection to server");
 						}
-						case "Integer": {
-							pay_load_from_srv_str = ((Integer) arr.get(2)).toString();
-							dataFromServer = new ArrayList<>();
-							dataFromServer.add(pay_load_from_srv_str);
-							result = true;
-							System.out.println("Order created");
+						
+						break;}
+					
+					case "UserLogin": {
+						pay_load_from_srv_str = (String) arr.get(2);
+						dataFromServer = new ArrayList<>();
+						dataFromServer.add(pay_load_from_srv_str);
+						break;}
+					
+					case "OrderUpdate": {
+						pay_load_from_srv_bln = (Boolean) arr.get(2);
+						caseDecision(pay_load_from_srv_bln, "Order updated in DB", "Order not updated in DB");
+						break;}
+					
+					case "OrderCancel": {
+						pay_load_from_srv_bln = (Boolean) arr.get(2);
+						caseDecision(pay_load_from_srv_bln, "Order cancelled", "Order not cancelled");
+						break;}
+
+					case "OrderGet": {	
+						switch (paylod_type_from_server) {
+						case "String":
+							System.out.println("DB didn't return the order");
+							pay_load_from_srv_str = (String) arr.get(2);
+							result = false;
 							break;
+						case "ArrayList<String>":
+							System.out.println("DB returned the order");
+							result = true;
+							pay_load_from_srv_arr_lst = (ArrayList<String>) arr.get(2);
+							order = new Order(pay_load_from_srv_arr_lst);
 						}
-					}
-					break;}
+						break;}
+					
+					case "OrderCreate": {
+						switch (paylod_type_from_server) {
+							case "String": {
+								pay_load_from_srv_str = (String) arr.get(2);
+								result = false;
+								break;
+							}
+							case "Integer": {
+								pay_load_from_srv_str = ((Integer) arr.get(2)).toString();
+								dataFromServer = new ArrayList<>();
+								dataFromServer.add(pay_load_from_srv_str);
+								result = true;
+								System.out.println("Order created");
+								break;
+							}
+						}
+						break;}
+					
+					case "GroupGuideCheck": {
+						pay_load_from_srv_bln = (Boolean) arr.get(2);
+						caseDecision(pay_load_from_srv_bln, "The visitor is group guide", "The visitor is not group guide");
+						break;}
+					
+					case "ParksListGet": {
+						pay_load_from_srv_arr_lst = (ArrayList<String>) arr.get(2);
+						dataFromServer = pay_load_from_srv_arr_lst;
+						break;}
+					
+					case "ParkCheckCapacity": {
+						pay_load_from_srv_bln = (Boolean) arr.get(2);
+						caseDecision(pay_load_from_srv_bln, "Park capacity allows to order", "Park capacity doesn't allow to order");
+						break;}
+				}
 				
-				case "GroupGuideCheck": {
-					pay_load_from_srv_bln = (Boolean) arr.get(2);
-					caseDecision(pay_load_from_srv_bln, "The visitor is group guide", "The visitor is not group guide");
-					break;}
-				
-				case "ParksListGet": {
-					pay_load_from_srv_arr_lst = (ArrayList<String>) arr.get(2);
-					dataFromServer = pay_load_from_srv_arr_lst;
-					break;}
-				
-				case "ParkCheckCapacity": {
-					pay_load_from_srv_bln = (Boolean) arr.get(2);
-					caseDecision(pay_load_from_srv_bln, "Park capacity allows to order", "Park capacity doesn't allow to order");
-					break;}
-			}
-			
-		}else
-			System.out.println("Msg is not Boolean or Array in ChatClient: handleMessageFromServer");
+			}else
+				System.out.println("Msg is not Boolean or Array in ChatClient: handleMessageFromServer");
+		} catch (Exception e) {
+			System.out.println("Error in ChatClient: handleMessageFromServer.");
+			System.out.println(e.getMessage());
+		}
 
 	}
 	

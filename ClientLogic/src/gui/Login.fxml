@@ -23,10 +23,10 @@
       </Text>
       <TextField fx:id="username_id" layoutX="93.0" layoutY="224.0" promptText="Username" />
       <TextField fx:id="password_id" layoutX="93.0" layoutY="266.0" promptText="Password" />
-      <Button id="btnExit" fx:id="btnExit" layoutX="261.0" layoutY="371.0" mnemonicParsing="false" onAction="#pressExitBtn" text="Exit" />
+      <Button id="btnExit" fx:id="btnExit" layoutX="250.0" layoutY="371.0" mnemonicParsing="false" onAction="#pressExitBtn" prefHeight="27.0" prefWidth="48.0" text="Exit" />
       <Button fx:id="btnLogin" layoutX="145.0" layoutY="312.0" mnemonicParsing="false" onAction="#Login" text="Login" />
       <Text fx:id="errorTxt" fill="#f20909" layoutX="15.0" layoutY="211.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="305.99999737739563" />
-      <Button fx:id="btnBack" layoutX="35.0" layoutY="370.0" mnemonicParsing="false" onAction="#pressBackBtn" prefHeight="26.0" prefWidth="42.0" text="Back" />
+      <Button fx:id="btnBack" layoutX="35.0" layoutY="370.0" mnemonicParsing="false" onAction="#pressBackBtn" prefHeight="27.0" prefWidth="48.0" text="Back" />
       <Text layoutX="100.0" layoutY="411.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Created By i-Recreation Inc." />
       <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="93.0" pickOnBounds="true" preserveRatio="true">
          <image>

@@ -52,6 +52,12 @@ public class OrderFrameController{
     private TextField txtPhoneNumber;
     
     private Order order;
+    private String visitorID;
+    
+    //set visitor ID
+    public void setVisitorID(String visitorID) {
+    	this.visitorID = visitorID;
+    }
     
     //load data
     public void loadData(Order order) {
@@ -172,6 +178,7 @@ public class OrderFrameController{
 				
 				orderArr = new ArrayList<>();
 				orderArr.add(order.getOrderNumber());
+				orderArr.add(this.visitorID);
 				orderArr.add(this.selectParkCmb.getValue());
 				orderArr.add(new String(selectedDate + " " + selectedTimeOption + ":00"));	
 				orderArr.add(visitorsNum);
@@ -214,10 +221,10 @@ public class OrderFrameController{
 				arrmsg.add(orderArr);
 				
 			    /////ANNA: OPEN////////////////
-				//ClientUI.chat.accept(arrmsg);
+				ClientUI.chat.accept(arrmsg);
 				
 			    /////ANNA: Check////////////////
-				ChatClient.result = true; //order updated
+				//ChatClient.result = true; //order updated
 				//ChatClient.result = false; //order not updated
 				
 			    /////ANNA: OPEN////////////////

@@ -9,6 +9,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import gui.ServerPortFrameController;
 import jdbc.MysqlConnection;
@@ -23,7 +27,10 @@ public class GoNatureServer extends AbstractServer {
 	private String db_user;
 	private String db_pass;
 	public static ServerPortFrameController controller;
-
+	
+	
+	private Map<String, ConnectionToClient> logged_in_clients = new HashMap<>();
+	
 	/// time outs ///
 	int db_conn_validation_timeout_milisecs = 10000;
 
@@ -148,7 +155,24 @@ public class GoNatureServer extends AbstractServer {
 						System.out.println(
 								"[loginUser|INFO]:ResultSet is not empty " + username_from_client + " was found returning to client: " + user_type);
 						
-						user_test_succeeded = true;
+						
+						
+						/// LOGIN and already logged in test
+						if (logged_in_clients.get(username_from_client) == null) {
+							logged_in_clients.put(username_from_client, client);
+							System.out.println("[UserLogin | info]: logged-in: " + username_from_client);
+							user_test_succeeded = true;
+						}
+						else {
+							System.out.println("[UserLogin | ERROR]: User alrady logged-in");
+							try {
+								send_response(client, new String("UserLogin"), new String("ErrorString"),
+										new String("Client already logged-in"));
+							} catch (IOException e) {
+								System.out.println("[UserLogin_ep |ERROR ]: Failed UserLogin");
+								e.printStackTrace();
+							}
+						}
 					}
 
 					// Catch problematic Payload
@@ -467,16 +491,17 @@ public class GoNatureServer extends AbstractServer {
 					return;
 				}
 				// add order parameters to ArrayList to send to client
-				arr.add(new String("" + rs.getInt("orderId")));
-				arr.add(new String(rs.getString("park_name")));
-				arr.add(new String(rs.getString("time_of_visit")));
-				arr.add(new String("" + rs.getInt("visitor_number")));
-				arr.add(new String(rs.getString("visitor_email")));
-				arr.add(new String(rs.getString("visitor_phone")));
+//				arr.add(new String("" + rs.getInt("orderId")));
+//				arr.add(new String(rs.getString("park_name")));
+//				arr.add(new String(rs.getString("time_of_visit")));
+//				arr.add(new String("" + rs.getInt("visitor_number")));
+//				arr.add(new String(rs.getString("visitor_email")));
+//				arr.add(new String(rs.getString("visitor_phone")));
 				// send Order to Client
-				send_response(client, new String("OrderGet"), new String("ArrayList<String>"), arr);
+				send_response(client, new String("OrderGet"), new String("ArrayList<String>"), new ArrayList<String>(Arrays.asList("yossi")));
 				System.out.println("[OrderGet|INFO]: OrderGet sent response of ArrayList<>");
 				System.out.println(arr);
+				
 			} catch (SQLException e) {
 				System.out.println("[OrderGet | ERROR]: SQLException was thrown!");
 				e.printStackTrace();
@@ -484,6 +509,7 @@ public class GoNatureServer extends AbstractServer {
 				System.out.println("[OrderGet | ERROR]: IOException was thrown!");
 				e.printStackTrace();
 			}
+			return;
 
 			// -------------------------------------------------------------------------------------
 			// PARK
@@ -565,6 +591,7 @@ public class GoNatureServer extends AbstractServer {
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");
 		}
+		return;
 
 	}
 
@@ -679,8 +706,23 @@ public class GoNatureServer extends AbstractServer {
 	@Override
 	synchronized protected void clientDisconnected(ConnectionToClient client) { // supposed to be called when client
 																				// disconnects...
-		System.out.println("[clientConnected|INFO]: removing client from gui list");
-		// controller.removeClient(client);
+		System.out.println("hiiii client disconnected");
+//		// controller.removeClient(client);
+//		String username_to_loggout = null;
+//		System.out.println("[clientConnected|DEBUG]:logged-in map before loggingout" + logged_in_clients);
+//		for ( Entry<String, ConnectionToClient>  logged_in_clients : logged_in_clients.entrySet()) {
+//			String username = logged_in_clients.getKey();
+//            ConnectionToClient client_of_username = logged_in_clients.getValue();
+//			if (client_of_username.equals(client)) {
+//				username_to_loggout = username;
+//				break;
+//			}
+//		}
+//		logged_in_clients.remove(username_to_loggout);
+//		System.out.println("[clientConnected|INFO]: removing client logged-in map");
+//		
+//		System.out.println("[clientConnected|DEBUG]:logged-in map" + logged_in_clients);
+
 		return;
 	}
 }

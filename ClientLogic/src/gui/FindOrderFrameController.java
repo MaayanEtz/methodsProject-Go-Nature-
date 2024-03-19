@@ -69,14 +69,18 @@ public class FindOrderFrameController {
 			FXMLLoader loader = new FXMLLoader();
 			Stage primaryStage = new Stage();
 			// Oren Testing Connect
-			String username =  orderNumber.split(",")[0];
-			String password =  orderNumber.split(",")[1];
+//			String username =  orderNumber.split(",")[0];
+//			String password =  orderNumber.split(",")[1];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("UserLogin"));
+//			arrmsg.add(new String("ArrayList<String>"));
+//			arrmsg.add(new ArrayList<String>(Arrays.asList(username,password)));
+			
+			// OREN TESTING GET
 			ArrayList<Object> arrmsg = new ArrayList<>();
-			arrmsg.add(new String("UserLogin"));
-			arrmsg.add(new String("ArrayList<String>"));
-			arrmsg.add(new ArrayList<String>(Arrays.asList(username,password)));
-			
-			
+			arrmsg.add(new String("OrderGet"));
+			arrmsg.add(new String("String"));
+			arrmsg.add("21");
 			
 			// Testing Delete
 			//String order_id_to_del = orderNumber.split(",")[0];

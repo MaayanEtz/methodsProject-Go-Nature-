@@ -485,13 +485,13 @@ public class GoNatureServer extends AbstractServer {
 					return;
 				}
 				// add order parameters to ArrayList to send to client
-//				arr.add(new String("" + rs.getInt("orderId")));
-//				arr.add(new String(rs.getString("park_name")));
-//				arr.add(new String(rs.getString("time_of_visit")));
-//				arr.add(new String("" + rs.getInt("visitor_number")));
-//				arr.add(new String(rs.getString("visitor_email")));
-//				arr.add(new String(rs.getString("visitor_phone")));
-				// send Order to Client
+				arr.add(new String("" + rs.getInt("orderId")));
+				arr.add(new String(rs.getString("park_name")));
+				arr.add(new String(rs.getString("time_of_visit")));
+				arr.add(new String("" + rs.getInt("visitor_number")));
+				arr.add(new String(rs.getString("visitor_email")));
+				arr.add(new String(rs.getString("visitor_phone")));
+				//send Order to Client
 				send_response(client, new String("OrderGet"), new String("ArrayList<String>"),
 						new ArrayList<String>(Arrays.asList("yossi")));
 				System.out.println("[OrderGet|INFO]: OrderGet sent response of ArrayList<>");

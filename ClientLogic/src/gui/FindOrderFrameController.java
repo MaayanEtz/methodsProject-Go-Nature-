@@ -57,7 +57,7 @@ public class FindOrderFrameController {
 	}
 	
 
-	
+	int globalOren = 0;
 	//Event for "Find" button
 	public void pressFindBtn (ActionEvent event) throws Exception {
 		try {
@@ -68,6 +68,7 @@ public class FindOrderFrameController {
 			//prepare the window to show the result
 			FXMLLoader loader = new FXMLLoader();
 			Stage primaryStage = new Stage();
+			
 			// Oren Testing Connect
 //			String username =  orderNumber.split(",")[0];
 //			String password =  orderNumber.split(",")[1];
@@ -76,17 +77,55 @@ public class FindOrderFrameController {
 //			arrmsg.add(new String("ArrayList<String>"));
 //			arrmsg.add(new ArrayList<String>(Arrays.asList(username,password)));
 			
+			
+			// OREN TEST is logged in
+			// Oren Testing Connect
+			ArrayList<Object> arrmsg;
+			if (globalOren == 0) {
+				String username =  orderNumber.split(",")[0];
+				String password =  orderNumber.split(",")[1];
+				arrmsg = new ArrayList<>();
+				arrmsg.add(new String("UserLogin"));
+				arrmsg.add(new String("ArrayList<String>"));
+				arrmsg.add(new ArrayList<String>(Arrays.asList(username,password)));
+				globalOren +=1;
+			}else {
+				if (globalOren == 1) {
+					String username =  orderNumber.split(",")[0];
+					arrmsg = new ArrayList<>();
+					arrmsg.add(new String("IsLoggedIn"));
+					arrmsg.add(new String("String"));
+					arrmsg.add(username);
+					globalOren+=1;
+				}else {
+					String username =  orderNumber.split(",")[0];
+					arrmsg = new ArrayList<>();
+					arrmsg.add(new String("UserLogOut"));
+					arrmsg.add(new String("String"));
+					arrmsg.add(username);
+				}
+			
+			}
+			
+			
 			// OREN TESTING GET
 //			ArrayList<Object> arrmsg = new ArrayList<>();
 //			arrmsg.add(new String("OrderGet"));
 //			arrmsg.add(new String("String"));
 //			arrmsg.add("21");
 			
-			// OREN TESTING OrderedEnter
-			ArrayList<Object> arrmsg = new ArrayList<>();
-			arrmsg.add(new String("OrderedEnter"));
-			arrmsg.add(new String("String"));
-			arrmsg.add("21");
+//			// OREN TESTING OrderedEnter
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("OrderedEnter"));
+//			arrmsg.add(new String("String"));
+//			arrmsg.add("21");
+			
+//			// OREN TESTING UnplannedEnter
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("UnplannedEnter"));
+//			arrmsg.add(new String("ArrayList<String>"));
+//			ArrayList<String> arr_str = new ArrayList<>(Arrays.asList("Hyde Park","16"));
+//			arrmsg.add(arr_str);
 			
 			// Testing Delete
 			//String order_id_to_del = orderNumber.split(",")[0];

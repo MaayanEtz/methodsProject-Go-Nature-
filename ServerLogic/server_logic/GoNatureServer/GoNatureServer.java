@@ -195,13 +195,142 @@ public class GoNatureServer extends AbstractServer {
 					send_response(client, new String("UserLogin"), new String("ErrorString"),
 							new String("Client asked UserLogin end point but payload-type was not ArrayList<String>!"));
 				} catch (IOException e) {
-					System.out.println("[UserLogin_ep |ERROR ]: Failed UserLogin");
+					System.out.println("[UserLogin_ep |ERROR ]: sending message to client");
 					e.printStackTrace();
 				}
 			}
 			return;
 
 		// -------------------------------------------------------------------------------------
+
+		// IS LOGGED IN CHECK
+		case "IsLoggedIn":
+
+			System.out.println("[IsLoggedIn|INFO]: IsLoggedIn enpoint trigered");
+
+			if (payload_type.equals("String")) {
+				boolean is_logged_in = false;
+
+				db_table = "users";
+
+				try {
+					String payload = (String) arr_msg.get(2); // payload is the username
+					for (String username : logged_in_clients.keySet()) {
+						if (username.equals(payload)) {
+							is_logged_in = true;
+							System.out.println("[IsLoggedIn|INFO]:" + payload + " is logged in");
+							break;
+						}
+					}
+
+					// Response to client
+					try {
+						send_response(client, new String("IsLoggedIn"), new String("Boolean"), is_logged_in);
+						return;
+					} catch (IOException e) {
+						System.out.println("[IsLoggedIn_ep |ERROR ]: Failed sending data to client");
+						e.printStackTrace();
+						return;
+					}
+
+					// Catch problematic Payload
+				} catch (ClassCastException e_clas) {
+					System.out.println(
+							"[IsLoggedIn_ep | ERROR]: Client sent payload for IsLoggedIn_ep ep which is not an String");
+					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+
+			} else {
+				// Client asked IsLoggedIn end-point but sent bad payload-type
+				try {
+					send_response(client, new String("IsLoggedIn"), new String("ErrorString"),
+							new String("Client asked IsLoggedIn end point but payload-type was not String!"));
+				} catch (IOException e) {
+					System.out.println("[IsLoggedIn_ep |ERROR ]: sending message to client");
+					e.printStackTrace();
+				}
+			}
+			return;
+
+		// -------------------------------------------------------------------------------------
+
+		// Log User Out
+		case "UserLogOut":
+
+			System.out.println("[UserLogOut|INFO]: UserLogOut enpoint trigered");
+
+			if (payload_type.equals("String")) {
+				boolean is_logged_out = false;
+				boolean is_logged_in = false;
+
+				db_table = "users";
+
+				try {
+					String payload = (String) arr_msg.get(2); // payload is the username
+					
+					// Test if logged in
+					boolean client_send_logged_off_user = false;
+					if (logged_in_clients.get(payload) == null) {
+						System.out.println("[UserLogOut|ERROR]:" + payload + " is not even logged in....");
+						client_send_logged_off_user = true;
+					}
+					
+					
+					for (String username : logged_in_clients.keySet()) {
+						if (username.equals(payload)) {
+							is_logged_in = true;
+							System.out.println("[UserLogOut|INFO]:" + payload + " is logged in");
+
+							break;
+						}
+					}
+
+					// Log user out
+					logged_in_clients.remove(payload);
+					if (logged_in_clients.get(payload) == null && !client_send_logged_off_user) {
+						System.out.println("[UserLogOut|DEBUG]:" + payload + " was removed from map");
+						is_logged_out = true;
+					}
+
+					// Response to client
+					try {
+						send_response(client, new String("UserLogOut"), new String("Boolean"), is_logged_out);
+						return;
+					} catch (IOException e) {
+						System.out.println("[UserLogOut_ep |ERROR ]: Failed sending data to client");
+						e.printStackTrace();
+						return;
+					}
+
+					// Catch problematic Payload
+				} catch (ClassCastException e_clas) {
+					System.out.println(
+							"[UserLogOut_ep | ERROR]: Client sent payload for UserLogOut_ep ep which is not an String");
+					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+
+			} else {
+				// Client asked IsLoggedIn end-point but sent bad payload-type
+				try {
+					send_response(client, new String("UserLogOut"), new String("ErrorString"),
+							new String("Client asked UserLogOut end point but payload-type was not String!"));
+				} catch (IOException e) {
+					System.out.println("[UserLogOut_ep |ERROR ]: sending message to client");
+					e.printStackTrace();
+				}
+			}
+			return;
+
+		// -------------------------------------------------------------------------------------
+
 		// ORDER Create
 		case "OrderCreate":
 			int orderId = -1;
@@ -491,7 +620,7 @@ public class GoNatureServer extends AbstractServer {
 				arr.add(new String("" + rs.getInt("visitor_number")));
 				arr.add(new String(rs.getString("visitor_email")));
 				arr.add(new String(rs.getString("visitor_phone")));
-				//send Order to Client
+				// send Order to Client
 				send_response(client, new String("OrderGet"), new String("ArrayList<String>"),
 						new ArrayList<String>(Arrays.asList("yossi")));
 				System.out.println("[OrderGet|INFO]: OrderGet sent response of ArrayList<>");
@@ -593,20 +722,20 @@ public class GoNatureServer extends AbstractServer {
 					String payload = (String) arr_msg.get(2);
 
 					// prepare MySQL query prepare
-					prepared_statement = db_con
-							.prepareStatement("SELECT park_name,visitor_number  FROM " + db_table + " WHERE orderId=?;");
+					prepared_statement = db_con.prepareStatement(
+							"SELECT park_name,visitor_number  FROM " + db_table + " WHERE orderId=?;");
 					prepared_statement.setString(1, payload);
 					result_set = prepared_statement.executeQuery();
 
 					// Check MySql Result
 					if (!result_set.next()) { // ResultSet is empty
-						System.out.println("[OrderedEnter|INFO]: ResultSet is empty - didnt not find the orderId: "
-								+ payload);
+						System.out.println(
+								"[OrderedEnter|INFO]: ResultSet is empty - didnt not find the orderId: " + payload);
 
 					} else {
 						System.out.println("[OrderedEnter|INFO]:ResultSet is not empty " + payload + " was found");
 						String parkNameExtracted = result_set.getString(1);
-						String visitor_number_extracted =result_set.getString(2);
+						String visitor_number_extracted = result_set.getString(2);
 						System.out.println("[OrderedEnter|DEBUG]:extacted park name: " + parkNameExtracted);
 						db_table = "parks";
 
@@ -617,8 +746,7 @@ public class GoNatureServer extends AbstractServer {
 						preparedStatement.setString(2, parkNameExtracted);
 						int rowsAffected = preparedStatement.executeUpdate();
 						if (rowsAffected > 0) {
-							System.out
-									.println("[OrderedEnter|INFO]: updated parks, rows effected: " + rowsAffected);
+							System.out.println("[OrderedEnter|INFO]: updated parks, rows effected: " + rowsAffected);
 							ordered_enterance_test_succeeded = true;
 
 						} else {
@@ -640,7 +768,8 @@ public class GoNatureServer extends AbstractServer {
 
 				// Response to client
 				try {
-					send_response(client, new String("OrderedEnter"), new String("Boolean"), ordered_enterance_test_succeeded);
+					send_response(client, new String("OrderedEnter"), new String("Boolean"),
+							ordered_enterance_test_succeeded);
 				} catch (IOException e) {
 					System.out.println("[OrderedEnter |ERROR ]: Failed sending message to client");
 					e.printStackTrace();
@@ -658,15 +787,75 @@ public class GoNatureServer extends AbstractServer {
 			}
 
 			return;
-			
-		case "SurpriseEnter":
-			System.out.println("[SurpriseEnter|INFO]: SurpriseEnter enpoint trigered");
-			// TODO - maayan should implement a function which returns if suprise visit is possible
+
+		case "UnplannedEnter":
+			System.out.println("[UnplannedEnter|INFO]: UnplannedEnter enpoint trigered");
+			// TODO - maayan should implement a function which returns if UnplannedEnter
+			// visit is possible
+			if (payload_type.equals("ArrayList<String>")) {
+				/////
+
+				boolean unplanned_enter_test_succeeded = false;
+				db_table = "parks";
+				try {
+					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
+					String park_name_extracted = payload.get(0);
+					String unplanned_visitors = payload.get(1);
+
+					//////// ORENB TODO - Maayan will provide the function for testing if number of
+					//////// visitors provided is allowed
+					if (true) {
+						// Update number of visitors in the relevant park
+						// prepare MySQL query
+						PreparedStatement preparedStatement = db_con.prepareStatement(
+								"UPDATE " + db_table + " SET currentVisitors = currentVisitors + ? WHERE parkName=?;");
+						preparedStatement.setInt(1, Integer.parseInt(unplanned_visitors));
+						preparedStatement.setString(2, park_name_extracted);
+						int rowsAffected = preparedStatement.executeUpdate();
+						if (rowsAffected > 0) {
+							System.out.println("[UnplannedEnter|INFO]: updated parks, rows effected: " + rowsAffected);
+							unplanned_enter_test_succeeded = true;
+
+						} else {
+							System.out.println(
+									"[UnplannedEnter|ERROR]:failed to update parks, rows effected: " + rowsAffected);
+						}
+					}
+					// unplanned_enter_test_succeeded variable remain false if too much visitors ask
+					// to come in
+
+					// Catch problematic Payload
+				} catch (ClassCastException e_clas) {
+					System.out.println(
+							"[UnplannedEnter | ERROR]: Client sent payload for UnplannedEnter ep which is not an ArrayList<String>");
+					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+
+				// Response to client
+				try {
+					send_response(client, new String("UnplannedEnter"), new String("Boolean"),
+							unplanned_enter_test_succeeded);
+				} catch (IOException e) {
+					System.out.println("[UnplannedEnter_ep |ERROR ]: Failed UnplannedEnter");
+					e.printStackTrace();
+				}
+
+				/////
+			} else {
+				// Client asked GroupGuideCheck end-point but sent bad payload-type
+				try {
+					send_response(client, new String("UnplannedEnter"), new String("ErrorString"), new String(
+							"Client asked UnplannedEnter end point but payload-type was not ArrayList<String>!"));
+				} catch (IOException e) {
+					System.out.println("[UnplannedEnter_ep |ERROR ]: Failed sending ErrorString to client");
+					e.printStackTrace();
+				}
+			}
 			return;
-			
-			
-			
-		
 
 		// ---------------------- DEFUALT CASE ---------------------------
 		default:

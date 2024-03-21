@@ -2,7 +2,9 @@ EndPoint          | expected String in payload-type | expected paylod           
 
 
 
+
 ConnectToServer   | doesn't matter                  | doesn't matter             | "ConnectToServer", "Boolean", true\false
+
 
 
 
@@ -10,13 +12,17 @@ UserLogin         | "ArrayList<String>"             | {"username","password"}   
 
 
 
+
 OrderCreate       | "ArrayList<String>"             | {"visitor_id","park_name" | //NOT GOOD////  "OrderCreate", "Boolean",true\fasle
+
 
 
                                                                                         ///GOOD///   "OrderCreate", "String", "order_id"
 
 
-                                                    |,"time_of_visit",          |  
+
+                                                    |,"time_of_visit",          |
+
 
 
 
@@ -24,11 +30,14 @@ OrderCreate       | "ArrayList<String>"             | {"visitor_id","park_name" 
 
 
 
+
                                                     |   "visitor_email",        |
 
 
 
+
                                                     |   "visitor_phone" }       |
+
 
 
 
@@ -36,7 +45,9 @@ OrderCancel       | "String"                        | "order_id"                
 
 
 
+
 ANNA'S CHANGES: NEED TO ADD TO SERVER
+
 
 
 
@@ -44,7 +55,9 @@ OrderUpdate       | "ArrayList<String>"             | {"order_id","park_name"   
 
 
 
-                                                    |,"time_of_visit",          |  
+
+                                                    |,"time_of_visit",          |
+
 
 
 
@@ -52,7 +65,9 @@ OrderUpdate       | "ArrayList<String>"             | {"order_id","park_name"   
 
 
 
+
                                                     |   "visitor_email",        |
+
 
 
 
@@ -60,7 +75,9 @@ OrderUpdate       | "ArrayList<String>"             | {"order_id","park_name"   
 
 
 
+
 OrderGet          | "String"                        | "order_id"                | "OrderGet", "ArrayList<String>", {"order_id",  "park_name",           If doesn't exists: "OrderGet", "String", null
+
 
 
 
@@ -68,7 +85,9 @@ OrderGet          | "String"                        | "order_id"                
 
 
 
+
                                                     |                           |                                       "visitor_number",
+
 
 
 
@@ -76,7 +95,9 @@ OrderGet          | "String"                        | "order_id"                
 
 
 
+
                                                     |                           |                                       "visitor_phone" }
+
 
 
 
@@ -84,14 +105,25 @@ GroupGuideCheck   | "String"                        | "visitor_id"              
 
 
 
+
 ParksListGet      | doesn't matter                  | doesn't matter            | "ParksListGet", "ArrayList<String>", {"park_name1", "park_name2", "park_name3"...}
+
 
 
 
 ParkCheckCapacity | "ArrayList<String>"             | {"park_name",             | "ParkCheckCapacity", "Boolean", true\fasle
 
 
+
                                                     |  "visitor_number"}        |
 
-OrderedEnter	  | "String"			    | "order_number"		| "OrderedEnter", "Boolean", true\false
+
+OrderedEnter      | "String"                        | "order_number"            | "OrderedEnter", "Boolean", true\false
+
+UnplannedEnter	  | "ArrayList<String>		    | {"parkName", "num_visitors| "UnplannedEnter", "Boolean", true\false
+
+IsLoggedIn	  | "String"			    | "username" 	        | "IsLoggedIn" , "Boolean", true\false
+
+UserLogOut 	  | "String"			    | "username"                | "UserLogOut", "Boolean", true\false
+
 

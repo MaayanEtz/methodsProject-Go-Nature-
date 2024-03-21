@@ -188,40 +188,19 @@ public class CreateOrderFrameController {
 				this.lblResult.setText(e.getMessage());
 				return;
 			}
-		
 			
-			//3. Check if the day and time of visit is available
-			
-			//////REAL CODE: CHANGE AND OPEN//////////////
+			//3. Create new order    	
 			ArrayList<Object> arrmsg = new ArrayList<Object>();
-			//arrmsg.add(new String("ParkCheckCapacity"));
-			//arrmsg.add(new String("String"));
-			//arrmsg.add(this.selectParkCmb.getValue());
-				
-			/////ANNA: OPEN////////////////
-			//ClientUI.chat.accept(arrmsg);
-			
-			/////ANNA: Check////////////////
-			ChatClient.result = true; //park available
-			//ChatClient.result = false; //park not available
-			
-			if(ChatClient.result == false) {
-				//park capacity doesn't allow to order
-				this.lblResult.setText("The park is full in choosen time. Choose other time or day.");
-			}else {	
-				//4. Create new order    	
-				arrmsg = new ArrayList<Object>();
-				arrmsg.add(new String("OrderCreate"));
-				arrmsg.add(new String("ArrayList<String>"));
-				arrmsg.add(orderArr);
-				ClientUI.chat.accept(arrmsg);
+			arrmsg.add(new String("OrderCreate"));
+			arrmsg.add(new String("ArrayList<String>"));
+			arrmsg.add(orderArr);
+			ClientUI.chat.accept(arrmsg);
 
-				if(ChatClient.result == false)
-					this.lblResult.setText(new String("Unfortunately, order not created!"));
-				else
-					this.lblResult.setText(new String("Order successfuly created! Your order number: " + ChatClient.dataFromServer.get(0)));
+			if(ChatClient.result == false)
+				this.lblResult.setText(new String("Unfortunately, order not created!"));
+			else
+				this.lblResult.setText(new String("Order successfuly created! Your order number: " + ChatClient.dataFromServer.get(0)));
 
-			}
 		} catch (Exception e) {
 			System.out.println("Error in CreateOrderFrameController: pressCreateBtn");
 			System.out.println(e.getMessage());

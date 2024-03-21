@@ -79,9 +79,8 @@ public class ChatClient extends AbstractClient {
 						break;}
 					
 					case "UserLogin": {
-						pay_load_from_srv_str = (String) arr.get(2);
-						dataFromServer = new ArrayList<>();
-						dataFromServer.add(pay_load_from_srv_str);
+						pay_load_from_srv_arr_lst = (ArrayList<String>) arr.get(2);
+						dataFromServer = pay_load_from_srv_arr_lst;
 						break;}
 					
 					case "OrderUpdate": {
@@ -144,8 +143,34 @@ public class ChatClient extends AbstractClient {
 					
 					case "OrderedEnter": {
 						pay_load_from_srv_bln = (Boolean) arr.get(2);
-						caseDecision(pay_load_from_srv_bln, "The visitors succesfully entered the park", "The visitors not entered the park");
+						caseDecision(pay_load_from_srv_bln, "The planned visitors succesfully entered the park", "The planned visitors not entered the park");
 						break;}
+					
+					case "UnplannedEnter": {
+						pay_load_from_srv_bln = (Boolean) arr.get(2);
+						caseDecision(pay_load_from_srv_bln, "The unplanned visitors succesfully entered the park", "The unplanned visitors not entered the park");
+						break;}
+					
+					case "GuideRegistration": {
+						pay_load_from_srv_bln = (Boolean) arr.get(2);
+						caseDecision(pay_load_from_srv_bln, "The guide has been successfully registered", "The guide is not registered");
+						break;}
+					
+					case "IsLoggedIn": {
+						pay_load_from_srv_bln = (Boolean) arr.get(2);
+						caseDecision(pay_load_from_srv_bln, "The user is logged in", "The user is not logged in");
+						break;}
+					
+					case "UserLogOut": {
+						pay_load_from_srv_bln = (Boolean) arr.get(2);
+						caseDecision(pay_load_from_srv_bln, "The user logged out", "The user wasn't logged out");
+						break;}
+					
+					case "ExitRegistration": {
+						pay_load_from_srv_bln = (Boolean) arr.get(2);
+						caseDecision(pay_load_from_srv_bln, "The exit registration performed", "The exit registration is not performed");
+						break;}
+
 				}
 				
 			}else

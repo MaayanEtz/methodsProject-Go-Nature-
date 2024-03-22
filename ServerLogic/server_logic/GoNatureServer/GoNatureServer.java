@@ -8,6 +8,12 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import gui.ServerPortFrameController;
 import jdbc.MysqlConnection;
 import ocsf.server.*;
@@ -21,6 +27,9 @@ public class GoNatureServer extends AbstractServer {
 	private String db_user;
 	private String db_pass;
 	public static ServerPortFrameController controller;
+
+	private Map<String, ConnectionToClient> logged_in_clients = new HashMap<>();
+	private Map<String, Double> discounts = new HashMap<>();
 
 	/// time outs ///
 	int db_conn_validation_timeout_milisecs = 10000;
@@ -90,8 +99,11 @@ public class GoNatureServer extends AbstractServer {
 		ResultSet result_set = null;
 		String error = "";
 
-		// choose Endpoint
+		// choose End-point
 		switch (endpoint) {
+
+		// -------------------------------------------------------------------------------------
+		// SERVER CONNECT
 		case "ConnectToServer":
 			System.out.println("[ConnectToServer|INFO]: ConnectToServer enpoint trigered");
 			try {
@@ -104,11 +116,16 @@ public class GoNatureServer extends AbstractServer {
 				return;
 			}
 
+			// -------------------------------------------------------------------------------------
+			// USER LOGIN
 		case "UserLogin":
 			System.out.println("[UserLogin|INFO]: UserLogin enpoint trigered");
+			String user_type_from_db = "null";
+			String park_name_from_db = "null";
 			if (payload_type.equals("ArrayList<String>")) {
 				boolean user_test_succeeded = false;
 				db_table = "users";
+
 				try {
 					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
 
@@ -122,7 +139,7 @@ public class GoNatureServer extends AbstractServer {
 
 					// prepare MySQL query prepare
 					prepared_statement = db_con
-							.prepareStatement("SELECT username FROM " + db_table + " WHERE username=? AND password=?;");
+							.prepareStatement("SELECT type,parkName FROM " + db_table + " WHERE username=? AND password=?;");
 					prepared_statement.setString(1, username_from_client);
 					prepared_statement.setString(2, password_from_client);
 					result_set = prepared_statement.executeQuery();
@@ -134,9 +151,26 @@ public class GoNatureServer extends AbstractServer {
 						user_test_succeeded = false;
 
 					} else {
-						System.out.println(
-								"[loginUser|INFO]:ResultSet is not empty " + username_from_client + " was found");
-						user_test_succeeded = true;
+						user_type_from_db = result_set.getString("type");
+						park_name_from_db = result_set.getString("parkName");
+						System.out.println("[loginUser|INFO]:ResultSet is not empty " + username_from_client
+								+ " was found returning to client: " + user_type_from_db + " and park name: " + park_name_from_db);
+
+						/// LOGIN and already logged in test
+						if (logged_in_clients.get(username_from_client) == null) {
+							logged_in_clients.put(username_from_client, client);
+							System.out.println("[UserLogin | info]: logged-in: " + username_from_client);
+							user_test_succeeded = true;
+						} else {
+							System.out.println("[UserLogin | ERROR]: User alrady logged-in");
+							try {
+								send_response(client, new String("UserLogin"), new String("ErrorString"),
+										new String("Client already logged-in"));
+							} catch (IOException e) {
+								System.out.println("[UserLogin_ep |ERROR ]: Failed UserLogin");
+								e.printStackTrace();
+							}
+						}
 					}
 
 					// Catch problematic Payload
@@ -152,11 +186,9 @@ public class GoNatureServer extends AbstractServer {
 
 				// Response to client
 				try {
-					send_response(client, new String("UserLogin"), new String("Boolean"),
-							new Boolean(user_test_succeeded));
+					send_response(client, new String("UserLogin"), new String("ArrayList<String>"), new ArrayList<String>(Arrays.asList(user_type_from_db,park_name_from_db)));
 				} catch (IOException e) {
 					System.out.println("[UserLogin_ep |ERROR ]: Failed UserLogin");
-					e.printStackTrace();
 					e.printStackTrace();
 				}
 
@@ -166,13 +198,143 @@ public class GoNatureServer extends AbstractServer {
 					send_response(client, new String("UserLogin"), new String("ErrorString"),
 							new String("Client asked UserLogin end point but payload-type was not ArrayList<String>!"));
 				} catch (IOException e) {
-					System.out.println("[UserLogin_ep |ERROR ]: Failed UserLogin");
-					e.printStackTrace();
+					System.out.println("[UserLogin_ep |ERROR ]: sending message to client");
 					e.printStackTrace();
 				}
 			}
 			return;
 
+		// -------------------------------------------------------------------------------------
+
+		// IS LOGGED IN CHECK
+		case "IsLoggedIn":
+
+			System.out.println("[IsLoggedIn|INFO]: IsLoggedIn enpoint trigered");
+
+			if (payload_type.equals("String")) {
+				boolean is_logged_in = false;
+
+				db_table = "users";
+
+				try {
+					String payload = (String) arr_msg.get(2); // payload is the username
+					for (String username : logged_in_clients.keySet()) {
+						if (username.equals(payload)) {
+							is_logged_in = true;
+							System.out.println("[IsLoggedIn|INFO]:" + payload + " is logged in");
+							break;
+						}
+					}
+
+					// Response to client
+					try {
+						send_response(client, new String("IsLoggedIn"), new String("Boolean"), is_logged_in);
+						return;
+					} catch (IOException e) {
+						System.out.println("[IsLoggedIn_ep |ERROR ]: Failed sending data to client");
+						e.printStackTrace();
+						return;
+					}
+
+					// Catch problematic Payload
+				} catch (ClassCastException e_clas) {
+					System.out.println(
+							"[IsLoggedIn_ep | ERROR]: Client sent payload for IsLoggedIn_ep ep which is not an String");
+					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+
+			} else {
+				// Client asked IsLoggedIn end-point but sent bad payload-type
+				try {
+					send_response(client, new String("IsLoggedIn"), new String("ErrorString"),
+							new String("Client asked IsLoggedIn end point but payload-type was not String!"));
+				} catch (IOException e) {
+					System.out.println("[IsLoggedIn_ep |ERROR ]: sending message to client");
+					e.printStackTrace();
+				}
+			}
+			return;
+
+		// -------------------------------------------------------------------------------------
+
+		// Log User Out
+		case "UserLogOut":
+
+			System.out.println("[UserLogOut|INFO]: UserLogOut enpoint trigered");
+
+			if (payload_type.equals("String")) {
+				boolean is_logged_out = false;
+				boolean is_logged_in = false;
+
+				db_table = "users";
+
+				try {
+					String payload = (String) arr_msg.get(2); // payload is the username
+					
+					// Test if logged in
+					boolean client_send_logged_off_user = false;
+					if (logged_in_clients.get(payload) == null) {
+						System.out.println("[UserLogOut|ERROR]:" + payload + " is not even logged in....");
+						client_send_logged_off_user = true;
+					}
+					
+					
+					for (String username : logged_in_clients.keySet()) {
+						if (username.equals(payload)) {
+							is_logged_in = true;
+							System.out.println("[UserLogOut|INFO]:" + payload + " is logged in");
+
+							break;
+						}
+					}
+
+					// Log user out
+					logged_in_clients.remove(payload);
+					if (logged_in_clients.get(payload) == null && !client_send_logged_off_user) {
+						System.out.println("[UserLogOut|DEBUG]:" + payload + " was removed from map");
+						is_logged_out = true;
+					}
+
+					// Response to client
+					try {
+						send_response(client, new String("UserLogOut"), new String("Boolean"), is_logged_out);
+						return;
+					} catch (IOException e) {
+						System.out.println("[UserLogOut_ep |ERROR ]: Failed sending data to client");
+						e.printStackTrace();
+						return;
+					}
+
+					// Catch problematic Payload
+				} catch (ClassCastException e_clas) {
+					System.out.println(
+							"[UserLogOut_ep | ERROR]: Client sent payload for UserLogOut_ep ep which is not an String");
+					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+
+			} else {
+				// Client asked IsLoggedIn end-point but sent bad payload-type
+				try {
+					send_response(client, new String("UserLogOut"), new String("ErrorString"),
+							new String("Client asked UserLogOut end point but payload-type was not String!"));
+				} catch (IOException e) {
+					System.out.println("[UserLogOut_ep |ERROR ]: sending message to client");
+					e.printStackTrace();
+				}
+			}
+			return;
+
+		// -------------------------------------------------------------------------------------
+
+		// ORDER Create
 		case "OrderCreate":
 			int orderId = -1;
 			if (payload_type.equals("ArrayList<String>")) {
@@ -192,8 +354,8 @@ public class GoNatureServer extends AbstractServer {
 					if (checkOrderTime(payload)) {
 						// prepare MySQL query prepare
 						prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table
-								+ " (`visitor_id`, `park_name`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`)"
-								+ "VALUES (?,?, ?, ?, ?, ?);");
+								+ " (`visitor_id`, `park_name`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`)"
+								+ "VALUES (?, ?, ?, ?, ?, ?, 'active');");
 						prepared_statement.setString(1, visitor_id);
 						prepared_statement.setString(2, park_name);
 						prepared_statement.setString(3, time_of_visit);
@@ -201,6 +363,8 @@ public class GoNatureServer extends AbstractServer {
 						prepared_statement.setString(5, visitor_email);
 						prepared_statement.setString(6, visitor_phone);
 						prepared_statement.executeUpdate();
+						// -------------------------------------------------
+
 						prepared_statement = null;
 						prepared_statement = db_con.prepareStatement("SELECT MAX(orderId) AS max FROM orders");
 						result_set = prepared_statement.executeQuery();
@@ -238,16 +402,136 @@ public class GoNatureServer extends AbstractServer {
 			} else {
 				// Client asked UserLogin end-point but sent bad payload-type
 				try {
-					send_response(client, new String("UserLogin"), new String("ErrorString"),
-							new String("Client asked UserLogin end point but payload-type was not ArrayList<String>!"));
+					send_response(client, new String("OrderCreate"), new String("ErrorString"), new String(
+							"Client asked OrderCreate end point but payload-type was not ArrayList<String>!"));
 				} catch (IOException e) {
-					System.out.println("[UserLogin_ep |ERROR]: Failed UserLogin error response");
+					System.out.println("[OrderCreate_ep |ERROR]: Failed UserLogin error response");
+					e.printStackTrace();
+				}
+			}
+			return;
+
+		// -------------------------------------------------------------------------------------
+		// ORDER UPDATE
+		case "OrderUpdate":
+			boolean orderUpdated = false;
+			if (payload_type.equals("ArrayList<String>")) {
+				db_table = "orders";
+				try {
+					// Extract pay-load (Pay attention order_id as oppose to Order Create with
+					// visitor_id)
+					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
+					String order_id = payload.get(0);
+					String visitor_id = payload.get(1);
+					String park_name = payload.get(2);
+					String time_of_visit = payload.get(3);
+					String visitor_number = payload.get(4);
+					String visitor_email = payload.get(5);
+					String visitor_phone = payload.get(6);
+					System.out.println("[OrderUpdate | DEBUG]: extracted: " + payload);
+
+					// Check if order_id exists:
+					// prepare MySQL query prepare
+					prepared_statement = db_con
+							.prepareStatement("SELECT orderId FROM " + db_table + " WHERE orderId=?;");
+					prepared_statement.setString(1, order_id);
+					result_set = prepared_statement.executeQuery();
+
+					// Check MySql Result for orderId Client sent
+					if (!result_set.next()) { // ResultSet is empty
+						System.out.println(
+								"[OrderUpdate|INFO]: ResultSet is empty - didnt not find the orderId: " + order_id);
+						// Response to client
+						try {
+							send_response(client, new String("OrderUpdate"), new String("ErrorString"),
+									new String("order_id not in db: " + order_id));
+
+						} catch (IOException e) {
+							System.out.println("[OrderUpdate_ep |ERROR ]: Failed OrderUpdate response");
+							e.printStackTrace();
+						}
+						return;
+					} else {
+						System.out.println("[OrderUpdate|INFO]:ResultSet is not empty " + order_id + " was found");
+					}
+
+					// Update payload since it has order_id at index 0
+					System.out.println("[OrderUpdate |DEBUG ]: payload before update: " + payload);
+					payload.remove(0);
+					System.out.println("[OrderUpdate |DEBUG ]: payload updated: " + payload);
+
+					if (checkOrderTime(payload)) { // TODO ORENB: Here will be algorithm for problematic time instead of
+													// true
+						// prepare MySQL query prepare
+						prepared_statement = db_con.prepareStatement("UPDATE " + db_table
+								+ " SET `visitor_id`=?, `park_name`=?, `time_of_visit`=?, `visitor_number`=?, `visitor_email`=?, `visitor_phone`=?"
+								+ " WHERE `orderId`=?;");
+
+						prepared_statement.setString(1, visitor_id);
+						prepared_statement.setString(2, park_name);
+						prepared_statement.setString(3, time_of_visit);
+						prepared_statement.setString(4, visitor_number);
+						prepared_statement.setString(5, visitor_email);
+						prepared_statement.setString(6, visitor_phone);
+						prepared_statement.setString(7, order_id);
+						int rowsAffected = prepared_statement.executeUpdate();
+						if (rowsAffected > 0) {
+							System.out.println(
+									"[OrderUpdate|INFO] Update successful. " + rowsAffected + " rows updated.");
+							orderUpdated = true;
+						} else {
+							System.out.println("[OrderUpdate|ERROR] No records were updated.");
+							try {
+								send_response(client, new String("OrderUpdate"), new String("ErrorString"),
+										new String("Capacity check passed but db failed to udpate"));
+
+							} catch (IOException e) {
+								System.out.println("[OrderUpdate_ep |ERROR ]: Failed OrderUpdate response");
+								e.printStackTrace();
+
+							}
+							return;
+						}
+					}
+
+					// Catch Problems
+				} catch (ClassCastException e_clas) {
+					System.out.println(
+							"[OrderUpdate | ERROR]: Client sent payload for OrderUpdate ep which is not an ArrayList<String>");
+					error = e_clas.getMessage();
+					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
+				} catch (SQLException e_sql) {
+					System.out.println("[OrderUpdate | ERROR]: MySQL query execution error");
+					e_sql.printStackTrace();
+					error = e_sql.getMessage();
+				} catch (Exception e) {
+					e.printStackTrace();
+					error = e.getMessage();
+				}
+
+				// Response to client
+				try {
+					send_response(client, new String("OrderUpdate"), new String("Boolean"), orderUpdated);
+				} catch (IOException e) {
+					System.out.println("[OrderUpdate_ep |ERROR ]: Failed OrderUpdate response");
+					e.printStackTrace();
+				}
+
+			} else {
+				// Client asked OrderUpdate end-point but sent bad payload-type
+				try {
+					send_response(client, new String("OrderUpdate"), new String("ErrorString"), new String(
+							"Client asked OrderUpdate end point but payload-type was not ArrayList<String>!"));
+				} catch (IOException e) {
+					System.out.println("[OrderUpdate_ep |ERROR]: Failed OrderUpdate error response");
 					e.printStackTrace();
 				}
 
 			}
 			return;
 
+		// -------------------------------------------------------------------------------------
+		// ORDER CANCEL
 		case "OrderCancel":
 			if (payload_type.equals("String")) {
 				boolean cancel_order_test_succeeded = false;
@@ -292,10 +576,6 @@ public class GoNatureServer extends AbstractServer {
 					e.printStackTrace();
 				}
 			}
-			return;
-
-		case "OrderEdit":
-			// UPDATE orders SET park_name="yossi_park" WHERE orderId="4";
 			return;
 
 		case "OrderGet":
@@ -419,6 +699,62 @@ public class GoNatureServer extends AbstractServer {
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");
 		}
+		return;
+
+	}
+
+	/**
+	 * method that checks db that order is valid
+	 * 
+	 * @param arr - array list of string containing order parameters
+	 * @return boolean - order is valid
+	 */
+	private boolean checkOrderTime(ArrayList<String> arr) {
+		try {
+			System.out.println("Debug: " + arr);
+			int visitorNum = Integer.valueOf(arr.get(3));
+			// get parks time of visit, and capacity of park
+			PreparedStatement ps = db_con
+					.prepareStatement("SELECT visitTimeInMinutes, capacity, diff FROM parks WHERE parkName = ?");
+			ps.setString(1, arr.get(1));
+			ResultSet rs = ps.executeQuery();
+			System.out.println("Debug: " + rs);
+			if (!rs.next()) {
+				System.out.println("Debug: couldnt find park?");
+				throw new IllegalArgumentException("invalid park name");
+			}
+			// found park
+			int timeToAdd = rs.getInt("visitTimeInMinutes");
+			int parkCapacity = rs.getInt("capacity");
+			int capacityDiff = rs.getInt("diff");
+			int actual = parkCapacity - capacityDiff;
+			System.out.println("Debug: actual capacity is: " + actual);
+
+			// get amount of orders in timeframe
+			String startTime = arr.get(2);
+			ps = db_con.prepareStatement(
+					"SELECT SUM(visitor_number) AS sum FROM orders WHERE time_of_visit BETWEEN ? AND ?");
+			ps.setString(1, startTime);
+			DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			LocalDateTime endTime = LocalDateTime.parse(startTime, f);
+			endTime = endTime.plusMinutes(timeToAdd);
+			String endTimeFormatted = endTime.format(f);
+			ps.setString(2, endTimeFormatted);
+			rs = ps.executeQuery();
+			if (!rs.next()) {
+				System.out.println("couldnt sum?");
+				throw new Exception("couldnt sum");
+			}
+			int sum = rs.getInt("sum");
+			System.out.println("Debug: sum came to " + sum);
+			int availableSpace = actual - sum;
+			return ((availableSpace - visitorNum) > 0);
+
+		} catch (Exception e) {
+			System.out.println("error in checkOrderTime(): ");
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	/**
@@ -675,6 +1011,16 @@ public class GoNatureServer extends AbstractServer {
 		} else {
 			System.out.println("[SERVER]: failed to connect DB");
 		}
+		
+		// Initiate discounts
+		discounts.put(new String("full_price"), new Double(50.0));
+		discounts.put(new String("discount_private_family_planned"), new Double(15.0));
+		discounts.put(new String("discount_private_family_unplanned"), new Double(0));
+		discounts.put(new String("discount_group_planned"), new Double(25.0));
+		discounts.put(new String("discount_group_unplanned"), new Double(10.0));
+		discounts.put(new String("discount_payment_in_advance"), new Double(12.0));
+		
+		
 		/////////////////////////////////////////////////////////////////
 	}
 
@@ -719,4 +1065,27 @@ public class GoNatureServer extends AbstractServer {
 		controller.removeClient(client);
 		return;
 	}
+
+// 	@Override
+// 	synchronized protected void clientDisconnected(ConnectionToClient client) { // supposed to be called when client
+// 																				// disconnects...
+// 		System.out.println("hiiii client disconnected");
+// //		// controller.removeClient(client);
+// //		String username_to_loggout = null;
+// //		System.out.println("[clientConnected|DEBUG]:logged-in map before loggingout" + logged_in_clients);
+// //		for ( Entry<String, ConnectionToClient>  logged_in_clients : logged_in_clients.entrySet()) {
+// //			String username = logged_in_clients.getKey();
+// //            ConnectionToClient client_of_username = logged_in_clients.getValue();
+// //			if (client_of_username.equals(client)) {
+// //				username_to_loggout = username;
+// //				break;
+// //			}
+// //		}
+// //		logged_in_clients.remove(username_to_loggout);
+// //		System.out.println("[clientConnected|INFO]: removing client logged-in map");
+// //		
+// //		System.out.println("[clientConnected|DEBUG]:logged-in map" + logged_in_clients);
+
+// 		return;
+// 	}
 }

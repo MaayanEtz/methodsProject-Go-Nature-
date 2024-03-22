@@ -1,18 +1,14 @@
 EndPoint          | expected String in payload-type | expected paylod           | return to client
 
-ConnectToServer   | doesnt metter	            | doesnt metter             | "ConnectToServer", "Boolean", true\false
 
 UserLogin         | "ArrayList<String>"		    | {"username","password"}   | "UserLogin", "Boolean",true\false
 
 OrderCreate 	  | "ArrayList<String>"		    | {"visitor_id","park_name" | "OrderCreate", "Integer",orderId or -1 in case order was not created
 
-						    |,"time_of_visit",          |  
+ConnectToServer   | doesn't matter                  | doesn't matter             | "ConnectToServer", "Boolean", true\false
 
-						    |	"visitor_number",	|
 
-						    |	"visitor_email",	|
 
-						    |	"visitor_phone"	}	|
 
 OrderCancel	  | "String"			    | "order_id"		| "OrderCancel", "Boolean",true\false
 

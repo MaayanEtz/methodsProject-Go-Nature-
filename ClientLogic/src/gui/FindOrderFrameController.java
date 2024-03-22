@@ -57,7 +57,7 @@ public class FindOrderFrameController {
 	}
 	
 
-	
+	int globalOren = 0;
 	//Event for "Find" button
 	public void pressFindBtn (ActionEvent event) throws Exception {
 		try {
@@ -68,26 +68,117 @@ public class FindOrderFrameController {
 			//prepare the window to show the result
 			FXMLLoader loader = new FXMLLoader();
 			Stage primaryStage = new Stage();
-			// Oren Testing Connect
-			//String username =  orderNumber.split(",")[0];
-			//String password =  orderNumber.split(",")[1];
 			
-			/* Testing Create
-			String visitor_id = orderNumber.split(",")[0];
-			String park_name = orderNumber.split(",")[1];
-			String time_of_visit = orderNumber.split(",")[2];
-			String visitor_number = orderNumber.split(",")[3];
-			String visitor_email = orderNumber.split(",")[4];
-			String visitor_phone = orderNumber.split(",")[5];
-			*/
+			// Oren Testing Connect
+//			String username =  orderNumber.split(",")[0];
+//			String password =  orderNumber.split(",")[1];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("UserLogin"));
+//			arrmsg.add(new String("ArrayList<String>"));
+//			arrmsg.add(new ArrayList<String>(Arrays.asList(username,password)));
+			
+			
+			// OREN TEST is logged in
+			// Oren Testing Connect
+//			ArrayList<Object> arrmsg;
+//			if (globalOren == 0) {
+//				String username =  orderNumber.split(",")[0];
+//				String password =  orderNumber.split(",")[1];
+//				arrmsg = new ArrayList<>();
+//				arrmsg.add(new String("UserLogin"));
+//				arrmsg.add(new String("ArrayList<String>"));
+//				arrmsg.add(new ArrayList<String>(Arrays.asList(username,password)));
+//				globalOren +=1;
+//			}else {
+//				if (globalOren == 1) {
+//					String username =  orderNumber.split(",")[0];
+//					arrmsg = new ArrayList<>();
+//					arrmsg.add(new String("IsLoggedIn"));
+//					arrmsg.add(new String("String"));
+//					arrmsg.add(username);
+//					globalOren+=1;
+//				}else {
+//					String username =  orderNumber.split(",")[0];
+//					arrmsg = new ArrayList<>();
+//					arrmsg.add(new String("UserLogOut"));
+//					arrmsg.add(new String("String"));
+//					arrmsg.add(username);
+//				}
+//			
+//			}
+			
+			
+			// OREN TEST EXIT REGISTRATION
+			ArrayList<Object> arrmsg;
+			String parkName =  orderNumber.split(",")[0];
+			String visitor_number =  orderNumber.split(",")[1];
+			arrmsg = new ArrayList<>();
+			arrmsg.add(new String("ExitRegistration"));
+			arrmsg.add(new String("ArrayList<String>"));
+			arrmsg.add(new ArrayList<String>(Arrays.asList(parkName,visitor_number)));
+			
+			// OREN TESTING GET
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("OrderGet"));
+//			arrmsg.add(new String("String"));
+//			arrmsg.add("21");
+			
+//			// OREN TESTING OrderedEnter
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("OrderedEnter"));
+//			arrmsg.add(new String("String"));
+//			arrmsg.add("21");
+			
+//			// OREN TESTING UnplannedEnter
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("UnplannedEnter"));
+//			arrmsg.add(new String("ArrayList<String>"));
+//			ArrayList<String> arr_str = new ArrayList<>(Arrays.asList("Hyde Park","16"));
+//			arrmsg.add(arr_str);
 			
 			// Testing Delete
-			String order_id_to_del = orderNumber.split(",")[0];
+			//String order_id_to_del = orderNumber.split(",")[0];
 			
-			ArrayList<Object> arrmsg = new ArrayList<Object>();
-			arrmsg.add(new String("OrderCancel"));
-			arrmsg.add(new String("String"));
-			arrmsg.add(order_id_to_del);
+			// Testing Delete
+			//String update_test = orderNumber.split(",")[0];
+			// Testing Create
+			
+			//String order_id = orderNumber.split(",")[0];
+			
+			// CREAT TEST
+//			String visitor_id = orderNumber.split(",")[0];
+//			String park_name = orderNumber.split(",")[1];
+//			String time_of_visit = orderNumber.split(",")[2];
+//			String visitor_number = orderNumber.split(",")[3];
+//			String visitor_email = orderNumber.split(",")[4];
+//			String visitor_phone = orderNumber.split(",")[5];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("OrderCreate"));
+//			arrmsg.add(new String("ArrayList<String>"));
+//			arrmsg.add(new ArrayList<String>(Arrays.asList(visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
+//			//
+			
+			// UPDATE TEST
+//			String order_id = orderNumber.split(",")[0];
+//			String visitor_id = orderNumber.split(",")[1];
+//			String park_name = orderNumber.split(",")[2];
+//			String time_of_visit = orderNumber.split(",")[3];
+//			String visitor_number = orderNumber.split(",")[4];
+//			String visitor_email = orderNumber.split(",")[5];
+//			String visitor_phone = orderNumber.split(",")[6];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("OrderUpdate"));
+//			arrmsg.add(new String("ArrayList<String>"));
+//			arrmsg.add(new ArrayList<String>(Arrays.asList(order_id,visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
+			//
+			
+			// Test Guid
+//			arrmsg.add(new String("GroupGuideCheck"));
+//			arrmsg.add(new String("String"));
+//			arrmsg.add(update_test);
+			
+			
+			// TEST HERE
 			ClientUI.chat.accept(arrmsg);
 			
 //			if(orderNumber.trim().isEmpty()) {

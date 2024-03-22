@@ -109,19 +109,19 @@ public class FindOrderFrameController {
 			
 			
 			// OREN TEST EXIT REGISTRATION
-			ArrayList<Object> arrmsg;
-			String parkName =  orderNumber.split(",")[0];
-			String visitor_number =  orderNumber.split(",")[1];
-			arrmsg = new ArrayList<>();
-			arrmsg.add(new String("ExitRegistration"));
-			arrmsg.add(new String("ArrayList<String>"));
-			arrmsg.add(new ArrayList<String>(Arrays.asList(parkName,visitor_number)));
+//			ArrayList<Object> arrmsg;
+//			String parkName =  orderNumber.split(",")[0];
+//			String visitor_number =  orderNumber.split(",")[1];
+//			arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("ExitRegistration"));
+//			arrmsg.add(new String("ArrayList<String>"));
+//			arrmsg.add(new ArrayList<String>(Arrays.asList(parkName,visitor_number)));
 			
 			// OREN TESTING GET
-//			ArrayList<Object> arrmsg = new ArrayList<>();
-//			arrmsg.add(new String("OrderGet"));
-//			arrmsg.add(new String("String"));
-//			arrmsg.add("21");
+			ArrayList<Object> arrmsg = new ArrayList<>();
+			arrmsg.add(new String("OrderGet"));
+			arrmsg.add(new String("String"));
+			arrmsg.add("21");
 			
 //			// OREN TESTING OrderedEnter
 //			ArrayList<Object> arrmsg = new ArrayList<>();
@@ -177,7 +177,13 @@ public class FindOrderFrameController {
 //			arrmsg.add(new String("String"));
 //			arrmsg.add(update_test);
 			
-			
+			// Test GetPrices:
+//			ArrayList<Object> arrmsg;
+//			arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("GetPrices"));
+//			arrmsg.add(new String("Doesnt Matter"));
+//			arrmsg.add(new String("Doesnt Matter"));
+//		
 			// TEST HERE
 			ClientUI.chat.accept(arrmsg);
 			

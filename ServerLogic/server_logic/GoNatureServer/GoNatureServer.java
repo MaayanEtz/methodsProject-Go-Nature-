@@ -10,9 +10,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import gui.ServerPortFrameController;
 import jdbc.MysqlConnection;
@@ -29,7 +31,7 @@ public class GoNatureServer extends AbstractServer {
 	public static ServerPortFrameController controller;
 
 	private Map<String, ConnectionToClient> logged_in_clients = new HashMap<>();
-	private Map<String, Double> discounts = new HashMap<>();
+	private Map<String, Integer> discounts = new LinkedHashMap<>();
 
 	/// time outs ///
 	int db_conn_validation_timeout_milisecs = 10000;
@@ -609,6 +611,7 @@ public class GoNatureServer extends AbstractServer {
 				arr.add(new String("" + rs.getInt("visitor_number")));
 				arr.add(new String(rs.getString("visitor_email")));
 				arr.add(new String(rs.getString("visitor_phone")));
+				arr.add(new String(rs.getString("visitor_id")));
 				// send Order to Client
 				send_response(client, new String("OrderGet"), new String("ArrayList<String>"), arr);
 				System.out.println("[OrderGet|INFO]: OrderGet sent response of ArrayList<>");
@@ -671,7 +674,7 @@ public class GoNatureServer extends AbstractServer {
 					// Catch problematic Payload
 				} catch (ClassCastException e_clas) {
 					System.out.println(
-							"[UserLogin | ERROR]: Client sent payload for UserLogin ep which is not an ArrayList<String>");
+							"[GuideRegistration | ERROR]: Client sent payload for GuideRegistration ep which is not an ArrayList<String>");
 					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
 					return;
 				} catch (Exception e) {
@@ -900,6 +903,92 @@ public class GoNatureServer extends AbstractServer {
 			}
 			
 			return;
+			
+		// TO maaya
+		case "GuideRegistration":
+			System.out.println("[GuideRegistration|INFO]: GuideRegistration enpoint trigered");
+			if (payload_type.equals("ArrayList<String>")) {
+				boolean guide_register_test_succeeded = false;
+				db_table = "guides";
+				try {
+					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
+
+					// prepare MySQL query prepare
+				//	INSERT INTO `go_nature`.`guides` (`visitor_id`) VALUES (<{visitor_id: }>);
+
+					prepared_statement = db_con.prepareStatement("SELECT * FROM " + db_table + " WHERE visitor_id=?;");
+					prepared_statement.setString(1, payload.get(0));
+					result_set = prepared_statement.executeQuery();
+
+					// Check MySql Result
+					if (!result_set.next()) { // ResultSet is empty
+						// prepare MySQL query prepare
+						prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table + " (`visitor_id`) VALUES (?);");
+						prepared_statement.setString(1, payload.get(0));
+						int rowsAffected = prepared_statement.executeUpdate();
+						
+						if (rowsAffected > 0) {
+							System.out.println("[GuideRegistration|INFO]: updated guilds, rows effected: " + rowsAffected);
+							guide_register_test_succeeded = true;
+
+						} else {
+							System.out.println(
+									"[GuideRegistration|ERROR]:failed to update guides, rows effected: " + rowsAffected);
+						}
+
+					} else {
+						System.out
+						.println("[GuideRegistration|ERROR]: Guide to register is alrady registered: "
+								+ payload);
+					}
+
+					// Catch problematic Payload
+				} catch (ClassCastException e_clas) {
+					System.out.println(
+							"[GuideRegistration | ERROR]: Client sent payload for GuideRegistration ep which is not an ArrayList<String>");
+					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+
+				// Response to client
+				try {
+					send_response(client, new String("GuideRegistration"), new String("Boolean"), guide_register_test_succeeded);
+					return;
+				} catch (IOException e) {
+					System.out.println("[GuideRegistration |ERROR ]: Failed Sending message to client");
+					e.printStackTrace();
+				}
+
+			} else {
+				// Client asked GroupGuideCheck end-point but sent bad payload-type
+				try {
+					send_response(client, new String("GuideRegistration"), new String("ErrorString"),
+							new String("Client asked GuideRegistration end point but payload-type was not ArrayList<String>!"));
+				} catch (IOException e) {
+					System.out.println("[GroupGuideCheck_ep |ERROR ]: Failed sending error meesage to client");
+					e.printStackTrace();
+				}
+			}
+			return;
+			
+			
+		case "GetPrices":
+			System.out.println("[GetPrices|INFO]: GetPrices enpoint trigered");
+			// Response to client
+			try {
+				ArrayList<String> discount_arr = new ArrayList<>();
+				for (Integer discount : discounts.values() ) {
+					discount_arr.add(discount.toString());
+				}
+				send_response(client, new String("GetPrices"), new String("ArrayList<String>"),discount_arr);
+			} catch (IOException e) {
+				System.out.println("[GetPrices |ERROR ]: Failed sending message to client");
+				e.printStackTrace();
+			}
+			return;
 
 
 		case "EnterWaitList":
@@ -938,6 +1027,7 @@ public class GoNatureServer extends AbstractServer {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			return;
 
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");
@@ -1202,14 +1292,13 @@ public class GoNatureServer extends AbstractServer {
 		}
 		
 		// Initiate discounts
-		discounts.put(new String("full_price"), new Double(50.0));
-		discounts.put(new String("discount_private_family_planned"), new Double(15.0));
-		discounts.put(new String("discount_private_family_unplanned"), new Double(0));
-		discounts.put(new String("discount_group_planned"), new Double(25.0));
-		discounts.put(new String("discount_group_unplanned"), new Double(10.0));
-		discounts.put(new String("discount_payment_in_advance"), new Double(12.0));
-		
-		
+		discounts.put(new String("full_price"), new Integer(50));
+		discounts.put(new String("discount_private_family_planned"), new Integer(15));
+		discounts.put(new String("discount_private_family_unplanned"), new Integer(0));
+		discounts.put(new String("discount_group_planned"), new Integer(25));
+		discounts.put(new String("discount_group_unplanned"), new Integer(10));
+		discounts.put(new String("discount_payment_in_advance"), new Integer(12));
+
 		/////////////////////////////////////////////////////////////////
 	}
 

@@ -642,22 +642,265 @@ public class GoNatureServer extends AbstractServer {
 			}
 			return;
 
-		/*
-		 * case "GetAvailableTable": //payload = ArrayList<String> = {orderTime,
-		 * visitorNumber} if (!payload_type.equals("ArrayList<String>")) { System.out.
-		 * println("[GetAvailableTable | ERROR]: Client sent payload for GetAvailableTable ep which is not an ArrayList<String>"
-		 * ); try { // send error to client send_response(client, new
-		 * String("GetAvailableTable"), new String("ErrorString"), new
-		 * String("Client asked GetAvailableTable end point but payload-type was not ArrayList<String>!"
-		 * )); } catch (IOException e) { System.out.
-		 * println("[GetAvailableTable_ep |ERROR]: Failed GetAvailableTable error response"
-		 * ); e.printStackTrace(); } return; } ArrayList<String> payload =
-		 * (ArrayList<String>) arr_msg.get(2); DateTimeFormatter f =
-		 * DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); LocalDateTime orderTime =
-		 * LocalDateTime.parse(payload.get(0), f); int visitorNumber =
-		 * Integer.valueOf(payload.get(1)); //LocalDateTime testTime = TODO: need to
-		 * think how to do that
-		 */
+			// -------------------------------------------------------------------------------------
+			// GUIDE
+		case "GroupGuideCheck":
+			System.out.println("[GroupGuideCheck|INFO]: GroupGuideCheck enpoint trigered");
+			if (payload_type.equals("String")) {
+				boolean guide_test_succeeded = false;
+				db_table = "guides";
+				try {
+					String payload = (String) arr_msg.get(2);
+
+					// prepare MySQL query prepare
+					prepared_statement = db_con.prepareStatement("SELECT * FROM " + db_table + " WHERE visitor_id=?;");
+					prepared_statement.setString(1, payload);
+					result_set = prepared_statement.executeQuery();
+
+					// Check MySql Result
+					if (!result_set.next()) { // ResultSet is empty
+						System.out
+								.println("[GroupGuideCheck|INFO]: ResultSet is empty - didnt not find the GroupGuide: "
+										+ payload);
+
+					} else {
+						System.out.println("[GroupGuideCheck|INFO]:ResultSet is not empty " + payload + " was found");
+						guide_test_succeeded = true;
+					}
+
+					// Catch problematic Payload
+				} catch (ClassCastException e_clas) {
+					System.out.println(
+							"[UserLogin | ERROR]: Client sent payload for UserLogin ep which is not an ArrayList<String>");
+					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+
+				// Response to client
+				try {
+					send_response(client, new String("GroupGuideCheck"), new String("Boolean"), guide_test_succeeded);
+				} catch (IOException e) {
+					System.out.println("[GroupGuideCheck |ERROR ]: Failed GroupGuideCheck");
+					e.printStackTrace();
+				}
+
+			} else {
+				// Client asked GroupGuideCheck end-point but sent bad payload-type
+				try {
+					send_response(client, new String("GroupGuideCheck"), new String("ErrorString"),
+							new String("Client asked GroupGuideCheck end point but payload-type was not String!"));
+				} catch (IOException e) {
+					System.out.println("[GroupGuideCheck_ep |ERROR ]: Failed GroupGuideCheck");
+					e.printStackTrace();
+				}
+			}
+			return;
+
+		case "OrderedEnter":
+			System.out.println("[OrderedEnter|INFO]: OrderedEnter enpoint trigered");
+			if (payload_type.equals("String")) {
+				boolean ordered_enterance_test_succeeded = false;
+				db_table = "orders";
+				try {
+					String payload = (String) arr_msg.get(2);
+
+					// prepare MySQL query prepare
+					prepared_statement = db_con.prepareStatement(
+							"SELECT park_name,visitor_number  FROM " + db_table + " WHERE orderId=?;");
+					prepared_statement.setString(1, payload);
+					result_set = prepared_statement.executeQuery();
+
+					// Check MySql Result
+					if (!result_set.next()) { // ResultSet is empty
+						System.out.println(
+								"[OrderedEnter|INFO]: ResultSet is empty - didnt not find the orderId: " + payload);
+
+					} else {
+						System.out.println("[OrderedEnter|INFO]:ResultSet is not empty " + payload + " was found");
+						String parkNameExtracted = result_set.getString(1);
+						String visitor_number_extracted = result_set.getString(2);
+						System.out.println("[OrderedEnter|DEBUG]:extacted park name: " + parkNameExtracted);
+						db_table = "parks";
+
+						// prepare MySQL query
+						PreparedStatement preparedStatement = db_con.prepareStatement(
+								"UPDATE " + db_table + " SET currentVisitors = currentVisitors + ? WHERE parkName=?;");
+						preparedStatement.setInt(1, Integer.parseInt(visitor_number_extracted));
+						preparedStatement.setString(2, parkNameExtracted);
+						int rowsAffected = preparedStatement.executeUpdate();
+						if (rowsAffected > 0) {
+							System.out.println("[OrderedEnter|INFO]: updated parks, rows effected: " + rowsAffected);
+							ordered_enterance_test_succeeded = true;
+
+						} else {
+							System.out.println(
+									"[OrderedEnter|ERROR]:failed to update parks, rows effected: " + rowsAffected);
+						}
+					}
+
+					// Catch problematic Payload
+				} catch (ClassCastException e_clas) {
+					System.out.println(
+							"[OrderedEnter | ERROR]: Client sent payload for OrderedEnter ep which is not an String");
+					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+
+				// Response to client
+				try {
+					send_response(client, new String("OrderedEnter"), new String("Boolean"),
+							ordered_enterance_test_succeeded);
+				} catch (IOException e) {
+					System.out.println("[OrderedEnter |ERROR ]: Failed sending message to client");
+					e.printStackTrace();
+				}
+
+			} else {
+				// Client asked GroupGuideCheck end-point but sent bad payload-type
+				try {
+					send_response(client, new String("OrderedEnter"), new String("ErrorString"),
+							new String("Client asked OrderedEnter end point but payload-type was not String!"));
+				} catch (IOException e) {
+					System.out.println("[OrderedEnter_ep |ERROR ]: Failed sending ErrorString to client");
+					e.printStackTrace();
+				}
+			}
+
+			return;
+
+		case "UnplannedEnter":
+			System.out.println("[UnplannedEnter|INFO]: UnplannedEnter enpoint trigered");
+			// TODO - maayan should implement a function which returns if UnplannedEnter
+			// visit is possible
+			if (payload_type.equals("ArrayList<String>")) {
+				/////
+
+				boolean unplanned_enter_test_succeeded = false;
+				db_table = "parks";
+				try {
+					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
+					String park_name_extracted = payload.get(0);
+					String unplanned_visitors = payload.get(1);
+
+					//////// ORENB TODO - Maayan will provide the function for testing if number of
+					//////// visitors provided is allowed
+					if (true) {
+						// Update number of visitors in the relevant park
+						// prepare MySQL query
+						PreparedStatement preparedStatement = db_con.prepareStatement(
+								"UPDATE " + db_table + " SET currentVisitors = currentVisitors + ? WHERE parkName=?;");
+						preparedStatement.setInt(1, Integer.parseInt(unplanned_visitors));
+						preparedStatement.setString(2, park_name_extracted);
+						int rowsAffected = preparedStatement.executeUpdate();
+						if (rowsAffected > 0) {
+							System.out.println("[UnplannedEnter|INFO]: updated parks, rows effected: " + rowsAffected);
+							unplanned_enter_test_succeeded = true;
+
+						} else {
+							System.out.println(
+									"[UnplannedEnter|ERROR]:failed to update parks, rows effected: " + rowsAffected);
+						}
+					}
+					// unplanned_enter_test_succeeded variable remain false if too much visitors ask
+					// to come in
+
+					// Catch problematic Payload
+				} catch (ClassCastException e_clas) {
+					System.out.println(
+							"[UnplannedEnter | ERROR]: Client sent payload for UnplannedEnter ep which is not an ArrayList<String>");
+					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+
+				// Response to client
+				try {
+					send_response(client, new String("UnplannedEnter"), new String("Boolean"),
+							unplanned_enter_test_succeeded);
+				} catch (IOException e) {
+					System.out.println("[UnplannedEnter_ep |ERROR ]: Failed UnplannedEnter");
+					e.printStackTrace();
+				}
+
+				/////
+			} else {
+				// Client asked GroupGuideCheck end-point but sent bad payload-type
+				try {
+					send_response(client, new String("UnplannedEnter"), new String("ErrorString"), new String(
+							"Client asked UnplannedEnter end point but payload-type was not ArrayList<String>!"));
+				} catch (IOException e) {
+					System.out.println("[UnplannedEnter_ep |ERROR ]: Failed sending ErrorString to client");
+					e.printStackTrace();
+				}
+			}
+			return;
+			
+		case "ExitRegistration": // TODO - ORENB:make sure exiting wont result in negative number later
+			System.out.println("[ExitRegistration|INFO]: ExitRegistration enpoint trigered");
+			if (payload_type.equals("ArrayList<String>")) {
+				boolean exit_registration_test_succeeded = false;
+				db_table = "parks";
+				try {
+					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
+					String park_name_extracted = payload.get(0);
+					String exiting_visitors_extracted = payload.get(1);
+
+					// prepare MySQL query - update parks currentVisitors
+					PreparedStatement preparedStatement = db_con.prepareStatement(
+							"UPDATE " + db_table + " SET currentVisitors = currentVisitors - ? WHERE parkName=?;");
+					preparedStatement.setInt(1, Integer.parseInt(exiting_visitors_extracted));
+					preparedStatement.setString(2, park_name_extracted);
+					int rowsAffected = preparedStatement.executeUpdate();
+					if (rowsAffected > 0) {
+						System.out.println("[ExitRegistration|INFO]: updated parks, rows effected: " + rowsAffected);
+						exit_registration_test_succeeded = true;
+
+					} else {
+						System.out.println(
+								"[ExitRegistration|ERROR]:failed to update parks, rows effected: " + rowsAffected);
+					}
+
+					// Catch problematic Payload
+				} catch (ClassCastException e_clas) {
+					System.out.println(
+							"[ExitRegistration | ERROR]: Client sent payload for ExitRegistration ep which is not an ArrayList<String>");
+					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+
+				// Response to client
+				try {
+					send_response(client, new String("ExitRegistration"), new String("Boolean"),
+							exit_registration_test_succeeded);
+				} catch (IOException e) {
+					System.out.println("[ExitRegistration |ERROR ]: Failed sending message to client");
+					e.printStackTrace();
+				}
+
+			} else {
+				// Client asked GroupGuideCheck end-point but sent bad payload-type
+				try {
+					send_response(client, new String("ExitRegistration"), new String("ErrorString"),
+							new String("Client asked ExitRegistration end point but payload-type was not ArrayList<String>!"));
+				} catch (IOException e) {
+					System.out.println("[ExitRegistration_ep |ERROR ]: Failed sending ErrorString to client");
+					e.printStackTrace();
+				}
+			}
+			
+			return;
+
 
 		case "EnterWaitList":
 			try {
@@ -718,7 +961,6 @@ public class GoNatureServer extends AbstractServer {
 					.prepareStatement("SELECT visitTimeInMinutes, capacity, diff FROM parks WHERE parkName = ?");
 			ps.setString(1, arr.get(1));
 			ResultSet rs = ps.executeQuery();
-			System.out.println("Debug: " + rs);
 			if (!rs.next()) {
 				System.out.println("Debug: couldnt find park?");
 				throw new IllegalArgumentException("invalid park name");
@@ -732,59 +974,6 @@ public class GoNatureServer extends AbstractServer {
 
 			// get amount of orders in timeframe
 			String startTime = arr.get(2);
-			ps = db_con.prepareStatement(
-					"SELECT SUM(visitor_number) AS sum FROM orders WHERE time_of_visit BETWEEN ? AND ?");
-			ps.setString(1, startTime);
-			DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-			LocalDateTime endTime = LocalDateTime.parse(startTime, f);
-			endTime = endTime.plusMinutes(timeToAdd);
-			String endTimeFormatted = endTime.format(f);
-			ps.setString(2, endTimeFormatted);
-			rs = ps.executeQuery();
-			if (!rs.next()) {
-				System.out.println("couldnt sum?");
-				throw new Exception("couldnt sum");
-			}
-			int sum = rs.getInt("sum");
-			System.out.println("Debug: sum came to " + sum);
-			int availableSpace = actual - sum;
-			return ((availableSpace - visitorNum) > 0);
-
-		} catch (Exception e) {
-			System.out.println("error in checkOrderTime(): ");
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	/**
-	 * method that checks db that order is valid
-	 * 
-	 * @param arr - array list of string containing order parameters
-	 * @return boolean - order is valid
-	 */
-	private boolean checkOrderTime(ArrayList<String> arr) {
-		try {
-			System.out.println("Debug: " + arr);
-			int visitorNum = Integer.valueOf(arr.get(4));
-			// get parks time of visit, and capacity of park
-			PreparedStatement ps = db_con
-					.prepareStatement("SELECT visitTimeInMinutes, capacity, diff FROM parks WHERE parkName = ?");
-			ps.setString(1, arr.get(2));
-			ResultSet rs = ps.executeQuery();
-			if (!rs.next()) {
-				System.out.println("Debug: couldnt find park?");
-				throw new IllegalArgumentException("invalid park name");
-			}
-			// found park
-			int timeToAdd = rs.getInt("visitTimeInMinutes");
-			int parkCapacity = rs.getInt("capacity");
-			int capacityDiff = rs.getInt("diff");
-			int actual = parkCapacity - capacityDiff;
-			System.out.println("Debug: actual capacity is: " + actual);
-
-			// get amount of orders in timeframe
-			String startTime = arr.get(3);
 			ps = db_con.prepareStatement(
 					"SELECT SUM(visitor_number) AS sum FROM orders WHERE status = 'Active' AND time_of_visit BETWEEN ? AND ?");
 			ps.setString(1, startTime);
@@ -885,7 +1074,6 @@ public class GoNatureServer extends AbstractServer {
 			ResultSet rs = ps.executeQuery();
 			if (!rs.next())
 				return null;
-			arr.add(String.valueOf(orderId));
 			arr.add(rs.getString("visitor_id"));
 			arr.add(rs.getString("park_name"));
 			arr.add(rs.getString("time_of_visit"));
@@ -893,6 +1081,7 @@ public class GoNatureServer extends AbstractServer {
 			arr.add(rs.getString("visitor_email"));
 			arr.add(rs.getString("visitor_phone"));
 			arr.add(rs.getString("status"));
+			arr.add(String.valueOf(orderId));
 		} catch (SQLException e) {
 			System.out.println("getOrderFromId: sql exception was thrown");
 			e.printStackTrace();
@@ -960,8 +1149,8 @@ public class GoNatureServer extends AbstractServer {
 	private void advanceWaitList(int orderId) {
 		ArrayList<String> order = getOrderFromId(orderId);
 		System.out.println(order);
-		String parkName = order.get(2);
-		String orderTime = order.get(3);
+		String parkName = order.get(1);
+		String orderTime = order.get(2);
 		ArrayList<ArrayList<String>> affectedOrders = getWaitListedOrders(orderTime, parkName);
 		if (affectedOrders == null)
 			return;// no need to advance waitlist
@@ -974,16 +1163,16 @@ public class GoNatureServer extends AbstractServer {
 
 	private void openPopup(ArrayList<String> order) {
 		System.out.println(String.format("SIMULATION! SENDING EMAIL TO %s and SMS to %s, spot opened to approve the reservation", order.get(5), order.get(6)));
-		System.out.println("order notified id is: " + order.get(0));
-		approveOrder(order.get(0));
+		System.out.println("order notified id is: " + order.get(7));
+		approveOrder(order.get(7));
 		
 	}
 
-	private void approveOrder(String orderId) {
+	private void approveOrder(String OrderId) {
 		try {
 			PreparedStatement ps = db_con
 					.prepareStatement("UPDATE `orders` SET `status` = 'Active' WHERE (`orderId` = ?);");
-			ps.setString(1, orderId);
+			ps.setString(1, OrderId);
 			int rowsAffected = ps.executeUpdate();
 			if (rowsAffected != 1)
 			System.out.println("approveOrder didnt work??");

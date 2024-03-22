@@ -51,10 +51,11 @@ public class HomePageController {
 
 		if (portNumber.trim().isEmpty()
 				|| (Integer.valueOf(portNumber.trim()) < 1024 || Integer.valueOf(portNumber.trim()) > 49151)) {
-			System.out.println("you have to enter valid port number");
-			errorTxt.setText("you have to enter valid port number!");
-			port_id.setText("");
-		} else {
+//			System.out.println("you have to enter valid port number");
+//			errorTxt.setText("you have to enter valid port number!");
+//			port_id.setText("");
+			portNumber = "5555";
+		}// else {
 			ServerUI.runServer(portNumber);
 			try {
 				FXMLLoader loader = new FXMLLoader();
@@ -75,7 +76,7 @@ public class HomePageController {
 				System.out.println("Error in HomePageController: pressOpenBtn");
 				System.out.println(e.getMessage());
 			}
-		}
+	//	}
 	}
 
 	// Event for "Exit" button

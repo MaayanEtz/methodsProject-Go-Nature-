@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import GoNatureServer.GoNatureServer;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -153,6 +154,7 @@ public class ServerPortFrameController {
 			e1.printStackTrace();
 		}
 	}
+	
 
 
 	

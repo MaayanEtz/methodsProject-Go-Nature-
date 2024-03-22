@@ -8,8 +8,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
-
 import gui.ServerPortFrameController;
 import jdbc.MysqlConnection;
 import ocsf.server.*;
@@ -251,7 +249,6 @@ public class GoNatureServer extends AbstractServer {
 			return;
 
 		case "OrderCancel":
-			// "DELETE FROM orders WHERE orderId = 5;"
 			if (payload_type.equals("String")) {
 				boolean cancel_order_test_succeeded = false;
 				db_table = "orders";
@@ -260,16 +257,11 @@ public class GoNatureServer extends AbstractServer {
 					String payload = (String) arr_msg.get(2);
 					System.out.println("[OrderCancel | DEBUG]: extracted: " + payload);
 
-					// MySQL
-					prepared_statement = db_con.prepareStatement("DELETE FROM " + db_table + " WHERE orderId = ?");
-					prepared_statement.setInt(1, Integer.parseInt(payload));
-					int rowsAffected = prepared_statement.executeUpdate();
+					cancel_order_test_succeeded = cancelOrder(Integer.valueOf(payload));
 
-					// Cancellation result update check
-					if (rowsAffected != 0) {
-						cancel_order_test_succeeded = true;
-					}
-
+					// Response to client
+					send_response(client, new String("OrderCancel"), new String("Boolean"),
+							new Boolean(cancel_order_test_succeeded));
 				}
 				// Catch Problems
 				catch (ClassCastException e_clas) {
@@ -281,18 +273,13 @@ public class GoNatureServer extends AbstractServer {
 					System.out.println("[OrderCreate | ERROR]: MySQL query execution error");
 					e_sql.printStackTrace();
 					error = e_sql.getMessage();
+				} catch (IOException e_io) {
+					System.out.println("[OrderCreate_ep |ERROR ]: Failed OrderCreate response");
+					e_io.printStackTrace();
+					error = e_io.getMessage();
 				} catch (Exception e) {
 					e.printStackTrace();
 					error = e.getMessage();
-				}
-
-				// Response to client
-				try {
-					send_response(client, new String("OrderCancel"), new String("Boolean"),
-							new Boolean(cancel_order_test_succeeded));
-				} catch (IOException e) {
-					System.out.println("[OrderCreate_ep |ERROR ]: Failed OrderCreate response");
-					e.printStackTrace();
 				}
 
 			} else {
@@ -443,11 +430,11 @@ public class GoNatureServer extends AbstractServer {
 	private boolean checkOrderTime(ArrayList<String> arr) {
 		try {
 			System.out.println("Debug: " + arr);
-			int visitorNum = Integer.valueOf(arr.get(3));
+			int visitorNum = Integer.valueOf(arr.get(4));
 			// get parks time of visit, and capacity of park
 			PreparedStatement ps = db_con
 					.prepareStatement("SELECT visitTimeInMinutes, capacity, diff FROM parks WHERE parkName = ?");
-			ps.setString(1, arr.get(1));
+			ps.setString(1, arr.get(2));
 			ResultSet rs = ps.executeQuery();
 			if (!rs.next()) {
 				System.out.println("Debug: couldnt find park?");
@@ -461,9 +448,9 @@ public class GoNatureServer extends AbstractServer {
 			System.out.println("Debug: actual capacity is: " + actual);
 
 			// get amount of orders in timeframe
-			String startTime = arr.get(2);
+			String startTime = arr.get(3);
 			ps = db_con.prepareStatement(
-					"SELECT SUM(visitor_number) AS sum FROM orders WHERE time_of_visit BETWEEN ? AND ?");
+					"SELECT SUM(visitor_number) AS sum FROM orders WHERE status = 'Active' AND time_of_visit BETWEEN ? AND ?");
 			ps.setString(1, startTime);
 			DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			LocalDateTime endTime = LocalDateTime.parse(startTime, f);
@@ -516,6 +503,158 @@ public class GoNatureServer extends AbstractServer {
 				throw e;
 			}
 			return;
+		}
+	}
+
+	private ArrayList<ArrayList<String>> getWaitListedOrders(String orderTime, String parkName) {
+
+		ArrayList<ArrayList<String>> arr = new ArrayList<>();
+		// get capacity of park
+		int capacity = getParkCapacity(parkName);
+		int visitTime = getParkTime(parkName);
+		// get start and end times affected by orderTime cancellation
+		DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime order = LocalDateTime.parse(orderTime, f), start = order.minusMinutes(visitTime),
+				end = order.plusMinutes(visitTime);
+
+		try {
+			PreparedStatement ps = db_con.prepareStatement(
+					"SELECT orderId FROM orders WHERE status = 'WaitList' AND time_of_visit BETWEEN ? AND ?");
+			ps.setString(1, start.format(f));
+			ps.setString(2, end.format(f));
+			ResultSet rs = ps.executeQuery();
+			if (!rs.next()) {// no orders found
+				System.out.println("[getWaitListedOrders | INFO]: no waitlisted orders found to check");
+				return null;
+			}
+			do {// add all orders to array of orders
+				int id = rs.getInt("orderId");
+				arr.add(getOrderFromId(id));
+			} while (rs.next());
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return arr;// return array of orders
+
+	}
+
+	private ArrayList<String> getOrderFromId(int orderId) {
+		ArrayList<String> arr = new ArrayList<>();
+		try {
+			PreparedStatement ps = db_con.prepareStatement("SELECT * FROM orders WHERE orderId = ?");
+			ps.setInt(1, orderId);
+			ResultSet rs = ps.executeQuery();
+			if (!rs.next())
+				return null;
+			arr.add(String.valueOf(orderId));
+			arr.add(rs.getString("visitor_id"));
+			arr.add(rs.getString("park_name"));
+			arr.add(rs.getString("time_of_visit"));
+			arr.add(String.valueOf(rs.getInt("visitor_number")));
+			arr.add(rs.getString("visitor_email"));
+			arr.add(rs.getString("visitor_phone"));
+			arr.add(rs.getString("status"));
+		} catch (SQLException e) {
+			System.out.println("getOrderFromId: sql exception was thrown");
+			e.printStackTrace();
+		}
+		return arr;
+	}
+
+	private int getParkCapacity(String parkName) {
+
+		int capacity, diff;
+		PreparedStatement ps;
+		ResultSet rs;
+		try {
+			ps = db_con.prepareStatement("SELECT capacity, diff FROM parks WHERE parkName = ?");
+			ps.setString(1, parkName);
+			rs = ps.executeQuery();
+			if (!rs.next())
+				return -1;
+			capacity = rs.getInt("capacity");
+			diff = rs.getInt("diff");
+			return capacity - diff;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
+	}
+
+	private int getParkTime(String parkName) {
+		int time;
+		PreparedStatement ps;
+		ResultSet rs;
+		try {
+			ps = db_con.prepareStatement("SELECT visitTimeInMinutes FROM parks WHERE parkName = ?");
+			ps.setString(1, parkName);
+			rs = ps.executeQuery();
+			if (!rs.next())
+				return -1;
+			time = rs.getInt("visitTimeInMinutes");
+			return time;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
+	}
+
+	public boolean cancelOrder(int orderId) throws SQLException {
+		boolean result = false;
+		PreparedStatement ps = db_con
+				.prepareStatement("UPDATE `orders` SET `status` = 'Cancelled' WHERE `orderId` = ?");
+		ps.setInt(1, orderId);
+		int rowsAffected = ps.executeUpdate();
+
+		// Cancellation result update check
+		if (rowsAffected == 1) {
+			result = true;
+		}
+		advanceWaitList(orderId);
+		return result;
+	}
+
+	private void advanceWaitList(int orderId) {
+		ArrayList<String> order = getOrderFromId(orderId);
+		System.out.println(order);
+		String parkName = order.get(2);
+		String orderTime = order.get(3);
+		ArrayList<ArrayList<String>> affectedOrders = getWaitListedOrders(orderTime, parkName);
+		if (affectedOrders == null)
+			return;// no need to advance waitlist
+		for (ArrayList<String> current : affectedOrders) {
+			if (checkOrderTime(current)) {
+				openPopup(current);
+			}
+		}
+	}
+
+	private void openPopup(ArrayList<String> order) {
+		System.out.println(String.format("SIMULATION! SENDING EMAIL TO %s and SMS to %s, spot opened to approve the reservation", order.get(5), order.get(6)));
+		System.out.println("order notified id is: " + order.get(0));
+		approveOrder(order.get(0));
+		
+	}
+
+	private void approveOrder(String orderId) {
+		try {
+			PreparedStatement ps = db_con
+					.prepareStatement("UPDATE `orders` SET `status` = 'Active' WHERE (`orderId` = ?);");
+			ps.setString(1, orderId);
+			int rowsAffected = ps.executeUpdate();
+			if (rowsAffected != 1)
+			System.out.println("approveOrder didnt work??");
+			System.out.println("assuming user has chosen to approve his waitlisted order, his order is now active");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

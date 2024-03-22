@@ -109,7 +109,7 @@ public class CancelOrderFrameController {
     
 	//get data from all fields
 	private Order getOrder() {
-		Order order = new Order(null,null,null,null,null,null);
+		Order order = new Order(null,null,null,null,null,null,null);
 		try {	
 			order.setOrderNumber(this.txtOrderNum.getText());
 			order.setParkName(this.txtParkName.getText());

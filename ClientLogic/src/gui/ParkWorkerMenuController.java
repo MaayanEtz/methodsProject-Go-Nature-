@@ -7,13 +7,19 @@ import java.util.regex.Pattern;
 import client.ChatClient;
 import client.ClientUI;
 import entity.NextPage;
+import entity.PriceGenerator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.scene.control.TabPane;
 
 
 public class ParkWorkerMenuController {
@@ -22,67 +28,43 @@ public class ParkWorkerMenuController {
 		
 		private Boolean isGotInvoice = false;
 		
+	    @FXML
+	    private TabPane tabPane;
+		
 		//buttons
 	 	@FXML
-	    private Button btnEnterParkPlanned;
+	    private Button btnEnterParkPlanned, btnEnterParkUnplanned;
 	    @FXML
-	    private Button btnEnterParkUnplanned;
+	    private Button btnFind, btnExitResitration;
 	    @FXML
-	    private Button btnFind;
-	    @FXML
-	    private Button btnGetInvoicePlanned;
-	    @FXML
-	    private Button btnGetInvoiceUnplanned;
+	    private Button btnGetInvoicePlanned, btnGetInvoiceUnplanned;
 	    @FXML
 	    private Button btnLogOut;
-	    @FXML
-	    private Button btnExitResitration;
 
 	    @FXML
-	    private Label lblEnteredOrderNum;
-	    @FXML
-	    private Label lblResult;
-	    
+	    private Label lblEnteredOrderNum, lblResult;    
 
 	    @FXML
-	    private TextField txtEnteredOrderNum;
-	    @FXML
-	    private TextField txtEnteredVisitorsNum;
-	    @FXML
-	    private TextField txtExitRegNumber;
+	    private TextField txtEnteredOrderNum, txtEnteredVisitorsNum, txtExitRegNumber;
 	    
 	    @FXML
-	    private Text txtEmail;
+	    private Text txtEmail, txtNumberOfVisitors, txtOrderNum, txtParkName, txtPhoneNum, txtTimeOfVisit;
+    
 	    @FXML
-	    private Text txtNumberOfVisitors;
-	    @FXML
-	    private Text txtOrderNum;
-	    @FXML
-	    private Text txtParkName;
-	    @FXML
-	    private Text txtPhoneNum;
-	    @FXML
-	    private Text txtTimeOfVisit;
-	    @FXML
-	    private Text txtError;
-	    @FXML
-	    private Text txtErrorUnplanned;
-	    @FXML
-	    private Text txtErrorExitReg;
+	    private Text txtError, txtErrorUnplanned, txtErrorExitReg;
 	    @FXML
 	    private Text txtTitle;
 	    
 	    @FXML
-	    private CheckBox ckbGuidedGroup;
-	    @FXML
-	    private CheckBox ckbPrivateFamVisit;
+	    private CheckBox ckbGuidedGroup, ckbPrivateFamVisit;
+
 	    
 	    //load data
 	    public void loadData(String parkName) {
 	    	try {
 	    		//load title
 	    		this.parkName = parkName;
-	    		this.txtTitle.setText(new String(parkName + "worker"));
+	    		this.txtTitle.setText(new String(parkName + " worker"));
 	    		
 	            // Add change listeners to each checkbox
 	    		ckbGuidedGroup.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -93,6 +75,29 @@ public class ParkWorkerMenuController {
 	    		ckbPrivateFamVisit.selectedProperty().addListener((observable, oldValue, newValue) -> {
 	                if (newValue) {
 	                	ckbGuidedGroup.setSelected(false);
+	                }
+	            });
+	    		
+	            // Reset data in other tabs when a new tab is selected
+	            tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldTab, newTab) -> {
+	                if (oldTab != null) {
+	                    // Reset data in oldTab here
+	                	isGotInvoice = false;
+
+	                    // Set up a loop to clear the content of each text field
+	                    for (TextField textField : new TextField[]{txtEnteredOrderNum, txtEnteredVisitorsNum, txtExitRegNumber}) {
+	                        textField.clear(); // Clear the content of the text field
+	                    }
+	                    
+	                    // Set up a loop to clear the content of each Text object
+	                    for (Text text : new Text[]{txtEmail, txtNumberOfVisitors, txtOrderNum, txtParkName, txtPhoneNum, txtTimeOfVisit, txtError, txtErrorUnplanned, txtErrorExitReg}) {
+	                        text.setText(""); // Clear the content of the Text object
+	                    }
+	                    
+	                    // Set up a loop to clear the selection of each CheckBox
+	                    for (CheckBox checkBox : new CheckBox[]{ckbGuidedGroup, ckbPrivateFamVisit}) {
+	                        checkBox.setSelected(false); // Clear the selection of the CheckBox
+	                    }
 	                }
 	            });
 	    		
@@ -117,7 +122,13 @@ public class ParkWorkerMenuController {
 					arrmsg.add(new String("OrderedEnter"));
 					arrmsg.add(new String("String"));
 					arrmsg.add(orderNum);
-					ClientUI.chat.accept(arrmsg);
+					
+					/////////////OPEN//////////////
+					//ClientUI.chat.accept(arrmsg);
+					
+					///////////ONLY FOR CHEK/////////////////
+					ChatClient.result = true;
+					//ChatClient.result = false;
 					
 					if(ChatClient.result == true)
 						errorCase("The visitors succesfully entered the park","The visitors succesfully entered the park.");
@@ -147,8 +158,11 @@ public class ParkWorkerMenuController {
 				        Pattern pattern = Pattern.compile("\\d");
 				        Matcher matcher = pattern.matcher(visitorNum);
 				        if (!matcher.find())
-				            throw new IllegalArgumentException(); 
-			    		
+				            throw new IllegalArgumentException("Number of visitors should contain only numbers");
+				        
+				        if (Integer.parseInt(visitorNum) < 1)
+				        	throw new IllegalArgumentException("The number of visitors should be greater then 0");
+
 			    		ArrayList<String> arrEnterPark = new ArrayList<>();
 			    		arrEnterPark.add(this.parkName);
 			    		arrEnterPark.add(visitorNum);
@@ -157,7 +171,13 @@ public class ParkWorkerMenuController {
 						arrmsg.add(new String("UnplannedEnter"));
 						arrmsg.add(new String("ArrayList<String>"));
 						arrmsg.add(arrEnterPark);
-						ClientUI.chat.accept(arrmsg);
+						
+						/////////////OPEN////////////////////
+						//ClientUI.chat.accept(arrmsg);
+						
+						///////////ONLY FOR CHEK/////////////////
+						ChatClient.result = true;
+						//ChatClient.result = false;
 						
 						if(ChatClient.result == true)
 							errorCaseUnplanned("The unplanned visitors succesfully entered the park","The unplanned visitors succesfully entered the park.");
@@ -166,7 +186,7 @@ public class ParkWorkerMenuController {
 		    		}
 	    		}    		
 	    	}catch (IllegalArgumentException e) {
-	    		errorCaseUnplanned("String does not contain numbers.","Number of visitors should contain only numbers.");
+	    		errorCaseUnplanned(e.getMessage(),e.getMessage());
 	    	}catch (Exception e) {
 	    		System.out.println("Error in ParkWorkerMenuController: pressEnterParkUnplannedBtn");
 	    		System.out.println(e.getMessage());
@@ -200,6 +220,8 @@ public class ParkWorkerMenuController {
 					}else {
 						System.out.println("Order number found");
 						
+						this.txtError.setText("");
+						
 						//Set the order to the screen
 						this.txtOrderNum.setText(ChatClient.order.getOrderNumber());
 						this.txtParkName.setText(ChatClient.order.getParkName());
@@ -222,19 +244,64 @@ public class ParkWorkerMenuController {
 	    @FXML
 	    void pessGetInvoicePlanned(ActionEvent event) {
 	    	try {
-	    		//1. Check if the group is Guided
+	    		if(this.txtOrderNum.getText().equals(""))
+	    			throw new NullPointerException("You should find order first");
 	    		
-	    		//2. Check if payed in advance
+	    		Boolean isGuidedGroup = false, isPaidInAdvance = false;
+	    		Integer visitorNumInt = 0;
+	    		Double finalPrice = 0.0;
+	    		
+	    		//1. Check if the group is Guided
+	    		ArrayList<Object> arrmsg = new ArrayList<Object>();
+				arrmsg.add(new String("GroupGuideCheck"));
+				arrmsg.add(new String("String"));
+				arrmsg.add(ChatClient.order.getVisitorID());
+				ClientUI.chat.accept(arrmsg);
+				
+				if(ChatClient.result == true)
+					isGuidedGroup = true;
+				
+				//2. Check if payed in advance
+	    		arrmsg = new ArrayList<Object>();
+				arrmsg.add(new String("isPaidInAdvance"));
+				arrmsg.add(new String("String"));
+				arrmsg.add(ChatClient.order.getOrderNumber());
+				
+				///////////OPEN////////////////////
+				//ClientUI.chat.accept(arrmsg);
+				
+				///////////ONLY FOR CHEK/////////////////
+				ChatClient.result = true;
+				//ChatClient.result = false;
+				
+				if(ChatClient.result == true)
+					isPaidInAdvance = true;
 	    		
 	    		//3. Check the number of visitors
+				visitorNumInt = Integer.parseInt(ChatClient.order.getNumberOfVisitors());
 	    		
 	    		//4. Call PriceGenerator to get the final price
+				PriceGenerator priceGenerator = new PriceGenerator();
+				priceGenerator.setIsGuidedGroup(isGuidedGroup);
+				priceGenerator.setIsPaidInAdvance(isPaidInAdvance);
+				priceGenerator.setIsPlannedVisit(true);
+				priceGenerator.setVisitorsNumber(visitorNumInt);	
+				finalPrice = priceGenerator.generateFinalPrice();
 	    		
-	    		//5. Generate Invoice
+	    		//5. Generate Invoice and open Invoice in the SECOND window
+				FXMLLoader secondLoader = new FXMLLoader(getClass().getResource("/gui/Invoice.fxml"));
+				Pane secondRoot = secondLoader.load();
+				InvoiceController invoiceController = secondLoader.getController();
+				invoiceController.genarateInvoice(priceGenerator);
+		        Stage secondStage = new Stage();
+		        secondStage.setTitle("Invoice");
+		        Scene secondScene = new Scene(secondRoot);
+		        secondStage.setScene(secondScene);
+		        secondStage.show();
 	    		
-	    		//6. Open Invoice in the SECOND window
-	    		
-	    		
+	    		this.isGotInvoice = true;
+	    	}catch (NullPointerException e) {
+	    		errorCase("You have tried to get invoice before searching the order","You should find order first");
 	    	}catch (Exception e) {
 	    		System.out.println("Error in ParkWorkerMenuController: pessGetInvoicePlanned");
 	    		System.out.println(e.getMessage());
@@ -247,13 +314,10 @@ public class ParkWorkerMenuController {
 	    void pessGetInvoiceUnplanned(ActionEvent event) {
 	    	try {
 	    		Boolean isGuidedGroup = false;
-	    		this.isGotInvoice = true;
-	    		
-	    		//1. Check checkbox if guided group or private visit
-	    		if(this.ckbGuidedGroup.isSelected())
-	    			isGuidedGroup = true;
-	    		
-	    		//2. Check the number of visitors
+	    		Integer visitorNumInt = 0;
+	    		Double finalPrice = 0.0;
+
+	    		//1. Check the number of visitors
 	    		String visitorNum = this.txtEnteredVisitorsNum.getText();
 	    		if(visitorNum.trim().isEmpty()) {
 	    			errorCaseUnplanned("String for number of visitors is empty","You must enter a number of visitors.");
@@ -262,18 +326,45 @@ public class ParkWorkerMenuController {
 			        Pattern pattern = Pattern.compile("\\d");
 			        Matcher matcher = pattern.matcher(visitorNum);
 			        if (!matcher.find())
-			            throw new IllegalArgumentException(); 
+			            throw new IllegalArgumentException("Number of visitors should contain only numbers");
+			        
+			        if (Integer.parseInt(visitorNum) < 1)
+			        	throw new IllegalArgumentException("Number of visitors should be greater then 0");
+
+		    		//2. Check checkbox if guided group or private visit
+		    		if(this.ckbGuidedGroup.isSelected()) {
+		    			isGuidedGroup = true;
+		    			visitorNumInt = Integer.parseInt(visitorNum) + 1;
+		    			}
 		    		
+		    		if(this.ckbPrivateFamVisit.isSelected()) {
+		    			isGuidedGroup = false;
+		    			visitorNumInt = Integer.parseInt(visitorNum);
+		    		}
+
 		    		//3. Call PriceGenerator to get the final price
-			        
+					PriceGenerator priceGenerator = new PriceGenerator();
+					priceGenerator.setIsGuidedGroup(isGuidedGroup);
+					priceGenerator.setIsPaidInAdvance(false);
+					priceGenerator.setIsPlannedVisit(false);
+					priceGenerator.setVisitorsNumber(visitorNumInt);
+					finalPrice = priceGenerator.generateFinalPrice();
 		    		
-		    		//4. Generate Invoice
-		    		
-		    		//5. Open Invoice in the SECOND window
+		    		//4. Generate Invoice and open Invoice in the SECOND window
+					FXMLLoader secondLoader = new FXMLLoader(getClass().getResource("/gui/Invoice.fxml"));
+					Pane secondRoot = secondLoader.load();
+					InvoiceController invoiceController = secondLoader.getController();
+					invoiceController.genarateInvoice(priceGenerator);
+			        Stage secondStage = new Stage();
+			        secondStage.setTitle("Invoice");
+			        Scene secondScene = new Scene(secondRoot);
+			        secondStage.setScene(secondScene);
+			        secondStage.show();
 			        
-			        
-			        
+		    		this.isGotInvoice = true;
 	    		}
+	    	}catch (IllegalArgumentException e) {
+	    		errorCaseUnplanned(e.getMessage(), e.getMessage());
 	    	}catch (Exception e) {
 	    		System.out.println("Error in ParkWorkerMenuController: pessGetInvoiceUnplanned");
 	    		System.out.println(e.getMessage());
@@ -293,21 +384,31 @@ public class ParkWorkerMenuController {
 			        Pattern pattern = Pattern.compile("\\d");
 			        Matcher matcher = pattern.matcher(exitVisitorsNum);
 			        if (!matcher.find())
-			            throw new IllegalArgumentException(); 
+			            throw new IllegalArgumentException();
 			        
-					//send the number of visitors for performing an exit registration
-					ArrayList<Object> arrmsg = new ArrayList<Object>();
-					arrmsg.add(new String("ExitRegistration"));
-					arrmsg.add(new String("ArrayList<String>"));
-					arrmsg.add(exitVisitorsNum);
-					ClientUI.chat.accept(arrmsg);
-					
-					if (ChatClient.result == false) {
-						//exit registration not succeeded
-						errorCaseExit("Exit registration failed","Exit registration wasn't performed.");
-					}else {
-						errorCaseExit("Exit registration succeeded","Exit registration performed successfully.");
-					}
+			        if (Integer.parseInt(exitVisitorsNum) < 1)
+			        	errorCaseExit("The number of visitors should be greater then 0","The number of visitors should be greater then 0");
+			        else {
+						//send the number of visitors for performing an exit registration
+						ArrayList<Object> arrmsg = new ArrayList<Object>();
+						arrmsg.add(new String("ExitRegistration"));
+						arrmsg.add(new String("ArrayList<String>"));
+						arrmsg.add(exitVisitorsNum);
+						
+						//////////////OPEN///////////////
+						//ClientUI.chat.accept(arrmsg);
+						
+						///////////ONLY FOR CHEK/////////////////
+						ChatClient.result = true;
+						//ChatClient.result = false;
+						
+						if (ChatClient.result == false) {
+							//exit registration not succeeded
+							errorCaseExit("Exit registration failed","Exit registration wasn't performed.");
+						}else {
+							errorCaseExit("Exit registration succeeded","Exit registration performed successfully.");
+						}		        	
+			        }
 	    		}
 	    	}catch (IllegalArgumentException e) {
 	    		errorCaseExit("String does not contain numbers.","The number of visitors should contain only numbers.");
@@ -348,7 +449,7 @@ public class ParkWorkerMenuController {
 			System.out.println(strPrint);
 			this.txtErrorExitReg.setText(strSet);
 	    }
-
+	    
 
 
 }

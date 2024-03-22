@@ -52,7 +52,14 @@ public class LoginController {
 				arrmsg.add(new String("UserLogin"));
 				arrmsg.add(new String("ArrayList<String>"));
 				arrmsg.add(loginDetails);
-				ClientUI.chat.accept(arrmsg);
+				
+				/////////////OPEN////////////
+				//ClientUI.chat.accept(arrmsg);
+				
+				////////ONLY FOR CHECK/////////////////////
+				ChatClient.dataFromServer = new ArrayList<String>();
+				ChatClient.dataFromServer.add(0, "ParkWorker");
+				ChatClient.dataFromServer.add(1, "Hyde park");
 
 				switch (ChatClient.dataFromServer.get(0)) {
 					case "DepartmentWorker": {
@@ -66,6 +73,7 @@ public class LoginController {
 					case "ParkWorker": {
 						// if user name and password are correct and the type of the employee is
 						// ParkWorker
+						//ChatClient.dataFromServer.get(1) - park name
 						NextPage page = new NextPage(event, "/gui/ParkWorkerMenu.fxml", "Park worker page",
 								"ParkWorkerMenuController", "", ChatClient.dataFromServer.get(1));
 						page.Next();

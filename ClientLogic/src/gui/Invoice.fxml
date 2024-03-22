@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -10,7 +9,6 @@
 
 <AnchorPane prefHeight="554.0" prefWidth="406.0" style="-fx-background-color: #F4F3EE;" stylesheets="@design.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.InvoiceController">
    <children>
-      <Button fx:id="btnClose" layoutX="314.0" layoutY="507.0" mnemonicParsing="false" onAction="#pressCloseBtn" text="Close" />
       <Label fx:id="lblResult" alignment="CENTER" contentDisplay="CENTER" layoutX="18.0" layoutY="330.0" prefHeight="27.0" prefWidth="304.0" text="    " textAlignment="CENTER">
          <font>
             <Font size="18.0" />
@@ -26,10 +24,6 @@
             <Font size="25.0" />
          </font>
       </Text>
-      <Text fill="#1e5d38" layoutX="58.0" layoutY="121.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Billing to:">
-         <font>
-            <Font size="14.0" />
-         </font></Text>
       <Text fill="#1e5d38" layoutX="269.0" layoutY="120.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Invoice date:">
          <font>
             <Font size="14.0" />
@@ -79,139 +73,134 @@
             <Font size="18.0" />
          </font>
       </Text>
-      <Text fx:id="txtTotalPrice" fill="#1e5d38" layoutX="294.0" layoutY="468.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="!!!!" textAlignment="CENTER" wrappingWidth="85.4755859375">
+      <Text fx:id="txtTotalPrice" fill="#1e5d38" layoutX="294.0" layoutY="468.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" textAlignment="CENTER" wrappingWidth="85.4755859375">
          <font>
             <Font size="18.0" />
          </font>
       </Text>
-      <Text fx:id="txtBillingTo" layoutX="17.0" layoutY="146.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!!" textAlignment="CENTER" wrappingWidth="141.6767578125">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <Text fx:id="txtInvoceDate" layoutX="235.0" layoutY="145.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!!" textAlignment="CENTER" wrappingWidth="141.6767578125">
+      <Text fx:id="txtInvoceDate" layoutX="235.0" layoutY="145.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="141.6767578125">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
       <Text fill="#1e5d38" layoutX="57.0" layoutY="504.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Thank you!" />
       <Label id="lblName" layoutX="27.0" layoutY="514.0" prefHeight="17.0" prefWidth="121.0" text="GoNature@parks.co.il" textFill="#1e5d38" />
-      <Text fx:id="txtRow1" layoutX="10.0" layoutY="233.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!!" wrappingWidth="153.9453125">
+      <Text fx:id="txtRow1" layoutX="10.0" layoutY="233.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="153.9453125">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtRow2" layoutX="10.0" layoutY="272.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!!" wrappingWidth="153.9453125">
+      <Text fx:id="txtRow2" layoutX="10.0" layoutY="272.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="153.9453125">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtRow3" layoutX="10.0" layoutY="311.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!!" wrappingWidth="153.9453125">
+      <Text fx:id="txtRow3" layoutX="10.0" layoutY="311.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="153.9453125">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtRow4" layoutX="10.0" layoutY="351.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!!" wrappingWidth="153.9453125">
+      <Text fx:id="txtRow4" layoutX="10.0" layoutY="345.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="153.9453125">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtRow5" layoutX="10.0" layoutY="390.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!!" wrappingWidth="153.9453125">
+      <Text fx:id="txtRow5" layoutX="10.0" layoutY="390.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="153.9453125">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtRow6" layoutX="10.0" layoutY="428.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!!" wrappingWidth="153.9453125">
+      <Text fx:id="txtRow6" layoutX="10.0" layoutY="428.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="153.9453125">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtPriceRow1" layoutX="178.0" layoutY="233.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!" textAlignment="CENTER" wrappingWidth="53.455078125">
+      <Text fx:id="txtPriceRow1" layoutX="178.0" layoutY="233.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="53.455078125">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtPriceRow2" layoutX="178.0" layoutY="272.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!" textAlignment="CENTER" wrappingWidth="53.455078125">
+      <Text fx:id="txtPriceRow2" layoutX="178.0" layoutY="272.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="53.455078125">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtPriceRow3" layoutX="178.0" layoutY="311.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!" textAlignment="CENTER" wrappingWidth="53.455078125">
+      <Text fx:id="txtPriceRow3" layoutX="178.0" layoutY="311.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="53.455078125">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtPriceRow4" layoutX="178.0" layoutY="349.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!" textAlignment="CENTER" wrappingWidth="53.455078125">
+      <Text fx:id="txtPriceRow4" layoutX="178.0" layoutY="349.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="53.455078125">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtPriceRow5" layoutX="178.0" layoutY="390.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!" textAlignment="CENTER" wrappingWidth="53.455078125">
+      <Text fx:id="txtPriceRow5" layoutX="178.0" layoutY="390.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="53.455078125">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtPriceRow6" layoutX="178.0" layoutY="427.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!" textAlignment="CENTER" wrappingWidth="53.455078125">
+      <Text fx:id="txtPriceRow6" layoutX="178.0" layoutY="427.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="53.455078125">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtQuantityRow1" layoutX="250.0" layoutY="233.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!" textAlignment="CENTER" wrappingWidth="58.0">
+      <Text fx:id="txtQuantityRow1" layoutX="250.0" layoutY="233.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="58.0">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtQuantityRow2" layoutX="250.0" layoutY="272.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!" textAlignment="CENTER" wrappingWidth="58.0">
+      <Text fx:id="txtQuantityRow2" layoutX="250.0" layoutY="272.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="58.0">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtQuantityRow3" layoutX="250.0" layoutY="311.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!" textAlignment="CENTER" wrappingWidth="58.0">
+      <Text fx:id="txtQuantityRow3" layoutX="250.0" layoutY="311.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="58.0">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtQuantityRow4" layoutX="250.0" layoutY="351.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!" textAlignment="CENTER" wrappingWidth="58.0">
+      <Text fx:id="txtQuantityRow4" layoutX="250.0" layoutY="351.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="58.0">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtQuantityRow5" layoutX="250.0" layoutY="390.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!" textAlignment="CENTER" wrappingWidth="58.0">
+      <Text fx:id="txtQuantityRow5" layoutX="250.0" layoutY="390.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="58.0">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtQuantityRow6" layoutX="250.0" layoutY="428.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!" textAlignment="CENTER" wrappingWidth="58.0">
+      <Text fx:id="txtQuantityRow6" layoutX="250.0" layoutY="428.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="58.0">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtAmountRow1" layoutX="330.0" layoutY="233.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!" textAlignment="CENTER" wrappingWidth="50.0">
+      <Text fx:id="txtAmountRow1" layoutX="330.0" layoutY="233.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="50.0">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtAmountRow2" layoutX="330.0" layoutY="272.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!" textAlignment="CENTER" wrappingWidth="50.0">
+      <Text fx:id="txtAmountRow2" layoutX="330.0" layoutY="272.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="50.0">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtAmountRow3" layoutX="330.0" layoutY="311.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!" textAlignment="CENTER" wrappingWidth="50.0">
+      <Text fx:id="txtAmountRow3" layoutX="330.0" layoutY="311.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="50.0">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtAmountRow4" layoutX="330.0" layoutY="351.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!" textAlignment="CENTER" wrappingWidth="50.0">
+      <Text fx:id="txtAmountRow4" layoutX="330.0" layoutY="351.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="50.0">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtAmountRow5" layoutX="330.0" layoutY="390.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!" textAlignment="CENTER" wrappingWidth="50.0">
+      <Text fx:id="txtAmountRow5" layoutX="330.0" layoutY="390.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="50.0">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtAmountRow6" layoutX="330.0" layoutY="427.0" strokeType="OUTSIDE" strokeWidth="0.0" text="!!!" textAlignment="CENTER" wrappingWidth="50.0">
+      <Text fx:id="txtAmountRow6" layoutX="330.0" layoutY="427.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="50.0">
          <font>
             <Font size="14.0" />
          </font>

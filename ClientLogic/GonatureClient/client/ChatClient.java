@@ -104,6 +104,7 @@ public class ChatClient extends AbstractClient {
 							System.out.println("DB returned the order");
 							result = true;
 							pay_load_from_srv_arr_lst = (ArrayList<String>) arr.get(2);
+							System.out.println(pay_load_from_srv_arr_lst.toString());
 							order = new Order(pay_load_from_srv_arr_lst);
 						}
 						break;}
@@ -170,6 +171,7 @@ public class ChatClient extends AbstractClient {
 						pay_load_from_srv_bln = (Boolean) arr.get(2);
 						caseDecision(pay_load_from_srv_bln, "The exit registration performed", "The exit registration is not performed");
 						break;}
+					
 
 				}
 				

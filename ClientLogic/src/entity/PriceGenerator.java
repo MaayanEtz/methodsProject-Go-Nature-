@@ -7,21 +7,21 @@ import client.ClientUI;
 
 public class PriceGenerator {
 	
-	private Integer finalPrice;
+	private Double finalPrice;
 	private Integer fullPrice;
 	private Integer discountPrivateFamilyPlanned;
 	private Integer discountPrivateFamilyUnplanned;
 	private Integer discountGroupPlanned;
 	private Integer discountGroupUnplanned;
 	private Integer discountPaymentInAdvance;
-	
+
 	private Boolean isGuidedGroup;
 	private Integer visitorsNumber;
-	private Boolean isPayedInAdvance;
+	private Boolean isPaidInAdvance;
 	private Boolean isPlannedVisit;
 	
 	//getters
-	public Integer getFinalPrice() {
+	public Double getFinalPrice() {
 		return finalPrice;
 	}
 	public Integer getFullPrice() {
@@ -42,6 +42,18 @@ public class PriceGenerator {
 	public Integer getDiscountPaymentInAdvance() {
 		return discountPaymentInAdvance;
 	}
+	public Boolean getIsGuidedGroup() {
+		return isGuidedGroup;
+	}
+	public Integer getVisitorsNumber() {
+		return visitorsNumber;
+	}
+	public Boolean getIsPaidInAdvance() {
+		return isPaidInAdvance;
+	}
+	public Boolean getIsPlannedVisit() {
+		return isPlannedVisit;
+	}
 	
 	
 	//setters
@@ -51,15 +63,15 @@ public class PriceGenerator {
 	public void setVisitorsNumber(Integer visitorsNumber) {
 		this.visitorsNumber = visitorsNumber;
 	}
-	public void setIsPayedInAdvance(Boolean isPayedInAdvance) {
-		this.isPayedInAdvance = isPayedInAdvance;
+	public void setIsPaidInAdvance(Boolean isPaidInAdvance) {
+		this.isPaidInAdvance = isPaidInAdvance;
 	}
 	public void setIsPlannedVisit(Boolean isPlannedVisit) {
 		this.isPlannedVisit = isPlannedVisit;
 	}
 	
 	//public method for generating the final price
-	public Integer generateFinalPrice() {
+	public Double generateFinalPrice() {
 		try {
 			//to set the prices
 			setPrices();
@@ -68,18 +80,30 @@ public class PriceGenerator {
 				//planned visit
 				if(isGuidedGroup) {
 					//planned guided group
+					if(isPaidInAdvance) {
+						//planned guided group paid in advance
+						finalPrice = (fullPrice*(1-(((double)discountGroupPlanned+(double)discountPaymentInAdvance)/100)))*(visitorsNumber-1);
+						return finalPrice;
+					}else {
+						//planned guided group not paid in advance
+						finalPrice = (fullPrice*(1-((double)discountGroupPlanned/100)))*(visitorsNumber-1);
+						return finalPrice;
+					}
 				}else {
 					//planned private or family visit
-					finalPrice = fullPrice*(1-(discountPrivateFamilyPlanned/100));
+					finalPrice = (fullPrice*(1-((double)discountPrivateFamilyPlanned/100)))*visitorsNumber;
+					return finalPrice;
 				}
 			}else {
 				//unplanned visit
 				if(isGuidedGroup) {
 					//unplanned guided group
-					
+					finalPrice = (fullPrice*(1-((double)discountGroupUnplanned/100)))*visitorsNumber;
+					return finalPrice;
 				}else {
 					//unplanned private or family visit
-					finalPrice = visitorsNumber * fullPrice;
+					finalPrice = (fullPrice*(1-((double)discountPrivateFamilyUnplanned/100)))*visitorsNumber;
+					return finalPrice;
 				}
 			}
 		} catch (Exception e) {
@@ -97,7 +121,17 @@ public class PriceGenerator {
 			arrmsg.add(new String("GetPrices"));
 			arrmsg.add(new String("GetPrices"));
 			arrmsg.add(new String("GetPrices"));
-			ClientUI.chat.accept(arrmsg);	
+			
+			///////////ONLY FOR CHECK////////////////////
+			fullPrice = 40;
+			discountPrivateFamilyPlanned = 15;
+			discountPrivateFamilyUnplanned = 0;
+			discountGroupPlanned = 25;
+			discountGroupUnplanned = 10;
+			discountPaymentInAdvance = 12;
+			
+			//////////////////OPEN///////////////////////
+			/*ClientUI.chat.accept(arrmsg);	
 			
 			//2. set the prices
 			if(ChatClient.result == true) {
@@ -106,17 +140,16 @@ public class PriceGenerator {
 				discountPrivateFamilyPlanned = Integer.parseInt(ChatClient.dataFromServer.get(1));
 				discountPrivateFamilyUnplanned = Integer.parseInt(ChatClient.dataFromServer.get(2));
 				discountGroupPlanned = Integer.parseInt(ChatClient.dataFromServer.get(3));
-				discountPrivateFamilyUnplanned = Integer.parseInt(ChatClient.dataFromServer.get(4));
+				discountGroupUnplanned = Integer.parseInt(ChatClient.dataFromServer.get(4));
 				discountPaymentInAdvance = Integer.parseInt(ChatClient.dataFromServer.get(5));
 			}else {
 				System.out.println("No prices returned from DB");
-			}
+			}*/
 		} catch (Exception e) {
 			System.out.println("Error in PriceGenerator: setPrices");
 			System.out.println(e.getMessage());
 		}
 	}//END OF setPrices
-	
 	
 
 }

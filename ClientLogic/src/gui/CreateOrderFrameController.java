@@ -46,6 +46,8 @@ public class CreateOrderFrameController {
     
     @FXML
     private CheckBox guidedChkb;
+    @FXML
+    private CheckBox ckbPayInAdvance;
 
     @FXML
     private TextField txtEmail;
@@ -140,6 +142,18 @@ public class CreateOrderFrameController {
     @FXML
     void pressCreateBtn(ActionEvent event) {
     	try {
+			String selectedTimeOption, selectedDate;
+			String visitorsNum, phoneNum, paymentInAdvance;
+			ArrayList<String> orderArr;
+			Integer visitorsNumInt = 0;
+			
+			//Check if want to pay in advance
+			if(this.ckbPayInAdvance.isSelected())
+				paymentInAdvance = new String("true");
+			else
+				paymentInAdvance = new String("false");
+			
+			
 			//1. If guided group - check the number of visitors. Should be less then 15
 			if (this.guidedChkb.isSelected()) {
 				//the guided group
@@ -147,12 +161,11 @@ public class CreateOrderFrameController {
 					this.lblResult.setText("An organized guided group is limited to 15 participants.");
 					return;
 				}
+				//if the group is guided visitors number = visitors number + 1 guide
+				visitorsNumInt++;
 			}
 				
 			//2. Get data
-			String selectedTimeOption, selectedDate;
-			String visitorsNum, phoneNum;
-			ArrayList<String> orderArr;
 			try {
 				selectedTimeOption = this.selectTimeCmb.getValue();
 				selectedDate = SelectDayDp.getValue().toString();
@@ -173,13 +186,17 @@ public class CreateOrderFrameController {
 				if(Integer.valueOf(visitorsNum) < 1)
 					throw new Exception("The number of visitors should be greater then 0.");
 				
+				//if the group is guided visitors number = visitors number + 1 guide
+				visitorsNumInt = visitorsNumInt + Integer.valueOf(visitorsNum);
+				
 				orderArr = new ArrayList<>();
 				orderArr.add(ChatClient.visitorID);
 				orderArr.add(this.selectParkCmb.getValue());
 				orderArr.add(new String(selectedDate + " " + selectedTimeOption + ":00"));	
-				orderArr.add(visitorsNum);
+				orderArr.add(String.valueOf(visitorsNumInt));
 				orderArr.add(this.txtEmail.getText());
 				orderArr.add(phoneNum);
+				orderArr.add(paymentInAdvance);	
 			} catch (NullPointerException e) {
 				this.lblResult.setText("You must feel all the fields.");
 				System.out.println("You must feel all the fields.");

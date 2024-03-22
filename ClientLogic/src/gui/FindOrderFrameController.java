@@ -80,33 +80,42 @@ public class FindOrderFrameController {
 			
 			// OREN TEST is logged in
 			// Oren Testing Connect
+//			ArrayList<Object> arrmsg;
+//			if (globalOren == 0) {
+//				String username =  orderNumber.split(",")[0];
+//				String password =  orderNumber.split(",")[1];
+//				arrmsg = new ArrayList<>();
+//				arrmsg.add(new String("UserLogin"));
+//				arrmsg.add(new String("ArrayList<String>"));
+//				arrmsg.add(new ArrayList<String>(Arrays.asList(username,password)));
+//				globalOren +=1;
+//			}else {
+//				if (globalOren == 1) {
+//					String username =  orderNumber.split(",")[0];
+//					arrmsg = new ArrayList<>();
+//					arrmsg.add(new String("IsLoggedIn"));
+//					arrmsg.add(new String("String"));
+//					arrmsg.add(username);
+//					globalOren+=1;
+//				}else {
+//					String username =  orderNumber.split(",")[0];
+//					arrmsg = new ArrayList<>();
+//					arrmsg.add(new String("UserLogOut"));
+//					arrmsg.add(new String("String"));
+//					arrmsg.add(username);
+//				}
+//			
+//			}
+			
+			
+			// OREN TEST EXIT REGISTRATION
 			ArrayList<Object> arrmsg;
-			if (globalOren == 0) {
-				String username =  orderNumber.split(",")[0];
-				String password =  orderNumber.split(",")[1];
-				arrmsg = new ArrayList<>();
-				arrmsg.add(new String("UserLogin"));
-				arrmsg.add(new String("ArrayList<String>"));
-				arrmsg.add(new ArrayList<String>(Arrays.asList(username,password)));
-				globalOren +=1;
-			}else {
-				if (globalOren == 1) {
-					String username =  orderNumber.split(",")[0];
-					arrmsg = new ArrayList<>();
-					arrmsg.add(new String("IsLoggedIn"));
-					arrmsg.add(new String("String"));
-					arrmsg.add(username);
-					globalOren+=1;
-				}else {
-					String username =  orderNumber.split(",")[0];
-					arrmsg = new ArrayList<>();
-					arrmsg.add(new String("UserLogOut"));
-					arrmsg.add(new String("String"));
-					arrmsg.add(username);
-				}
-			
-			}
-			
+			String parkName =  orderNumber.split(",")[0];
+			String visitor_number =  orderNumber.split(",")[1];
+			arrmsg = new ArrayList<>();
+			arrmsg.add(new String("ExitRegistration"));
+			arrmsg.add(new String("ArrayList<String>"));
+			arrmsg.add(new ArrayList<String>(Arrays.asList(parkName,visitor_number)));
 			
 			// OREN TESTING GET
 //			ArrayList<Object> arrmsg = new ArrayList<>();

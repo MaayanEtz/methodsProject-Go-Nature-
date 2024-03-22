@@ -29,6 +29,7 @@ public class GoNatureServer extends AbstractServer {
 	public static ServerPortFrameController controller;
 
 	private Map<String, ConnectionToClient> logged_in_clients = new HashMap<>();
+	private Map<String, Double> discounts = new HashMap<>();
 
 	/// time outs ///
 	int db_conn_validation_timeout_milisecs = 10000;
@@ -119,7 +120,8 @@ public class GoNatureServer extends AbstractServer {
 			// USER LOGIN
 		case "UserLogin":
 			System.out.println("[UserLogin|INFO]: UserLogin enpoint trigered");
-			String user_type = "null";
+			String user_type_from_db = "null";
+			String park_name_from_db = "null";
 			if (payload_type.equals("ArrayList<String>")) {
 				boolean user_test_succeeded = false;
 				db_table = "users";
@@ -137,7 +139,7 @@ public class GoNatureServer extends AbstractServer {
 
 					// prepare MySQL query prepare
 					prepared_statement = db_con
-							.prepareStatement("SELECT type FROM " + db_table + " WHERE username=? AND password=?;");
+							.prepareStatement("SELECT type,parkName FROM " + db_table + " WHERE username=? AND password=?;");
 					prepared_statement.setString(1, username_from_client);
 					prepared_statement.setString(2, password_from_client);
 					result_set = prepared_statement.executeQuery();
@@ -149,9 +151,10 @@ public class GoNatureServer extends AbstractServer {
 						user_test_succeeded = false;
 
 					} else {
-						user_type = result_set.getString("type");
+						user_type_from_db = result_set.getString("type");
+						park_name_from_db = result_set.getString("parkName");
 						System.out.println("[loginUser|INFO]:ResultSet is not empty " + username_from_client
-								+ " was found returning to client: " + user_type);
+								+ " was found returning to client: " + user_type_from_db + " and park name: " + park_name_from_db);
 
 						/// LOGIN and already logged in test
 						if (logged_in_clients.get(username_from_client) == null) {
@@ -183,7 +186,7 @@ public class GoNatureServer extends AbstractServer {
 
 				// Response to client
 				try {
-					send_response(client, new String("UserLogin"), new String("String"), user_type);
+					send_response(client, new String("UserLogin"), new String("ArrayList<String>"), new ArrayList<String>(Arrays.asList(user_type_from_db,park_name_from_db)));
 				} catch (IOException e) {
 					System.out.println("[UserLogin_ep |ERROR ]: Failed UserLogin");
 					e.printStackTrace();
@@ -856,6 +859,64 @@ public class GoNatureServer extends AbstractServer {
 				}
 			}
 			return;
+			
+		case "ExitRegistration": // TODO - ORENB:make sure exiting wont result in negative number later
+			System.out.println("[ExitRegistration|INFO]: ExitRegistration enpoint trigered");
+			if (payload_type.equals("ArrayList<String>")) {
+				boolean exit_registration_test_succeeded = false;
+				db_table = "parks";
+				try {
+					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
+					String park_name_extracted = payload.get(0);
+					String exiting_visitors_extracted = payload.get(1);
+
+					// prepare MySQL query - update parks currentVisitors
+					PreparedStatement preparedStatement = db_con.prepareStatement(
+							"UPDATE " + db_table + " SET currentVisitors = currentVisitors - ? WHERE parkName=?;");
+					preparedStatement.setInt(1, Integer.parseInt(exiting_visitors_extracted));
+					preparedStatement.setString(2, park_name_extracted);
+					int rowsAffected = preparedStatement.executeUpdate();
+					if (rowsAffected > 0) {
+						System.out.println("[ExitRegistration|INFO]: updated parks, rows effected: " + rowsAffected);
+						exit_registration_test_succeeded = true;
+
+					} else {
+						System.out.println(
+								"[ExitRegistration|ERROR]:failed to update parks, rows effected: " + rowsAffected);
+					}
+
+					// Catch problematic Payload
+				} catch (ClassCastException e_clas) {
+					System.out.println(
+							"[ExitRegistration | ERROR]: Client sent payload for ExitRegistration ep which is not an ArrayList<String>");
+					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+
+				// Response to client
+				try {
+					send_response(client, new String("ExitRegistration"), new String("Boolean"),
+							exit_registration_test_succeeded);
+				} catch (IOException e) {
+					System.out.println("[ExitRegistration |ERROR ]: Failed sending message to client");
+					e.printStackTrace();
+				}
+
+			} else {
+				// Client asked GroupGuideCheck end-point but sent bad payload-type
+				try {
+					send_response(client, new String("ExitRegistration"), new String("ErrorString"),
+							new String("Client asked ExitRegistration end point but payload-type was not ArrayList<String>!"));
+				} catch (IOException e) {
+					System.out.println("[ExitRegistration_ep |ERROR ]: Failed sending ErrorString to client");
+					e.printStackTrace();
+				}
+			}
+			
+			return;
 
 		// ---------------------- DEFUALT CASE ---------------------------
 		default:
@@ -936,6 +997,16 @@ public class GoNatureServer extends AbstractServer {
 		} else {
 			System.out.println("[SERVER]: failed to connect DB");
 		}
+		
+		// Initiate discounts
+		discounts.put(new String("full_price"), new Double(50.0));
+		discounts.put(new String("discount_private_family_planned"), new Double(15.0));
+		discounts.put(new String("discount_private_family_unplanned"), new Double(0));
+		discounts.put(new String("discount_group_planned"), new Double(25.0));
+		discounts.put(new String("discount_group_unplanned"), new Double(10.0));
+		discounts.put(new String("discount_payment_in_advance"), new Double(12.0));
+		
+		
 		/////////////////////////////////////////////////////////////////
 	}
 

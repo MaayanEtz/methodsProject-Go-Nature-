@@ -140,8 +140,8 @@ public class GoNatureServer extends AbstractServer {
 							"[UserLogin|DEBUG]: extracted password: " + password_from_client + " from clients payload");
 
 					// prepare MySQL query prepare
-					prepared_statement = db_con
-							.prepareStatement("SELECT type,parkName FROM " + db_table + " WHERE username=? AND password=?;");
+					prepared_statement = db_con.prepareStatement(
+							"SELECT type,parkName FROM " + db_table + " WHERE username=? AND password=?;");
 					prepared_statement.setString(1, username_from_client);
 					prepared_statement.setString(2, password_from_client);
 					result_set = prepared_statement.executeQuery();
@@ -156,7 +156,8 @@ public class GoNatureServer extends AbstractServer {
 						user_type_from_db = result_set.getString("type");
 						park_name_from_db = result_set.getString("parkName");
 						System.out.println("[loginUser|INFO]:ResultSet is not empty " + username_from_client
-								+ " was found returning to client: " + user_type_from_db + " and park name: " + park_name_from_db);
+								+ " was found returning to client: " + user_type_from_db + " and park name: "
+								+ park_name_from_db);
 
 						/// LOGIN and already logged in test
 						if (logged_in_clients.get(username_from_client) == null) {
@@ -188,7 +189,8 @@ public class GoNatureServer extends AbstractServer {
 
 				// Response to client
 				try {
-					send_response(client, new String("UserLogin"), new String("ArrayList<String>"), new ArrayList<String>(Arrays.asList(user_type_from_db,park_name_from_db)));
+					send_response(client, new String("UserLogin"), new String("ArrayList<String>"),
+							new ArrayList<String>(Arrays.asList(user_type_from_db, park_name_from_db)));
 				} catch (IOException e) {
 					System.out.println("[UserLogin_ep |ERROR ]: Failed UserLogin");
 					e.printStackTrace();
@@ -276,15 +278,14 @@ public class GoNatureServer extends AbstractServer {
 
 				try {
 					String payload = (String) arr_msg.get(2); // payload is the username
-					
+
 					// Test if logged in
 					boolean client_send_logged_off_user = false;
 					if (logged_in_clients.get(payload) == null) {
 						System.out.println("[UserLogOut|ERROR]:" + payload + " is not even logged in....");
 						client_send_logged_off_user = true;
 					}
-					
-					
+
 					for (String username : logged_in_clients.keySet()) {
 						if (username.equals(payload)) {
 							is_logged_in = true;
@@ -339,6 +340,7 @@ public class GoNatureServer extends AbstractServer {
 		// ORDER Create
 		case "OrderCreate":
 			int orderId = -1;
+			String status = "Active";
 			if (payload_type.equals("ArrayList<String>")) {
 				db_table = "orders";
 				try {
@@ -352,36 +354,69 @@ public class GoNatureServer extends AbstractServer {
 					String visitor_phone = payload.get(5);
 					System.out.println("[OrderCreate | DEBUG]: extracted: " + payload);
 
-					//
-					if (checkOrderTime(payload)) {
-						// prepare MySQL query prepare
-						prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table
-								+ " (`visitor_id`, `park_name`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`)"
-								+ "VALUES (?, ?, ?, ?, ?, ?, 'active');");
-						prepared_statement.setString(1, visitor_id);
-						prepared_statement.setString(2, park_name);
-						prepared_statement.setString(3, time_of_visit);
-						prepared_statement.setString(4, visitor_number);
-						prepared_statement.setString(5, visitor_email);
-						prepared_statement.setString(6, visitor_phone);
-						prepared_statement.executeUpdate();
-						// -------------------------------------------------
-
-						prepared_statement = null;
-						prepared_statement = db_con.prepareStatement("SELECT MAX(orderId) AS max FROM orders");
-						result_set = prepared_statement.executeQuery();
-						if (!result_set.next()) {
-							System.out.println("[OrderCreate | ERROR]: couldnt get max id!");
-							send_response(client, new String("OrderCreate"), new String("ErrorString"),
-									new String("couldnt get max from DB"));
-						}
-						orderId = result_set.getInt("max");
+					///////////////////// OREN NEW CODE START:
+					/// If park is full update the status
+					if (!checkOrderTime(payload)) {
+						status = "WaitUserResponse";
 					}
+
+					// prepare MySQL query prepare
+					prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table
+							+ " (`visitor_id`, `parkName`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`)"
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?);");
+					prepared_statement.setString(1, visitor_id);
+					prepared_statement.setString(2, park_name);
+					prepared_statement.setString(3, time_of_visit);
+					prepared_statement.setString(4, visitor_number);
+					prepared_statement.setString(5, visitor_email);
+					prepared_statement.setString(6, visitor_phone);
+					prepared_statement.setString(7, status);
+					prepared_statement.executeUpdate();
+					// -------------------------------------------------
+					prepared_statement = null;
+					prepared_statement = db_con.prepareStatement("SELECT MAX(orderId) AS max FROM orders");
+					result_set = prepared_statement.executeQuery();
+					if (!result_set.next()) {
+						System.out.println("[OrderCreate | ERROR]: couldnt get max id!");
+						send_response(client, new String("OrderCreate"), new String("ErrorString"),
+								new String("couldnt get max from DB"));
+						return;
+					}
+					orderId = result_set.getInt("max");
+
+					// OREN new code end////////////////////////////////////
+
+					// ORIGINAL CODE START////////////////
+//					if (checkOrderTime(payload)) {
+//						// prepare MySQL query prepare
+//						prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table
+//								+ " (`visitor_id`, `parkName`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`)"
+//								+ "VALUES (?, ?, ?, ?, ?, ?, 'active');");
+//						prepared_statement.setString(1, visitor_id);
+//						prepared_statement.setString(2, park_name);
+//						prepared_statement.setString(3, time_of_visit);
+//						prepared_statement.setString(4, visitor_number);
+//						prepared_statement.setString(5, visitor_email);
+//						prepared_statement.setString(6, visitor_phone);
+//						prepared_statement.executeUpdate();
+//						// -------------------------------------------------
+//
+//						prepared_statement = null;
+//						prepared_statement = db_con.prepareStatement("SELECT MAX(orderId) AS max FROM orders");
+//						result_set = prepared_statement.executeQuery();
+//						if (!result_set.next()) {
+//							System.out.println("[OrderCreate | ERROR]: couldnt get max id!");
+//							send_response(client, new String("OrderCreate"), new String("ErrorString"),
+//									new String("couldnt get max from DB"));
+//						}
+//						orderId = result_set.getInt("max");
+//					}
+					// ORIGINAL CODE END///////////////////////
 
 					// Catch Problems
 				} catch (ClassCastException e_clas) {
 					System.out.println(
-							"[UserLogin | ERROR]: Client sent payload for UserLogin ep which is not an ArrayList<String>");
+							"[OrderCreate | ERROR]: Client sent payload for OrderCreate ep which is not an ArrayList<String>");
 					error = e_clas.getMessage();
 					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
 				} catch (SQLException e_sql) {
@@ -395,7 +430,8 @@ public class GoNatureServer extends AbstractServer {
 
 				// Response to client
 				try {
-					send_response(client, new String("OrderCreate"), new String("Integer"), new Integer(orderId));
+					send_response(client, new String("OrderCreate"), new String("ArrayList<String>"),
+							new ArrayList<String>(Arrays.asList(String.valueOf(orderId), status)));
 				} catch (IOException e) {
 					System.out.println("[OrderCreate_ep |ERROR ]: Failed OrderCreate response");
 					e.printStackTrace();
@@ -407,7 +443,7 @@ public class GoNatureServer extends AbstractServer {
 					send_response(client, new String("OrderCreate"), new String("ErrorString"), new String(
 							"Client asked OrderCreate end point but payload-type was not ArrayList<String>!"));
 				} catch (IOException e) {
-					System.out.println("[OrderCreate_ep |ERROR]: Failed UserLogin error response");
+					System.out.println("[OrderCreate_ep |ERROR]: Failed response to client");
 					e.printStackTrace();
 				}
 			}
@@ -466,7 +502,7 @@ public class GoNatureServer extends AbstractServer {
 													// true
 						// prepare MySQL query prepare
 						prepared_statement = db_con.prepareStatement("UPDATE " + db_table
-								+ " SET `visitor_id`=?, `park_name`=?, `time_of_visit`=?, `visitor_number`=?, `visitor_email`=?, `visitor_phone`=?"
+								+ " SET `visitor_id`=?, `parkName`=?, `time_of_visit`=?, `visitor_number`=?, `visitor_email`=?, `visitor_phone`=?"
 								+ " WHERE `orderId`=?;");
 
 						prepared_statement.setString(1, visitor_id);
@@ -606,7 +642,7 @@ public class GoNatureServer extends AbstractServer {
 				}
 				// add order parameters to ArrayList to send to client
 				arr.add(new String("" + rs.getInt("orderId")));
-				arr.add(new String(rs.getString("park_name")));
+				arr.add(new String(rs.getString("parkName")));
 				arr.add(new String(rs.getString("time_of_visit")));
 				arr.add(new String("" + rs.getInt("visitor_number")));
 				arr.add(new String(rs.getString("visitor_email")));
@@ -645,8 +681,8 @@ public class GoNatureServer extends AbstractServer {
 			}
 			return;
 
-			// -------------------------------------------------------------------------------------
-			// GUIDE
+		// -------------------------------------------------------------------------------------
+		// GUIDE
 		case "GroupGuideCheck":
 			System.out.println("[GroupGuideCheck|INFO]: GroupGuideCheck enpoint trigered");
 			if (payload_type.equals("String")) {
@@ -711,8 +747,8 @@ public class GoNatureServer extends AbstractServer {
 					String payload = (String) arr_msg.get(2);
 
 					// prepare MySQL query prepare
-					prepared_statement = db_con.prepareStatement(
-							"SELECT park_name,visitor_number  FROM " + db_table + " WHERE orderId=?;");
+					prepared_statement = db_con
+							.prepareStatement("SELECT parkName,visitor_number  FROM " + db_table + " WHERE orderId=?;");
 					prepared_statement.setString(1, payload);
 					result_set = prepared_statement.executeQuery();
 
@@ -845,7 +881,7 @@ public class GoNatureServer extends AbstractServer {
 				}
 			}
 			return;
-			
+
 		case "ExitRegistration": // TODO - ORENB:make sure exiting wont result in negative number later
 			System.out.println("[ExitRegistration|INFO]: ExitRegistration enpoint trigered");
 			if (payload_type.equals("ArrayList<String>")) {
@@ -894,16 +930,16 @@ public class GoNatureServer extends AbstractServer {
 			} else {
 				// Client asked GroupGuideCheck end-point but sent bad payload-type
 				try {
-					send_response(client, new String("ExitRegistration"), new String("ErrorString"),
-							new String("Client asked ExitRegistration end point but payload-type was not ArrayList<String>!"));
+					send_response(client, new String("ExitRegistration"), new String("ErrorString"), new String(
+							"Client asked ExitRegistration end point but payload-type was not ArrayList<String>!"));
 				} catch (IOException e) {
 					System.out.println("[ExitRegistration_ep |ERROR ]: Failed sending ErrorString to client");
 					e.printStackTrace();
 				}
 			}
-			
+
 			return;
-			
+
 		// TO maaya
 		case "GuideRegistration":
 			System.out.println("[GuideRegistration|INFO]: GuideRegistration enpoint trigered");
@@ -914,7 +950,7 @@ public class GoNatureServer extends AbstractServer {
 					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
 
 					// prepare MySQL query prepare
-				//	INSERT INTO `go_nature`.`guides` (`visitor_id`) VALUES (<{visitor_id: }>);
+					// INSERT INTO `go_nature`.`guides` (`visitor_id`) VALUES (<{visitor_id: }>);
 
 					prepared_statement = db_con.prepareStatement("SELECT * FROM " + db_table + " WHERE visitor_id=?;");
 					prepared_statement.setString(1, payload.get(0));
@@ -923,23 +959,24 @@ public class GoNatureServer extends AbstractServer {
 					// Check MySql Result
 					if (!result_set.next()) { // ResultSet is empty
 						// prepare MySQL query prepare
-						prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table + " (`visitor_id`) VALUES (?);");
+						prepared_statement = db_con
+								.prepareStatement("INSERT INTO " + db_table + " (`visitor_id`) VALUES (?);");
 						prepared_statement.setString(1, payload.get(0));
 						int rowsAffected = prepared_statement.executeUpdate();
-						
+
 						if (rowsAffected > 0) {
-							System.out.println("[GuideRegistration|INFO]: updated guilds, rows effected: " + rowsAffected);
+							System.out.println(
+									"[GuideRegistration|INFO]: updated guilds, rows effected: " + rowsAffected);
 							guide_register_test_succeeded = true;
 
 						} else {
-							System.out.println(
-									"[GuideRegistration|ERROR]:failed to update guides, rows effected: " + rowsAffected);
+							System.out.println("[GuideRegistration|ERROR]:failed to update guides, rows effected: "
+									+ rowsAffected);
 						}
 
 					} else {
-						System.out
-						.println("[GuideRegistration|ERROR]: Guide to register is alrady registered: "
-								+ payload);
+						System.out.println(
+								"[GuideRegistration|ERROR]: Guide to register is alrady registered: " + payload);
 					}
 
 					// Catch problematic Payload
@@ -955,7 +992,8 @@ public class GoNatureServer extends AbstractServer {
 
 				// Response to client
 				try {
-					send_response(client, new String("GuideRegistration"), new String("Boolean"), guide_register_test_succeeded);
+					send_response(client, new String("GuideRegistration"), new String("Boolean"),
+							guide_register_test_succeeded);
 					return;
 				} catch (IOException e) {
 					System.out.println("[GuideRegistration |ERROR ]: Failed Sending message to client");
@@ -965,61 +1003,82 @@ public class GoNatureServer extends AbstractServer {
 			} else {
 				// Client asked GroupGuideCheck end-point but sent bad payload-type
 				try {
-					send_response(client, new String("GuideRegistration"), new String("ErrorString"),
-							new String("Client asked GuideRegistration end point but payload-type was not ArrayList<String>!"));
+					send_response(client, new String("GuideRegistration"), new String("ErrorString"), new String(
+							"Client asked GuideRegistration end point but payload-type was not ArrayList<String>!"));
 				} catch (IOException e) {
 					System.out.println("[GroupGuideCheck_ep |ERROR ]: Failed sending error meesage to client");
 					e.printStackTrace();
 				}
 			}
 			return;
-			
-			
+
 		case "GetPrices":
 			System.out.println("[GetPrices|INFO]: GetPrices enpoint trigered");
 			// Response to client
 			try {
 				ArrayList<String> discount_arr = new ArrayList<>();
-				for (Integer discount : discounts.values() ) {
+				for (Integer discount : discounts.values()) {
 					discount_arr.add(discount.toString());
 				}
-				send_response(client, new String("GetPrices"), new String("ArrayList<String>"),discount_arr);
+				send_response(client, new String("GetPrices"), new String("ArrayList<String>"), discount_arr);
 			} catch (IOException e) {
 				System.out.println("[GetPrices |ERROR ]: Failed sending message to client");
 				e.printStackTrace();
 			}
 			return;
 
-
 		case "EnterWaitList":
+			System.out.println("[EnterWaitList|INFO]: EnterWaitList enpoint trigered");
 			try {
-				checkType(client, payload_type, "ArrayList<String>", endpoint);
+				checkType(client, payload_type, "String", endpoint);
 			} catch (IOException e) {
 				System.out.println("checkType failed in EnterWaitList");
 				e.printStackTrace();
 				return;
 			}
 			// get payload
-			arr = (ArrayList<String>) arr_msg.get(2);
+			// arr = (ArrayList<String>) arr_msg.get(2); Maayan oldcode
+			String order_id_extracted = (String) arr_msg.get(2);
+
 			// insert order in payload as waitlist
 			try {
-				PreparedStatement ps = db_con.prepareStatement(
-						"INSERT INTO `orders`(`visitor_id`, `park_name`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`) VALUES (?,?, ?, ?, ?, ?, 'WaitList');");
-				ps.setInt(1, Integer.valueOf(arr.get(0)));
-				ps.setString(2, arr.get(1));
-				ps.setString(3, arr.get(2));
-				ps.setInt(4, Integer.valueOf(arr.get(3)));
-				ps.setString(5, arr.get(4));
-				ps.setString(6, arr.get(5));
-				if (ps.executeUpdate() != 1) {
-					System.out.println("[EnterWaitList | ERROR]: couldnt insert order to orders table");
-					send_response(client, endpoint, new String("ErrorString"),
-							new String("couldnt insert order into orders table as waitList"));
+				////////////// OLD MAAYAN CODE
+//				PreparedStatement ps = db_con.prepareStatement(
+//						"INSERT INTO `orders`(`visitor_id`, `parkName`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`) VALUES (?,?, ?, ?, ?, ?, 'WaitList');");
+//				ps.setInt(1, Integer.valueOf(arr.get(0)));
+//				ps.setString(2, arr.get(1));
+//				ps.setString(3, arr.get(2));
+//				ps.setInt(4, Integer.valueOf(arr.get(3)));
+//				ps.setString(5, arr.get(4));
+//				ps.setString(6, arr.get(5));
+//				if (ps.executeUpdate() != 1) {
+//					System.out.println("[EnterWaitList | ERROR]: couldnt insert order to orders table");
+//					send_response(client, endpoint, new String("ErrorString"),
+//							new String("couldnt insert order into orders table as waitList"));
+//				} else {
+//					send_response(client, endpoint, "Boolean", new Boolean(true));
+//					System.out.println("[EnterWaitList | INFO]: sent client answear of true");
+//				}
+				////////////// OLD MAAYAN CODE END
+
+				// NEW OREN CODE
+				PreparedStatement ps = db_con
+						.prepareStatement("UPDATE `orders` SET `status` = 'WaitList' WHERE `orderId` = ?;");
+				ps.setString(1, order_id_extracted);
+
+				// Execute the update statement
+				int rowsAffected = ps.executeUpdate();
+
+				if (rowsAffected != 1) {
+					System.out.println("[EnterWaitList | ERROR]: couldn't update order status in orders table");
+					send_response(client, endpoint, "ErrorString",
+							"Couldn't update order status in orders table as WaitList");
 				} else {
-					send_response(client, endpoint, "Boolean", new Boolean(true));
-					System.out.println("[EnterWaitList | INFO]: sent client answear of true");
+					send_response(client, endpoint, "Boolean", Boolean.TRUE);
+					System.out.println("[EnterWaitList | INFO]: sent client answer of true");
 				}
 
+				// NEW OREN CODE END
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1029,6 +1088,100 @@ public class GoNatureServer extends AbstractServer {
 			}
 			return;
 
+		case "getPaidInAdvance":
+			System.out.println("[" + endpoint + " |INFO]: " + endpoint + " enpoint trigered");
+			if (payload_type.equals("String")) {
+				boolean getPaidInAdvance_test_succeeded = false;
+				db_table = "getpaidinadvance";
+				PreparedStatement ps;
+				try {
+					String getPaidInAdvance_order_id_extracted = (String) arr_msg.get(2);
+					ps = db_con.prepareStatement("SELECT paid FROM " + db_table + " WHERE orderId=?;");
+					ps.setString(1, getPaidInAdvance_order_id_extracted);
+
+					result_set = ps.executeQuery();
+					if (!result_set.next()) { // ResultSet is empty
+						System.out.println("[" + endpoint + "|INFO]: ResultSet is empty - didnt not find the orderId: "
+								+ getPaidInAdvance_order_id_extracted);
+					} else {
+						getPaidInAdvance_test_succeeded = result_set.getBoolean("paid");
+					}
+
+					try {
+						send_response(client, endpoint, new String("Boolean"), getPaidInAdvance_test_succeeded);
+						return;
+					} catch (IOException e) {
+						System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending ErrorString to client");
+						e.printStackTrace();
+						return;
+					}
+
+				} catch (SQLException e) {
+					System.out.println("[" + endpoint + " | ERROR]: sql error");
+					e.printStackTrace();
+
+				} catch (ClassCastException e_clas) {
+					System.out.println("[" + endpoint + " | ERROR]: Client sent payload for " + endpoint
+							+ " ep which is not an String");
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+
+			} else {
+				// Client asked GroupGuideCheck end-point but sent bad payload-type
+				try {
+					send_response(client, endpoint, new String("ErrorString"),
+							new String("Client asked " + endpoint + " end point but payload-type was not String!"));
+				} catch (IOException e) {
+					System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending ErrorString to client");
+					e.printStackTrace();
+				}
+			}
+
+			return;
+
+		case "setPaidInAdvance":
+			System.out.println("[" + endpoint + " |INFO]: " + endpoint + " enpoint trigered");
+			if (payload_type.equals("ArrayList<String>")) {
+				boolean setPaidInAdvance = false;
+				db_table = "getpaidinadvance";
+				PreparedStatement ps;
+				try {
+					ArrayList<String> extracted_arrlist = (ArrayList<String>) arr_msg.get(2);
+					ps = db_con.prepareStatement("UPDATE "+db_table+" SET `paid` = ? WHERE `orderId` = ?;");
+					ps.setString(1, extracted_arrlist.get(1));
+					ps.setString(2, extracted_arrlist.get(0));
+
+					int rowsAffected = ps.executeUpdate();
+					if (rowsAffected != 1) {
+						System.out.println("[" + endpoint + " | ERROR]: couldn't update order status in "+db_table+" table");
+						send_response(client, endpoint, "ErrorString",
+								"Couldn't update order status in "+db_table);
+					} else {
+						send_response(client, endpoint, "Boolean", Boolean.TRUE);
+						System.out.println("[" + endpoint + " | INFO]: sent client answer of true");
+						return;
+					}
+					
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+			} else {
+				// Client asked GroupGuideCheck end-point but sent bad payload-type
+				try {
+					send_response(client, endpoint, new String("ErrorString"),
+							new String("Client asked " + endpoint + " end point but payload-type was not String!"));
+				} catch (IOException e) {
+					System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending ErrorString to client");
+					e.printStackTrace();
+				}
+			}
+
+			return;
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");
 		}
@@ -1165,7 +1318,7 @@ public class GoNatureServer extends AbstractServer {
 			if (!rs.next())
 				return null;
 			arr.add(rs.getString("visitor_id"));
-			arr.add(rs.getString("park_name"));
+			arr.add(rs.getString("parkName"));
 			arr.add(rs.getString("time_of_visit"));
 			arr.add(String.valueOf(rs.getInt("visitor_number")));
 			arr.add(rs.getString("visitor_email"));
@@ -1252,10 +1405,12 @@ public class GoNatureServer extends AbstractServer {
 	}
 
 	private void openPopup(ArrayList<String> order) {
-		System.out.println(String.format("SIMULATION! SENDING EMAIL TO %s and SMS to %s, spot opened to approve the reservation", order.get(5), order.get(6)));
+		System.out.println(
+				String.format("SIMULATION! SENDING EMAIL TO %s and SMS to %s, spot opened to approve the reservation",
+						order.get(5), order.get(6)));
 		System.out.println("order notified id is: " + order.get(7));
 		approveOrder(order.get(7));
-		
+
 	}
 
 	private void approveOrder(String OrderId) {
@@ -1265,7 +1420,7 @@ public class GoNatureServer extends AbstractServer {
 			ps.setString(1, OrderId);
 			int rowsAffected = ps.executeUpdate();
 			if (rowsAffected != 1)
-			System.out.println("approveOrder didnt work??");
+				System.out.println("approveOrder didnt work??");
 			System.out.println("assuming user has chosen to approve his waitlisted order, his order is now active");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -1290,7 +1445,7 @@ public class GoNatureServer extends AbstractServer {
 		} else {
 			System.out.println("[SERVER]: failed to connect DB");
 		}
-		
+
 		// Initiate discounts
 		discounts.put(new String("full_price"), new Integer(50));
 		discounts.put(new String("discount_private_family_planned"), new Integer(15));

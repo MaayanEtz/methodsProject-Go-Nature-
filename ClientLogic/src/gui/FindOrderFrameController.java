@@ -118,10 +118,10 @@ public class FindOrderFrameController {
 //			arrmsg.add(new ArrayList<String>(Arrays.asList(parkName,visitor_number)));
 			
 			// OREN TESTING GET
-			ArrayList<Object> arrmsg = new ArrayList<>();
-			arrmsg.add(new String("OrderGet"));
-			arrmsg.add(new String("String"));
-			arrmsg.add("21");
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("OrderGet"));
+//			arrmsg.add(new String("String"));
+//			arrmsg.add("21");
 			
 //			// OREN TESTING OrderedEnter
 //			ArrayList<Object> arrmsg = new ArrayList<>();
@@ -156,7 +156,7 @@ public class FindOrderFrameController {
 //			arrmsg.add(new String("OrderCreate"));
 //			arrmsg.add(new String("ArrayList<String>"));
 //			arrmsg.add(new ArrayList<String>(Arrays.asList(visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
-//			//
+			//
 			
 			// UPDATE TEST
 //			String order_id = orderNumber.split(",")[0];
@@ -183,7 +183,31 @@ public class FindOrderFrameController {
 //			arrmsg.add(new String("GetPrices"));
 //			arrmsg.add(new String("Doesnt Matter"));
 //			arrmsg.add(new String("Doesnt Matter"));
-//		
+			
+			
+			// TEST EnterWaitList
+//			String order_id =  orderNumber.split(",")[0];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("EnterWaitList"));
+//			arrmsg.add(new String("String"));
+//			arrmsg.add(order_id);
+			
+			// Test getPaidInAdvance
+//			String order_id =  orderNumber.split(",")[0];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("getPaidInAdvance"));
+//			arrmsg.add(new String("String"));
+//			arrmsg.add(order_id);
+			
+			// Test setPaidInAdvance
+			String order_id =  orderNumber.split(",")[0];
+			String trueorfalse = orderNumber.split(",")[1];
+			ArrayList<Object> arrmsg = new ArrayList<>();
+			arrmsg.add(new String("setPaidInAdvance"));
+			arrmsg.add(new String("ArrayList<String>"));
+			arrmsg.add(new ArrayList<String>(Arrays.asList(order_id, trueorfalse)));
+			
+			
 			// TEST HERE
 			ClientUI.chat.accept(arrmsg);
 			

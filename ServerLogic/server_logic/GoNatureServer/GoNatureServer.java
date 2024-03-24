@@ -357,7 +357,7 @@ public class GoNatureServer extends AbstractServer {
 								if (checkOrderTime(payload)) {
 									// prepare MySQL query prepare
 									prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table
-											+ " (`visitor_id`, `park_name`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`)"
+											+ " (`visitor_id`, `parkName`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`)"
 											+ "VALUES (?, ?, ?, ?, ?, ?, 'active');");
 									prepared_statement.setString(1, visitor_id);
 									prepared_statement.setString(2, park_name);
@@ -1005,7 +1005,7 @@ public class GoNatureServer extends AbstractServer {
 			// insert order in payload as waitlist
 			try {
 				PreparedStatement ps = db_con.prepareStatement(
-						"INSERT INTO `orders`(`visitor_id`, `park_name`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`) VALUES (?,?, ?, ?, ?, ?, 'WaitList');");
+						"INSERT INTO `orders`(`visitor_id`, `parkName`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`) VALUES (?,?, ?, ?, ?, ?, 'WaitList');");
 				ps.setInt(1, Integer.valueOf(arr.get(0)));
 				ps.setString(2, arr.get(1));
 				ps.setString(3, arr.get(2));

@@ -72,7 +72,7 @@ CREATE TABLE `orders` (
 
   `visitor_phone` varchar(90) DEFAULT NULL,
 
-  `status` enum('Active','Cancelled','WaitList','WaitUserResponse') DEFAULT NULL,
+  `status` enum('Active','Cancelled','WaitList') DEFAULT NULL,
 
   PRIMARY KEY (`orderId`),
 
@@ -130,8 +130,8 @@ VALUES
 
 
 CREATE TABLE `getpaidinadvance` (
-  `orderId` int NOT NULL,
-  `paid` tinyint(1) NOT NULL,
+  `orderId` INT NOT NULL,
+  `paid` TINYINT NOT NULL,
   PRIMARY KEY (`orderId`),
   CONSTRAINT `fk_orderId` FOREIGN KEY (`orderId`) REFERENCES `orders` (`orderId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

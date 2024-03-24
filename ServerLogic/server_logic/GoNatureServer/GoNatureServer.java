@@ -337,117 +337,82 @@ public class GoNatureServer extends AbstractServer {
 
 		// -------------------------------------------------------------------------------------
 
-		// ORDER Create
-		case "OrderCreate":
-			int orderId = -1;
-			String status = "Active";
-			if (payload_type.equals("ArrayList<String>")) {
-				db_table = "orders";
-				try {
-					// Extract pay-load
-					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
-					String visitor_id = payload.get(0);
-					String park_name = payload.get(1);
-					String time_of_visit = payload.get(2);
-					String visitor_number = payload.get(3);
-					String visitor_email = payload.get(4);
-					String visitor_phone = payload.get(5);
-					System.out.println("[OrderCreate | DEBUG]: extracted: " + payload);
+			// ORDER Create
+					case "OrderCreate":
+						int orderId = -1;
+						if (payload_type.equals("ArrayList<String>")) {
+							db_table = "orders";
+							try {
+								// Extract pay-load
+								ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
+								String visitor_id = payload.get(0);
+								String park_name = payload.get(1);
+								String time_of_visit = payload.get(2);
+								String visitor_number = payload.get(3);
+								String visitor_email = payload.get(4);
+								String visitor_phone = payload.get(5);
+								System.out.println("[OrderCreate | DEBUG]: extracted: " + payload);
 
-					///////////////////// OREN NEW CODE START:
-					/// If park is full update the status
-					if (!checkOrderTime(payload)) {
-						status = "WaitUserResponse";
-					}
+								//
+								if (checkOrderTime(payload)) {
+									// prepare MySQL query prepare
+									prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table
+											+ " (`visitor_id`, `park_name`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`)"
+											+ "VALUES (?, ?, ?, ?, ?, ?, 'active');");
+									prepared_statement.setString(1, visitor_id);
+									prepared_statement.setString(2, park_name);
+									prepared_statement.setString(3, time_of_visit);
+									prepared_statement.setString(4, visitor_number);
+									prepared_statement.setString(5, visitor_email);
+									prepared_statement.setString(6, visitor_phone);
+									prepared_statement.executeUpdate();
+									// -------------------------------------------------
 
-					// prepare MySQL query prepare
-					prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table
-							+ " (`visitor_id`, `parkName`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`)"
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?);");
-					prepared_statement.setString(1, visitor_id);
-					prepared_statement.setString(2, park_name);
-					prepared_statement.setString(3, time_of_visit);
-					prepared_statement.setString(4, visitor_number);
-					prepared_statement.setString(5, visitor_email);
-					prepared_statement.setString(6, visitor_phone);
-					prepared_statement.setString(7, status);
-					prepared_statement.executeUpdate();
-					// -------------------------------------------------
-					prepared_statement = null;
-					prepared_statement = db_con.prepareStatement("SELECT MAX(orderId) AS max FROM orders");
-					result_set = prepared_statement.executeQuery();
-					if (!result_set.next()) {
-						System.out.println("[OrderCreate | ERROR]: couldnt get max id!");
-						send_response(client, new String("OrderCreate"), new String("ErrorString"),
-								new String("couldnt get max from DB"));
+									prepared_statement = null;
+									prepared_statement = db_con.prepareStatement("SELECT MAX(orderId) AS max FROM orders");
+									result_set = prepared_statement.executeQuery();
+									if (!result_set.next()) {
+										System.out.println("[OrderCreate | ERROR]: couldnt get max id!");
+										send_response(client, new String("OrderCreate"), new String("ErrorString"),
+												new String("couldnt get max from DB"));
+									}
+									orderId = result_set.getInt("max");
+								}
+
+								// Catch Problems
+							} catch (ClassCastException e_clas) {
+								System.out.println(
+										"[UserLogin | ERROR]: Client sent payload for UserLogin ep which is not an ArrayList<String>");
+								error = e_clas.getMessage();
+								// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
+							} catch (SQLException e_sql) {
+								System.out.println("[OrderCreate | ERROR]: MySQL query execution error");
+								e_sql.printStackTrace();
+								error = e_sql.getMessage();
+							} catch (Exception e) {
+								e.printStackTrace();
+								error = e.getMessage();
+							}
+
+							// Response to client
+							try {
+								send_response(client, new String("OrderCreate"), new String("Integer"), new Integer(orderId));
+							} catch (IOException e) {
+								System.out.println("[OrderCreate_ep |ERROR ]: Failed OrderCreate response");
+								e.printStackTrace();
+							}
+
+						} else {
+							// Client asked UserLogin end-point but sent bad payload-type
+							try {
+								send_response(client, new String("OrderCreate"), new String("ErrorString"), new String(
+										"Client asked OrderCreate end point but payload-type was not ArrayList<String>!"));
+							} catch (IOException e) {
+								System.out.println("[OrderCreate_ep |ERROR]: Failed UserLogin error response");
+								e.printStackTrace();
+							}
+						}
 						return;
-					}
-					orderId = result_set.getInt("max");
-
-					// OREN new code end////////////////////////////////////
-
-					// ORIGINAL CODE START////////////////
-//					if (checkOrderTime(payload)) {
-//						// prepare MySQL query prepare
-//						prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table
-//								+ " (`visitor_id`, `parkName`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`)"
-//								+ "VALUES (?, ?, ?, ?, ?, ?, 'active');");
-//						prepared_statement.setString(1, visitor_id);
-//						prepared_statement.setString(2, park_name);
-//						prepared_statement.setString(3, time_of_visit);
-//						prepared_statement.setString(4, visitor_number);
-//						prepared_statement.setString(5, visitor_email);
-//						prepared_statement.setString(6, visitor_phone);
-//						prepared_statement.executeUpdate();
-//						// -------------------------------------------------
-//
-//						prepared_statement = null;
-//						prepared_statement = db_con.prepareStatement("SELECT MAX(orderId) AS max FROM orders");
-//						result_set = prepared_statement.executeQuery();
-//						if (!result_set.next()) {
-//							System.out.println("[OrderCreate | ERROR]: couldnt get max id!");
-//							send_response(client, new String("OrderCreate"), new String("ErrorString"),
-//									new String("couldnt get max from DB"));
-//						}
-//						orderId = result_set.getInt("max");
-//					}
-					// ORIGINAL CODE END///////////////////////
-
-					// Catch Problems
-				} catch (ClassCastException e_clas) {
-					System.out.println(
-							"[OrderCreate | ERROR]: Client sent payload for OrderCreate ep which is not an ArrayList<String>");
-					error = e_clas.getMessage();
-					// ORENB_TODO: send client an error that he sent bad msg (not arrlist)
-				} catch (SQLException e_sql) {
-					System.out.println("[OrderCreate | ERROR]: MySQL query execution error");
-					e_sql.printStackTrace();
-					error = e_sql.getMessage();
-				} catch (Exception e) {
-					e.printStackTrace();
-					error = e.getMessage();
-				}
-
-				// Response to client
-				try {
-					send_response(client, new String("OrderCreate"), new String("ArrayList<String>"),
-							new ArrayList<String>(Arrays.asList(String.valueOf(orderId), status)));
-				} catch (IOException e) {
-					System.out.println("[OrderCreate_ep |ERROR ]: Failed OrderCreate response");
-					e.printStackTrace();
-				}
-
-			} else {
-				// Client asked UserLogin end-point but sent bad payload-type
-				try {
-					send_response(client, new String("OrderCreate"), new String("ErrorString"), new String(
-							"Client asked OrderCreate end point but payload-type was not ArrayList<String>!"));
-				} catch (IOException e) {
-					System.out.println("[OrderCreate_ep |ERROR]: Failed response to client");
-					e.printStackTrace();
-				}
-			}
-			return;
 
 		// -------------------------------------------------------------------------------------
 		// ORDER UPDATE
@@ -1028,57 +993,34 @@ public class GoNatureServer extends AbstractServer {
 			return;
 
 		case "EnterWaitList":
-			System.out.println("[EnterWaitList|INFO]: EnterWaitList enpoint trigered");
 			try {
-				checkType(client, payload_type, "String", endpoint);
+				checkType(client, payload_type, "ArrayList<String>", endpoint);
 			} catch (IOException e) {
 				System.out.println("checkType failed in EnterWaitList");
 				e.printStackTrace();
 				return;
 			}
 			// get payload
-			// arr = (ArrayList<String>) arr_msg.get(2); Maayan oldcode
-			String order_id_extracted = (String) arr_msg.get(2);
-
+			arr = (ArrayList<String>) arr_msg.get(2);
 			// insert order in payload as waitlist
 			try {
-				////////////// OLD MAAYAN CODE
-//				PreparedStatement ps = db_con.prepareStatement(
-//						"INSERT INTO `orders`(`visitor_id`, `parkName`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`) VALUES (?,?, ?, ?, ?, ?, 'WaitList');");
-//				ps.setInt(1, Integer.valueOf(arr.get(0)));
-//				ps.setString(2, arr.get(1));
-//				ps.setString(3, arr.get(2));
-//				ps.setInt(4, Integer.valueOf(arr.get(3)));
-//				ps.setString(5, arr.get(4));
-//				ps.setString(6, arr.get(5));
-//				if (ps.executeUpdate() != 1) {
-//					System.out.println("[EnterWaitList | ERROR]: couldnt insert order to orders table");
-//					send_response(client, endpoint, new String("ErrorString"),
-//							new String("couldnt insert order into orders table as waitList"));
-//				} else {
-//					send_response(client, endpoint, "Boolean", new Boolean(true));
-//					System.out.println("[EnterWaitList | INFO]: sent client answear of true");
-//				}
-				////////////// OLD MAAYAN CODE END
-
-				// NEW OREN CODE
-				PreparedStatement ps = db_con
-						.prepareStatement("UPDATE `orders` SET `status` = 'WaitList' WHERE `orderId` = ?;");
-				ps.setString(1, order_id_extracted);
-
-				// Execute the update statement
-				int rowsAffected = ps.executeUpdate();
-
-				if (rowsAffected != 1) {
-					System.out.println("[EnterWaitList | ERROR]: couldn't update order status in orders table");
-					send_response(client, endpoint, "ErrorString",
-							"Couldn't update order status in orders table as WaitList");
+				PreparedStatement ps = db_con.prepareStatement(
+						"INSERT INTO `orders`(`visitor_id`, `park_name`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`) VALUES (?,?, ?, ?, ?, ?, 'WaitList');");
+				ps.setInt(1, Integer.valueOf(arr.get(0)));
+				ps.setString(2, arr.get(1));
+				ps.setString(3, arr.get(2));
+				ps.setInt(4, Integer.valueOf(arr.get(3)));
+				ps.setString(5, arr.get(4));
+				ps.setString(6, arr.get(5));
+				if (ps.executeUpdate() != 1) {
+					System.out.println("[EnterWaitList | ERROR]: couldnt insert order to orders table");
+					send_response(client, endpoint, new String("ErrorString"),
+							new String("couldnt insert order into orders table as waitList"));
 				} else {
-					send_response(client, endpoint, "Boolean", Boolean.TRUE);
-					System.out.println("[EnterWaitList | INFO]: sent client answer of true");
+					send_response(client, endpoint, "Boolean", new Boolean(true));
+					System.out.println("[EnterWaitList | INFO]: sent client answear of true");
 				}
 
-				// NEW OREN CODE END
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1086,7 +1028,6 @@ public class GoNatureServer extends AbstractServer {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return;
 
 		case "getPaidInAdvance":
 			System.out.println("[" + endpoint + " |INFO]: " + endpoint + " enpoint trigered");

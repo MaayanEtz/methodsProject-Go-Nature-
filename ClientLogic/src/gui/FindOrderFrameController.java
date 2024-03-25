@@ -193,11 +193,11 @@ public class FindOrderFrameController {
 //			arrmsg.add(order_id);
 			
 			// Test getPaidInAdvance
-			String order_id =  orderNumber.split(",")[0];
-			ArrayList<Object> arrmsg = new ArrayList<>();
-			arrmsg.add(new String("getPaidInAdvance"));
-			arrmsg.add(new String("String"));
-			arrmsg.add(order_id);
+//			String order_id =  orderNumber.split(",")[0];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("getPaidInAdvance"));
+//			arrmsg.add(new String("String"));
+//			arrmsg.add(order_id);
 			
 			// Test setPaidInAdvance
 //			String order_id =  orderNumber.split(",")[0];
@@ -207,6 +207,58 @@ public class FindOrderFrameController {
 //			arrmsg.add(new String("ArrayList<String>"));
 //			arrmsg.add(new ArrayList<String>(Arrays.asList(order_id, trueorfalse)));
 			
+			
+			// Test park_current_params_get
+//			String order_id =  orderNumber.split(",")[0];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("ParkCurrentParamsGet"));
+//			arrmsg.add(new String("String"));
+//			arrmsg.add(order_id);
+			
+			// Test park_current_params_update
+//			String park_name =  orderNumber.split(",")[0];
+//			String capacity =  orderNumber.split(",")[1];
+//			String diff =  orderNumber.split(",")[2];
+//			String visit_time =  orderNumber.split(",")[3];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("ParkCurrentParamsUpdate"));
+//			arrmsg.add(new String("ArrayList<String>"));
+//			arrmsg.add(new ArrayList<String>(Arrays.asList(park_name,capacity, diff, visit_time)));
+//
+//
+			
+			// Test new par kl params get
+//			String park_name =  orderNumber.split(",")[0];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("ParkNewParamsGet"));
+//			arrmsg.add(new String("String"));
+//			arrmsg.add(park_name);
+//			
+			// Test ParkCheckIfApproveRequired
+//			String park_name =  orderNumber.split(",")[0];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("ParkCheckIfApproveRequired"));
+//			arrmsg.add(new String("String"));
+//			arrmsg.add(new String(""));
+			
+			// AvilableSpaceGet test
+			String park_name =  orderNumber.split(",")[0];
+			ArrayList<Object> arrmsg = new ArrayList<>();
+			arrmsg.add(new String("AvilableSpaceGet"));
+			arrmsg.add(new String("String"));
+			arrmsg.add(park_name);
+			
+//			
+			
+			// Test park_current_params_update
+//			String park_name =  orderNumber.split(",")[0];
+//			String capacity =  orderNumber.split(",")[1];
+//			String diff =  orderNumber.split(",")[2];
+//			String visit_time =  orderNumber.split(",")[3];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("ParkNewParamsUpdate"));
+//			arrmsg.add(new String("ArrayList<String>"));
+//			arrmsg.add(new ArrayList<String>(Arrays.asList(park_name,capacity, diff, visit_time)));
 			
 			// TEST HERE
 			ClientUI.chat.accept(arrmsg);

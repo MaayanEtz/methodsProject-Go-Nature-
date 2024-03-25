@@ -14,34 +14,25 @@ VALUES
 
 
 
+
 CREATE TABLE `parks` (
-
   `parkName` varchar(255) NOT NULL,
-
   `capacity` int DEFAULT NULL,
-
   `diff` int DEFAULT NULL,
-
   `visitTimeInMinutes` int DEFAULT NULL,
-
   `currentVisitors` int DEFAULT NULL,
-
+  `newCapacity` int DEFAULT NULL,
+  `newDiff` int DEFAULT NULL,
+  `newVisitTimeInMinutes` int DEFAULT NULL,
   PRIMARY KEY (`parkName`)
-
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-
-
-INSERT INTO parks (parkName, capacity, diff, visitTimeInMinutes, currentVisitors)
-
+INSERT INTO parks (parkName, capacity, diff, visitTimeInMinutes, currentVisitors, newCapacity, newDiff, newVisitTimeInMinutes)
 VALUES
-
-    ('Central Park', 100, 5, 120, 50),
-
-    ('Golden Gate Park', 150, 7, 90, 75),
-
-    ('Yellowstone National Park', 200, 10, 180, 100);
+    ('Central Park', 100, 5, 120, 50, 100, 5, 120),
+    ('Golden Gate Park', 150, 7, 90, 75, 150, 7, 90),
+    ('Yellowstone National Park', 200, 10, 180, 100, 200, 10, 180);
 
 
 

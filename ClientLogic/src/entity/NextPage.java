@@ -102,9 +102,6 @@ public class NextPage {
 				createOrderFrameController.loadData();
 				break;}
 			
-			case "InvoiceController": {
-				InvoiceController invoiceController = loader.getController();
-				break;}
 			
 			case "ParkWorkerMenuController":{
 				ParkWorkerMenuController parkWorkerMenuController = loader.getController();
@@ -117,12 +114,18 @@ public class NextPage {
 				DepartmentWorkerController departmentWorkerController = loader.getController();
 				break;}
 						
-//			case "DepartmentManagerController":{
-//				DepartmentManagerController departmentManagerController = loader.getController();
-//				break;}
-//			
+			case "DepartmentManagerController":{
+				DepartmentManagerController departmentManagerController = loader.getController();
+				//send the name of the park!
+				if (data instanceof String)
+					departmentManagerController.loadData((String)data);
+				break;}
+			
 			case "ParkManagerController":{
 				ParkManagerController parkManagerController = loader.getController();
+				//send the name of the park!
+				if (data instanceof String)
+					parkManagerController.loadData((String)data);
 				break;}
 			
 			default: {System.out.println("No such controller in NextPage: Next");}

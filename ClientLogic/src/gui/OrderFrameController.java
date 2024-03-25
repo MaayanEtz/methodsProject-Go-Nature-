@@ -65,7 +65,7 @@ public class OrderFrameController{
 			arrmsg.add(new String("Get"));
 			ClientUI.chat.accept(arrmsg);
 			
-			if (ChatClient.dataFromServer.equals(null))
+			if (ChatClient.dataFromServer.get(0).equals("null"))
 				throw new NullPointerException("The parks list doesn't exists.");
 			//Adding items to the ComboBox and selecting one of the options by default
 			this.selectParkCmb.getItems().addAll(ChatClient.dataFromServer);
@@ -118,6 +118,8 @@ public class OrderFrameController{
 	        this.txtEmail.setText(order.getEmail());
 			
 
+		}catch (NullPointerException e) {
+			System.out.println(e.getMessage());
 		}catch (Exception e) {
 			System.out.println("Error in OrderFrameController: loadData");
 			System.out.println(e.getMessage());

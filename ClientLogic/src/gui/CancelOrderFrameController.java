@@ -73,16 +73,12 @@ public class CancelOrderFrameController {
 			ClientUI.chat.accept(arrmsg);
 
 			if(ChatClient.result == true) {
-				//updated successfully
-				//lblResult.setText("Cancelled successfully!");
-				
+				//updated successfully			
 		    	NextPage page = new NextPage(event, "/gui/RespondWindow.fxml", "Respond", "RespondWindowController", "pressCancelBtn", new String("Cancelled successfully!"));
 		    	page.Next();
 
 			}else {
-				//update failed
-				//lblResult.setText("Cancel failed!");
-				
+				//update failed			
 		    	NextPage page = new NextPage(event, "/gui/RespondWindow.fxml", "Respond", "RespondWindowController", "pressCancelBtn", new String("Cancel failed!"));
 		    	page.Next();
 			}	

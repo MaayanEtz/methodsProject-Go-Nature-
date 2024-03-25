@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="428.0" prefWidth="336.0" stylesheets="@design.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.CancelOrderFrameController">
+<AnchorPane prefHeight="428.0" prefWidth="405.0" stylesheets="@design.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.CancelOrderFrameController">
    <children>
       <Label fx:id="lblOrderNum" layoutX="29.0" layoutY="77.0" text="Order number" textFill="#1e5d38">
          <font>
@@ -37,45 +37,45 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <Button fx:id="btnClose" layoutX="244.0" layoutY="381.0" mnemonicParsing="false" onAction="#pressCloseBtn" text="Close" />
-      <Button fx:id="btnCancel" layoutX="45.0" layoutY="381.0" mnemonicParsing="false" onAction="#pressCancelBtn" text="Cancel order" />
+      <Button fx:id="btnClose" layoutX="311.0" layoutY="381.0" mnemonicParsing="false" onAction="#pressCloseBtn" text="Close" />
+      <Button fx:id="btnCancel" layoutX="58.0" layoutY="381.0" mnemonicParsing="false" onAction="#pressCancelBtn" text="Cancel order" />
       <Label fx:id="lblResult" layoutX="112.0" layoutY="350.0" prefHeight="25.0" prefWidth="164.0" text="    " />
       <ImageView fitHeight="80.0" fitWidth="67.0" layoutX="48.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@Pictures/go_Nature_logo-removebg-preview.png" />
          </image>
       </ImageView>
-      <Text fill="#1e5d38" layoutX="153.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="My order">
+      <Text fill="#1e5d38" layoutX="194.0" layoutY="51.0" strokeType="OUTSIDE" strokeWidth="0.0" text="My order">
          <font>
             <Font size="20.0" />
          </font>
       </Text>
-      <Label fx:id="txtOrderNum" alignment="CENTER" layoutX="170.0" layoutY="79.0" prefHeight="23.0" prefWidth="151.0" style="-fx-border-color: #1e5d38;" textAlignment="CENTER">
+      <Label fx:id="txtOrderNum" alignment="CENTER" layoutX="170.0" layoutY="79.0" prefHeight="23.0" prefWidth="216.0" style="-fx-border-color: #1e5d38;" textAlignment="CENTER">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
-      <Label fx:id="txtParkName" alignment="CENTER" layoutX="170.0" layoutY="126.0" prefHeight="23.0" prefWidth="151.0" style="-fx-border-color: #1e5d38;" textAlignment="CENTER">
+      <Label fx:id="txtParkName" alignment="CENTER" layoutX="170.0" layoutY="126.0" prefHeight="23.0" prefWidth="216.0" style="-fx-border-color: #1e5d38;" textAlignment="CENTER">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
-      <Label fx:id="txtVisitTime" alignment="CENTER" layoutX="170.0" layoutY="173.0" prefHeight="23.0" prefWidth="151.0" style="-fx-border-color: #1e5d38;" textAlignment="CENTER">
+      <Label fx:id="txtVisitTime" alignment="CENTER" layoutX="170.0" layoutY="173.0" prefHeight="23.0" prefWidth="216.0" style="-fx-border-color: #1e5d38;" textAlignment="CENTER">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
-      <Label fx:id="txtVisitorsNum" alignment="CENTER" layoutX="170.0" layoutY="220.0" prefHeight="23.0" prefWidth="151.0" style="-fx-border-color: #1e5d38;" textAlignment="CENTER">
+      <Label fx:id="txtVisitorsNum" alignment="CENTER" layoutX="170.0" layoutY="220.0" prefHeight="23.0" prefWidth="216.0" style="-fx-border-color: #1e5d38;" textAlignment="CENTER">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
-      <Label fx:id="txtPhone" alignment="CENTER" layoutX="170.0" layoutY="267.0" prefHeight="23.0" prefWidth="151.0" style="-fx-border-color: #1e5d38;" textAlignment="CENTER">
+      <Label fx:id="txtPhone" alignment="CENTER" layoutX="170.0" layoutY="267.0" prefHeight="23.0" prefWidth="216.0" style="-fx-border-color: #1e5d38;" textAlignment="CENTER">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
-      <Label fx:id="txtEmail" alignment="CENTER" layoutX="170.0" layoutY="314.0" prefHeight="23.0" prefWidth="151.0" style="-fx-border-color: #1e5d38;" textAlignment="CENTER">
+      <Label fx:id="txtEmail" alignment="CENTER" layoutX="170.0" layoutY="314.0" prefHeight="23.0" prefWidth="216.0" style="-fx-border-color: #1e5d38;" textAlignment="CENTER">
          <font>
             <Font size="15.0" />
          </font>

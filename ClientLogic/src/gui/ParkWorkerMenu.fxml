@@ -26,7 +26,7 @@
             <Image url="@Pictures/go_Nature_logo-removebg-preview.png" />
          </image>
       </ImageView>
-      <Text fx:id="txtTitle" fill="#1e5d38" layoutX="169.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="188.6259765625">
+      <Text fx:id="txtTitle" fill="#1e5d38" layoutX="98.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="285.6259765625">
          <font>
             <Font size="18.0" />
          </font>

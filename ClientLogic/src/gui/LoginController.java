@@ -52,21 +52,15 @@ public class LoginController {
 				arrmsg.add(new String("UserLogin"));
 				arrmsg.add(new String("ArrayList<String>"));
 				arrmsg.add(loginDetails);
-				
-				/////////////OPEN////////////
-				//ClientUI.chat.accept(arrmsg);
-				
-				////////ONLY FOR CHECK/////////////////////
-				ChatClient.dataFromServer = new ArrayList<String>();
-				ChatClient.dataFromServer.add(0, "ParkWorker");
-				ChatClient.dataFromServer.add(1, "Hyde park");
+				ClientUI.chat.accept(arrmsg);
 
 				switch (ChatClient.dataFromServer.get(0)) {
 					case "DepartmentWorker": {
 						// if user name and password are correct and the type of the employee is
 						// DepartmentWorker
+						ChatClient.userName = username;
 						NextPage page = new NextPage(event, "/gui/DepartmentWorker.fxml", "Department worker page",
-								"DepartmentWorkerController", "", ""); // need to add path and title
+								"DepartmentWorkerController", "Login", ChatClient.dataFromServer.get(1)); // need to add path and title
 						page.Next();
 						break;
 					}
@@ -74,24 +68,27 @@ public class LoginController {
 						// if user name and password are correct and the type of the employee is
 						// ParkWorker
 						//ChatClient.dataFromServer.get(1) - park name
+						ChatClient.userName = username;
 						NextPage page = new NextPage(event, "/gui/ParkWorkerMenu.fxml", "Park worker page",
-								"ParkWorkerMenuController", "", ChatClient.dataFromServer.get(1));
+								"ParkWorkerMenuController", "Login", ChatClient.dataFromServer.get(1));
 						page.Next();
 						break;
 					}
 					case "DepartmentManager": {
 						// if user name and password are correct and the type of the employee is
 						// DepartmentManager
+						ChatClient.userName = username;
 						NextPage page = new NextPage(event, "/gui/DepartmentManager.fxml", "Department manager page",
-								"DepartmentManagerController", "", ""); // need to add path and title
+								"DepartmentManagerController", "Login", ChatClient.dataFromServer.get(1)); // need to add path and title
 						page.Next();
 						break;
 					}
 					case "ParkManager": {
 						// if user name and password are correct and the type of the employee is
 						// ParkManager
+						ChatClient.userName = username;
 						NextPage page = new NextPage(event, "/gui/ParkManager.fxml", "Park manager page",
-								"ParkManagerController", "", ""); // need to add path and title
+								"ParkManagerController", "Login", ChatClient.dataFromServer.get(1)); // need to add path and title
 						page.Next();
 						break;
 					}

@@ -121,31 +121,24 @@ public class PriceGenerator {
 			arrmsg.add(new String("GetPrices"));
 			arrmsg.add(new String("GetPrices"));
 			arrmsg.add(new String("GetPrices"));
-			
-			///////////ONLY FOR CHECK////////////////////
-			fullPrice = 40;
-			discountPrivateFamilyPlanned = 15;
-			discountPrivateFamilyUnplanned = 0;
-			discountGroupPlanned = 25;
-			discountGroupUnplanned = 10;
-			discountPaymentInAdvance = 12;
-			
-			//////////////////OPEN///////////////////////
-			/*ClientUI.chat.accept(arrmsg);	
+			ClientUI.chat.accept(arrmsg);	
 			
 			//2. set the prices
-			if(ChatClient.result == true) {
-				//"ArrayList<Integer>", {"0-full_price", "1-discount_private_family_planned", "2-discount_private_family_unplanned", "3-discount_group_planned", "4-discount_group_unplanned", "5-discount_payment_in_advance" }
-				fullPrice = Integer.parseInt(ChatClient.dataFromServer.get(0));
-				discountPrivateFamilyPlanned = Integer.parseInt(ChatClient.dataFromServer.get(1));
-				discountPrivateFamilyUnplanned = Integer.parseInt(ChatClient.dataFromServer.get(2));
-				discountGroupPlanned = Integer.parseInt(ChatClient.dataFromServer.get(3));
-				discountGroupUnplanned = Integer.parseInt(ChatClient.dataFromServer.get(4));
-				discountPaymentInAdvance = Integer.parseInt(ChatClient.dataFromServer.get(5));
-			}else {
-				System.out.println("No prices returned from DB");
-			}*/
-		} catch (Exception e) {
+			
+			if (ChatClient.dataFromServer.get(0).equals("null"))
+				throw new NullPointerException("No prices returned from DB");
+			
+			//"ArrayList<Integer>", {"0-full_price", "1-discount_private_family_planned", "2-discount_private_family_unplanned", "3-discount_group_planned", "4-discount_group_unplanned", "5-discount_payment_in_advance" }
+			fullPrice = Integer.parseInt(ChatClient.dataFromServer.get(0));
+			discountPrivateFamilyPlanned = Integer.parseInt(ChatClient.dataFromServer.get(1));
+			discountPrivateFamilyUnplanned = Integer.parseInt(ChatClient.dataFromServer.get(2));
+			discountGroupPlanned = Integer.parseInt(ChatClient.dataFromServer.get(3));
+			discountGroupUnplanned = Integer.parseInt(ChatClient.dataFromServer.get(4));
+			discountPaymentInAdvance = Integer.parseInt(ChatClient.dataFromServer.get(5));
+			
+		}catch (NullPointerException e) {
+			System.out.println(e.getMessage());
+		}catch (Exception e) {
 			System.out.println("Error in PriceGenerator: setPrices");
 			System.out.println(e.getMessage());
 		}

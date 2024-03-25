@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="340.0" prefWidth="404.0" stylesheets="@design.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ChoiceWindowController">
+   <children>
+      <Text fill="#1e5d38" layoutX="30.0" layoutY="121.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Unfortunately, order not created! On the selected day and time, there is no available space in the park for the number of visitors you entered." textAlignment="CENTER" wrappingWidth="344.9140625">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <ImageView fitHeight="94.0" fitWidth="92.0" layoutX="156.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Pictures/go_Nature_logo-removebg-preview.png" />
+         </image></ImageView>
+      <Button fx:id="btnGoBack" layoutX="95.0" layoutY="278.0" mnemonicParsing="false" onAction="#pressGoBack" text="Go back and choose another time" textAlignment="CENTER">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Button>
+      <Button fx:id="btnEnterWaitingList" layoutX="96.0" layoutY="229.0" mnemonicParsing="false" onAction="#pressEnterWaitingList" prefHeight="27.0" prefWidth="212.0" text="Enter waiting list" textAlignment="CENTER">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Button>
+      <Text fx:id="txtResult" fill="RED" layoutX="33.0" layoutY="198.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="337.13671875">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Text>
+   </children>
+</AnchorPane>

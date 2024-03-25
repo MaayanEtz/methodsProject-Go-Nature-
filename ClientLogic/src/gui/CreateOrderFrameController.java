@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import client.ChatClient;
 import client.ClientUI;
 import entity.NextPage;
+import entity.SecondPage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -60,7 +61,7 @@ public class CreateOrderFrameController {
     public void loadData() {
     	
     	try {
-			
+	
 			//1. Load Parks List  	
 			ArrayList<Object> arrmsg = new ArrayList<Object>();
 			arrmsg.add(new String("ParksListGet"));
@@ -68,7 +69,7 @@ public class CreateOrderFrameController {
 			arrmsg.add(new String("Get"));
 			ClientUI.chat.accept(arrmsg);
 			
-			if (ChatClient.dataFromServer.equals(null))
+			if (ChatClient.dataFromServer.get(0).equals("null"))
 				throw new NullPointerException("The parks list doesn't exists.");
 			
 			this.selectParkCmb.getItems().addAll(ChatClient.dataFromServer);
@@ -118,7 +119,9 @@ public class CreateOrderFrameController {
 				this.guidedChkb.setSelected(false);
 				this.guidedChkb.setDisable(true);
 			}
-		} catch (Exception e) {
+		}catch (NullPointerException e) {
+			System.out.println(e.getMessage());
+		}catch (Exception e) {
 			System.out.println("Error in CreateOrderFrameController: loadData");
 			System.out.println(e.getMessage());
 		}
@@ -146,14 +149,7 @@ public class CreateOrderFrameController {
 			String visitorsNum, phoneNum, paymentInAdvance;
 			ArrayList<String> orderArr;
 			Integer visitorsNumInt = 0;
-			
-			//Check if want to pay in advance
-			if(this.ckbPayInAdvance.isSelected())
-				paymentInAdvance = new String("true");
-			else
-				paymentInAdvance = new String("false");
-			
-			
+
 			//1. If guided group - check the number of visitors. Should be less then 15
 			if (this.guidedChkb.isSelected()) {
 				//the guided group
@@ -196,7 +192,6 @@ public class CreateOrderFrameController {
 				orderArr.add(String.valueOf(visitorsNumInt));
 				orderArr.add(this.txtEmail.getText());
 				orderArr.add(phoneNum);
-				orderArr.add(paymentInAdvance);	
 			} catch (NullPointerException e) {
 				this.lblResult.setText("You must feel all the fields.");
 				System.out.println("You must feel all the fields.");
@@ -207,21 +202,48 @@ public class CreateOrderFrameController {
 			}
 			
 			//3. Create new order    	
-			ArrayList<Object> arrmsg = new ArrayList<Object>();
+			ArrayList<Object>  arrmsg = new ArrayList<Object>();
 			arrmsg.add(new String("OrderCreate"));
 			arrmsg.add(new String("ArrayList<String>"));
 			arrmsg.add(orderArr);
 			ClientUI.chat.accept(arrmsg);
 
-			if(ChatClient.result == false)
-				this.lblResult.setText(new String("Unfortunately, order not created!"));
-			else
+			if(ChatClient.dataFromServer.get(0).equals("-1")) {
+				//////enter wait list or choose other date and time
+				//this.lblResult.setText(new String("Unfortunately, order not created!"));
+				SecondPage page = new SecondPage(event, "/gui/ChoiceWindow.fxml", "Choice window", "ChoiceWindowController", "pressCreateBtn", orderArr); 
+	        	page.openSecondPage();
+			}
+			else {
 				this.lblResult.setText(new String("Order successfuly created! Your order number: " + ChatClient.dataFromServer.get(0)));
-
+				
+				//Check and set if want to pay in advance
+				if(this.ckbPayInAdvance.isSelected())
+					paymentInAdvance = new String("0");
+				else
+					paymentInAdvance = new String("1");
+				
+				ArrayList<String> payMsg = new ArrayList<>();
+				payMsg.add(ChatClient.dataFromServer.get(0));
+				payMsg.add(paymentInAdvance);
+				
+				arrmsg = new ArrayList<Object>();
+				arrmsg.add(new String("setPaidInAdvance"));
+				arrmsg.add(new String("ArrayList<String>"));
+				arrmsg.add(payMsg);
+				ClientUI.chat.accept(arrmsg);
+				
+				if(ChatClient.result == true)
+					System.out.println("The paiment in advance setted");
+				else
+					System.out.println("The paiment in advance was not setted");
+				
+			}
 		} catch (Exception e) {
 			System.out.println("Error in CreateOrderFrameController: pressCreateBtn");
 			System.out.println(e.getMessage());
 		}	
     }//End pressCreateBtn
+    
 
 }//END class

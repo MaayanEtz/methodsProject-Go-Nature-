@@ -21,6 +21,7 @@ public class ChatClient extends AbstractClient {
 	 */
 	ChatIF clientUI;
 	public static String visitorID;
+	public static String userName;
 	public static Order order;
 	public static ArrayList<String> dataFromServer;
 	public static boolean result = false;
@@ -121,7 +122,6 @@ public class ChatClient extends AbstractClient {
 								dataFromServer = new ArrayList<>();
 								dataFromServer.add(pay_load_from_srv_str);
 								result = true;
-								System.out.println("Order created");
 								break;
 							}
 						}
@@ -154,22 +154,52 @@ public class ChatClient extends AbstractClient {
 					
 					case "GuideRegistration": {
 						pay_load_from_srv_bln = (Boolean) arr.get(2);
-						caseDecision(pay_load_from_srv_bln, "The guide has been successfully registered", "The guide is not registered");
+						caseDecision(pay_load_from_srv_bln, "The guide has been successfully registered", "The guide was not registered");
 						break;}
 					
 					case "IsLoggedIn": {
 						pay_load_from_srv_bln = (Boolean) arr.get(2);
-						caseDecision(pay_load_from_srv_bln, "The user is logged in", "The user is not logged in");
+						caseDecision(pay_load_from_srv_bln, "The user is logged in", "The user was not logged in");
 						break;}
 					
 					case "UserLogOut": {
-						pay_load_from_srv_bln = (Boolean) arr.get(2);
-						caseDecision(pay_load_from_srv_bln, "The user logged out", "The user wasn't logged out");
+						switch (paylod_type_from_server) {
+						case "String": {
+							pay_load_from_srv_str = (String) arr.get(2);
+							System.out.println(pay_load_from_srv_str);
+							result = false;
+							break;}
+						case "Boolean": {
+							pay_load_from_srv_bln = (Boolean) arr.get(2);
+							caseDecision(pay_load_from_srv_bln, "The user logged out", "The user wasn't logged out");
+							break;}
+						}
 						break;}
 					
 					case "ExitRegistration": {
 						pay_load_from_srv_bln = (Boolean) arr.get(2);
-						caseDecision(pay_load_from_srv_bln, "The exit registration performed", "The exit registration is not performed");
+						caseDecision(pay_load_from_srv_bln, "The exit registration performed", "The exit registration was not performed");
+						break;}
+					
+					case "GetPrices": {
+						pay_load_from_srv_arr_lst = (ArrayList<String>) arr.get(2);
+						dataFromServer = pay_load_from_srv_arr_lst;
+						break;}
+					
+					case "setPaidInAdvance": {
+						pay_load_from_srv_bln = (Boolean) arr.get(2);
+						caseDecision(pay_load_from_srv_bln, "The paiment in advance setted", "The paiment in advance was not setted");
+						break;}
+					
+					case "getPaidInAdvance": {
+						pay_load_from_srv_bln = (Boolean) arr.get(2);
+						caseDecision(pay_load_from_srv_bln, "Paid in advance", "Wasn't paid in advance");
+						break;}
+					
+					case "EnterWaitList": {
+						pay_load_from_srv_str = (String) arr.get(2);
+						dataFromServer = new ArrayList<>();
+						dataFromServer.add(pay_load_from_srv_str);
 						break;}
 					
 

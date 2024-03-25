@@ -1,8 +1,10 @@
 package gui;
 
 import java.text.DecimalFormat;
-import java.time.LocalDate;
+import java.text.NumberFormat;
 
+
+import java.time.LocalDate;
 import entity.PriceGenerator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,10 +13,10 @@ import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 
 public class InvoiceController {
+	
     @FXML
     private Label lblResult;
     @FXML
-    
     private Text txtAmountRow1, txtAmountRow2, txtAmountRow3, txtAmountRow4, txtAmountRow5, txtAmountRow6;
 
     @FXML
@@ -31,11 +33,16 @@ public class InvoiceController {
 
     @FXML
     private Text txtTotalPrice;
+    
  
     //load invoice
     public void genarateInvoice(PriceGenerator priceGenerator) {
     	try {
 			
+    		//0. Set currency
+    		String currencySymbol = "₪"; // Israeli Shekel symbol
+
+    		
 			//1. Invoice date
 			LocalDate today = LocalDate.now();
 			this.txtInvoceDate.setText(today.toString());
@@ -44,7 +51,7 @@ public class InvoiceController {
 			this.txtRow1.setText("Full price");
 			this.txtPriceRow1.setText(String.valueOf(priceGenerator.getFullPrice()));
 			this.txtQuantityRow1.setText(String.valueOf(priceGenerator.getVisitorsNumber()));
-			this.txtAmountRow1.setText(String.valueOf(priceGenerator.getFullPrice() * priceGenerator.getVisitorsNumber()));
+			this.txtAmountRow1.setText(new String(String.valueOf(priceGenerator.getFullPrice() * priceGenerator.getVisitorsNumber()) + " " + currencySymbol));
 			
 			//3. Guide
 			this.txtRow2.setText("Guided visit discount");
@@ -68,7 +75,7 @@ public class InvoiceController {
 				
 			//5. Total price
 			DecimalFormat decimalFormat = new DecimalFormat("#.##");
-			this.txtTotalPrice.setText(String.valueOf(decimalFormat.format(priceGenerator.getFinalPrice())));
+			this.txtTotalPrice.setText(new String(String.valueOf(decimalFormat.format(priceGenerator.getFinalPrice())) + " " + currencySymbol));
 			
 		} catch (Exception e) {
 			System.out.println("Error in InvoiceController: genarateInvoice");

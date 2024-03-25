@@ -71,7 +71,15 @@ public class DepartmentWorkerController {
 
 	@FXML
 	void pressLogoutBtn(ActionEvent event) { //// NEED TO ADD LOGOUT
-		
+    	try {
+    		///////////ENTER LOG OUT REQUEST////////////
+    		
+        	NextPage page = new NextPage(event, "/gui/Login.fxml", "Login Page", "LoginController", "pressLogoutBtn"); 
+        	page.Next();
+    	}catch (Exception e) {
+    		System.out.println("Error in ParkWorkerMenuController: pressLogOut");
+    		System.out.println(e.getMessage());
+    	}
 	}
 
 	// Event for "Back" button

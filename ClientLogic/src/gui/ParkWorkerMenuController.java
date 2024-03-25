@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import client.ChatClient;
 import client.ClientUI;
 import entity.NextPage;
+import entity.SecondPage;
 import entity.PriceGenerator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -117,24 +118,23 @@ public class ParkWorkerMenuController {
 	    		else {
 		    		String orderNum = this.txtEnteredOrderNum.getText();
 		    		
+		    		if(!parkName.equals(this.txtParkName.getText()))
+		    			throw new IllegalArgumentException("You can't deal with not your park orders.");
+		    		
 		    		//Send the order
 					ArrayList<Object> arrmsg = new ArrayList<Object>();
 					arrmsg.add(new String("OrderedEnter"));
 					arrmsg.add(new String("String"));
 					arrmsg.add(orderNum);
-					
-					/////////////OPEN//////////////
-					//ClientUI.chat.accept(arrmsg);
-					
-					///////////ONLY FOR CHEK/////////////////
-					ChatClient.result = true;
-					//ChatClient.result = false;
-					
+					ClientUI.chat.accept(arrmsg);
+								
 					if(ChatClient.result == true)
 						errorCase("The visitors succesfully entered the park","The visitors succesfully entered the park.");
 					else
 						errorCase("The visitors not entered the park","The visitors not entered the park.");
 	    		}	    		
+	    	}catch (IllegalArgumentException e) {
+	    		errorCase(e.getMessage(),e.getMessage());
 	    	}catch (Exception e) {
 	    		System.out.println("Error in ParkWorkerMenuController: pressEnterParkBtn");
 	    		System.out.println(e.getMessage());
@@ -154,6 +154,9 @@ public class ParkWorkerMenuController {
 		    		if(visitorNum.trim().isEmpty()) {
 		    			errorCaseUnplanned("String for number of visitors is empty","You must enter a number of visitors.");
 		    		}else {
+			    		if(!parkName.equals(this.txtParkName.getText()))
+			    			throw new IllegalArgumentException("You can't deal with not your park orders.");
+		    			
 		    			// Check if the string contains any digit
 				        Pattern pattern = Pattern.compile("\\d");
 				        Matcher matcher = pattern.matcher(visitorNum);
@@ -162,7 +165,7 @@ public class ParkWorkerMenuController {
 				        
 				        if (Integer.parseInt(visitorNum) < 1)
 				        	throw new IllegalArgumentException("The number of visitors should be greater then 0");
-
+				        
 			    		ArrayList<String> arrEnterPark = new ArrayList<>();
 			    		arrEnterPark.add(this.parkName);
 			    		arrEnterPark.add(visitorNum);
@@ -171,14 +174,8 @@ public class ParkWorkerMenuController {
 						arrmsg.add(new String("UnplannedEnter"));
 						arrmsg.add(new String("ArrayList<String>"));
 						arrmsg.add(arrEnterPark);
-						
-						/////////////OPEN////////////////////
-						//ClientUI.chat.accept(arrmsg);
-						
-						///////////ONLY FOR CHEK/////////////////
-						ChatClient.result = true;
-						//ChatClient.result = false;
-						
+						ClientUI.chat.accept(arrmsg);
+
 						if(ChatClient.result == true)
 							errorCaseUnplanned("The unplanned visitors succesfully entered the park","The unplanned visitors succesfully entered the park.");
 						else
@@ -263,7 +260,7 @@ public class ParkWorkerMenuController {
 				
 				//2. Check if payed in advance
 	    		arrmsg = new ArrayList<Object>();
-				arrmsg.add(new String("isPaidInAdvance"));
+				arrmsg.add(new String("getPaidInAdvance"));
 				arrmsg.add(new String("String"));
 				arrmsg.add(ChatClient.order.getOrderNumber());
 				
@@ -288,16 +285,9 @@ public class ParkWorkerMenuController {
 				priceGenerator.setVisitorsNumber(visitorNumInt);	
 				finalPrice = priceGenerator.generateFinalPrice();
 	    		
-	    		//5. Generate Invoice and open Invoice in the SECOND window
-				FXMLLoader secondLoader = new FXMLLoader(getClass().getResource("/gui/Invoice.fxml"));
-				Pane secondRoot = secondLoader.load();
-				InvoiceController invoiceController = secondLoader.getController();
-				invoiceController.genarateInvoice(priceGenerator);
-		        Stage secondStage = new Stage();
-		        secondStage.setTitle("Invoice");
-		        Scene secondScene = new Scene(secondRoot);
-		        secondStage.setScene(secondScene);
-		        secondStage.show();
+	    		//5. Generate Invoice and open Invoice in the SECOND window	
+				SecondPage page = new SecondPage(event, "/gui/Invoice.fxml", "Invoice", "InvoiceController", "pessGetInvoicePlanned", priceGenerator); 
+	        	page.openSecondPage();
 	    		
 	    		this.isGotInvoice = true;
 	    	}catch (NullPointerException e) {
@@ -316,6 +306,7 @@ public class ParkWorkerMenuController {
 	    		Boolean isGuidedGroup = false;
 	    		Integer visitorNumInt = 0;
 	    		Double finalPrice = 0.0;
+	    		this.txtErrorUnplanned.setText("");
 
 	    		//1. Check the number of visitors
 	    		String visitorNum = this.txtEnteredVisitorsNum.getText();
@@ -333,7 +324,12 @@ public class ParkWorkerMenuController {
 
 		    		//2. Check checkbox if guided group or private visit
 		    		if(this.ckbGuidedGroup.isSelected()) {
-		    			isGuidedGroup = true;
+		    			isGuidedGroup = true;				
+		    			//if guided group - the number of visitors should be no more than 15
+		    			if(Integer.parseInt(visitorNum) > 15) {
+		    				errorCaseUnplanned("Guided group - more than 15 visitors","Guided group should be up to 15 visitors.");
+		    				return;
+		    			}
 		    			visitorNumInt = Integer.parseInt(visitorNum) + 1;
 		    			}
 		    		
@@ -341,6 +337,9 @@ public class ParkWorkerMenuController {
 		    			isGuidedGroup = false;
 		    			visitorNumInt = Integer.parseInt(visitorNum);
 		    		}
+		    		
+		    		if((!this.ckbGuidedGroup.isSelected()) && (!this.ckbPrivateFamVisit.isSelected()) )
+		    			throw new IllegalArgumentException("You should choose the type of visit: guided or private/family");
 
 		    		//3. Call PriceGenerator to get the final price
 					PriceGenerator priceGenerator = new PriceGenerator();
@@ -351,15 +350,9 @@ public class ParkWorkerMenuController {
 					finalPrice = priceGenerator.generateFinalPrice();
 		    		
 		    		//4. Generate Invoice and open Invoice in the SECOND window
-					FXMLLoader secondLoader = new FXMLLoader(getClass().getResource("/gui/Invoice.fxml"));
-					Pane secondRoot = secondLoader.load();
-					InvoiceController invoiceController = secondLoader.getController();
-					invoiceController.genarateInvoice(priceGenerator);
-			        Stage secondStage = new Stage();
-			        secondStage.setTitle("Invoice");
-			        Scene secondScene = new Scene(secondRoot);
-			        secondStage.setScene(secondScene);
-			        secondStage.show();
+					
+					SecondPage page = new SecondPage(event, "/gui/Invoice.fxml", "Invoice", "InvoiceController", "pessGetInvoiceUnplanned", priceGenerator); 
+		        	page.openSecondPage();
 			        
 		    		this.isGotInvoice = true;
 	    		}
@@ -389,18 +382,17 @@ public class ParkWorkerMenuController {
 			        if (Integer.parseInt(exitVisitorsNum) < 1)
 			        	errorCaseExit("The number of visitors should be greater then 0","The number of visitors should be greater then 0");
 			        else {
+			        	
+			        	ArrayList<String> exitRegMsg = new ArrayList<>();
+			        	exitRegMsg.add(this.parkName);
+			        	exitRegMsg.add(exitVisitorsNum);
+			        	
 						//send the number of visitors for performing an exit registration
 						ArrayList<Object> arrmsg = new ArrayList<Object>();
 						arrmsg.add(new String("ExitRegistration"));
 						arrmsg.add(new String("ArrayList<String>"));
-						arrmsg.add(exitVisitorsNum);
-						
-						//////////////OPEN///////////////
-						//ClientUI.chat.accept(arrmsg);
-						
-						///////////ONLY FOR CHEK/////////////////
-						ChatClient.result = true;
-						//ChatClient.result = false;
+						arrmsg.add(exitRegMsg);
+						ClientUI.chat.accept(arrmsg);
 						
 						if (ChatClient.result == false) {
 							//exit registration not succeeded
@@ -422,10 +414,24 @@ public class ParkWorkerMenuController {
 	    @FXML
 	    void pressLogOut(ActionEvent event) {
 	    	try {
-	    		///////////ENTER LOG OUT REQUEST////////////
-	    		
-	        	NextPage page = new NextPage(event, "/gui/NewHomePage.fxml", "Home Page", "NewHomePageController", "pressBackBtn"); 
-	        	page.Next();
+				ArrayList<Object> arrmsg = new ArrayList<Object>();
+				arrmsg.add(new String("UserLogOut"));
+				arrmsg.add(new String("String"));
+				arrmsg.add(ChatClient.userName);
+				ClientUI.chat.accept(arrmsg);
+				
+				if(ChatClient.result == true) {
+					ChatClient.userName = "";
+		        	NextPage page = new NextPage(event, "/gui/NewHomePage.fxml", "Home Page", "NewHomePageController", "pressBackBtn"); 
+		        	page.Next();
+				}
+				else {
+					this.txtError.setText("The user wasn't logged out");
+					this.txtErrorUnplanned.setText("The user wasn't logged out");
+					this.txtErrorExitReg.setText("The user wasn't logged out");
+				}
+					
+
 	    	}catch (Exception e) {
 	    		System.out.println("Error in ParkWorkerMenuController: pressLogOut");
 	    		System.out.println(e.getMessage());

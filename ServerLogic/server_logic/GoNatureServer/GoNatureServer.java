@@ -1033,7 +1033,7 @@ public class GoNatureServer extends AbstractServer {
 			System.out.println("[" + endpoint + " |INFO]: " + endpoint + " enpoint trigered");
 			if (payload_type.equals("String")) {
 				boolean getPaidInAdvance_test_succeeded = false;
-				db_table = "getpaidinadvance";
+				db_table = "orders";
 				PreparedStatement ps;
 				try {
 					String getPaidInAdvance_order_id_extracted = (String) arr_msg.get(2);
@@ -1087,7 +1087,7 @@ public class GoNatureServer extends AbstractServer {
 			System.out.println("[" + endpoint + " |INFO]: " + endpoint + " enpoint trigered");
 			if (payload_type.equals("ArrayList<String>")) {
 				boolean setPaidInAdvance = false;
-				db_table = "getpaidinadvance";
+				db_table = "orders";
 				PreparedStatement ps;
 				try {
 					ArrayList<String> extracted_arrlist = (ArrayList<String>) arr_msg.get(2);

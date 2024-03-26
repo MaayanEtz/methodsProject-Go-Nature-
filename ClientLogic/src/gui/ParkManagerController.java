@@ -113,7 +113,7 @@ public class ParkManagerController
         }
         }
         @FXML
-        void pressSentTomanager(ActionEvent event) 
+        void pressSendToApprove(ActionEvent event) 
         {
         	try {
         		ArrayList<Object> arrmsg = new ArrayList<Object>();

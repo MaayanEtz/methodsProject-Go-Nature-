@@ -40,10 +40,12 @@
             <Font size="15.0" />
          </font>
       </Label>
-      <Button fx:id="btnSend" layoutX="90.0" layoutY="347.0" mnemonicParsing="false" onAction="#pressSend" text="Approve" />
+      <Button fx:id="btnApprove" layoutX="90.0" layoutY="347.0" mnemonicParsing="false" onAction="#pressApprove" text="Approve" />
       <Text fx:id="maxCapacityTxt" layoutX="258.0" layoutY="182.0" stroke="#a16666" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="188.0" />
       <Text fx:id="configureGapTxt" layoutX="258.0" layoutY="227.0" stroke="#a16666" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="188.0" />
       <Text fx:id="closesParkTxt" layoutX="258.0" layoutY="271.0" stroke="#a16666" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="188.0" />
       <Text fx:id="availableSpaceTxt" layoutX="258.0" layoutY="316.0" stroke="#a16666" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="188.0" />
+      <Button fx:id="btnDeny" layoutX="235.0" layoutY="347.0" mnemonicParsing="false" onAction="#pressDeny" text="Deny" />
+      <Button fx:id="btnRefresh" layoutX="397.0" layoutY="297.0" mnemonicParsing="false" onAction="#pressRefreshbtn" text="Refresh" />
    </children>
 </AnchorPane>

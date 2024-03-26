@@ -15,6 +15,7 @@ VALUES
 
 
 
+
 CREATE TABLE `parks` (
   `parkName` varchar(255) NOT NULL,
   `capacity` int DEFAULT NULL,
@@ -26,39 +27,37 @@ CREATE TABLE `parks` (
   `newVisitTimeInMinutes` int DEFAULT NULL,
   PRIMARY KEY (`parkName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-
-INSERT INTO parks (parkName, capacity, diff, visitTimeInMinutes, currentVisitors, newCapacity, newDiff, newVisitTimeInMinutes)
+INSERT INTO `parks` (`parkName`, `capacity`, `diff`, `visitTimeInMinutes`, `currentVisitors`, `newCapacity`, `newDiff`, `newVisitTimeInMinutes`)
 VALUES
-    ('Central Park', 100, 5, 120, 50, 100, 5, 120),
-    ('Golden Gate Park', 150, 7, 90, 75, 150, 7, 90),
-    ('Yellowstone National Park', 200, 10, 180, 100, 200, 10, 180);
-
+('Yellowstone National Park', 500, 30, 120, 300, 600, 40, 150),
+('Central Park', 200, 10, 90, 150, 250, 15, 105),
+('Golden Gate Park', 300, 20, 60, 200, 350, 25, 75);
 
 
 
 CREATE TABLE `orders` (
   `orderId` int NOT NULL AUTO_INCREMENT,
-  `visitor_id` VARCHAR(255) DEFAULT NULL, -- Changed data type to varchar
+  `visitor_id` varchar(255) DEFAULT NULL,
   `parkName` varchar(90) DEFAULT NULL,
   `time_of_visit` datetime DEFAULT NULL,
   `visitor_number` int DEFAULT NULL,
   `visitor_email` varchar(90) DEFAULT NULL,
   `visitor_phone` varchar(90) DEFAULT NULL,
   `status` enum('Active','Cancelled','WaitList') DEFAULT NULL,
-  `paid` BOOLEAN, -- Added a new column 'paid' of boolean type
+  `paid` BOOLEAN DEFAULT NULL,
+  `reminderMsgSend` BOOLEAN DEFAULT NULL,
+  `visitorConfirmedOrder` BOOLEAN DEFAULT NULL,
   PRIMARY KEY (`orderId`),
   KEY `parkName` (`parkName`),
   CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`parkName`) REFERENCES `parks` (`parkName`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-INSERT INTO orders (visitor_id, parkName, time_of_visit, visitor_number, visitor_email, visitor_phone, status, paid)
+INSERT INTO orders (visitor_id, parkName, time_of_visit, visitor_number, visitor_email, visitor_phone, status, paid, reminderMsgSend, visitorConfirmedOrder)
 VALUES
-    ('987654321', 'Central Park', '2024-03-23 10:00:00', 2, 'visitor1@example.com', '1234567890', 'Active', 0), -- Assuming not paid
-    ('654321987', 'Central Park', '2024-03-24 11:00:00', 3, 'visitor2@example.com', '9876543210', 'Cancelled', 0), -- Assuming not paid
-    ('123987456', 'Central Park', '2024-03-25 12:00:00', 4, 'visitor3@example.com', '4567891230', 'WaitList', 0); -- Assuming not paid
-
+    ('987654321', 'Central Park', '2024-03-23 10:00:00', 2, 'visitor1@example.com', '1234567890', 'Active', FALSE, FALSE, FALSE), -- Assuming not paid and reminders not sent, order not confirmed
+    ('654321987', 'Central Park', '2024-03-24 11:00:00', 3, 'visitor2@example.com', '9876543210', 'Cancelled', FALSE, FALSE, FALSE), -- Assuming not paid and reminders not sent, order not confirmed
+    ('123987456', 'Central Park', '2024-03-25 12:00:00', 4, 'visitor3@example.com', '4567891230', 'WaitList', FALSE, FALSE, FALSE); -- Assuming not paid and reminders not sent, order not confirmed
 
 
 CREATE TABLE `users` (

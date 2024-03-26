@@ -33,6 +33,11 @@ public class GoNatureServer extends AbstractServer {
 	private Map<String, ConnectionToClient> logged_in_clients = new HashMap<>();
 	private Map<String, Integer> discounts = new LinkedHashMap<>();
 
+	/// By oren temporal
+	//ArrayList<ConnectionToClient, String> clients_with_orders = new ArrayList<>();
+	public Map<String,ConnectionToClient> clients_with_orders = new HashMap<>();
+
+	
 	/// time outs ///
 	int db_conn_validation_timeout_milisecs = 10000;
 
@@ -48,7 +53,7 @@ public class GoNatureServer extends AbstractServer {
 		this.db_pass = db_pass;
 	}
 
-	private void send_response(ConnectionToClient client, String endpoint, String payload_type, Object payload)
+	public void send_response(ConnectionToClient client, String endpoint, String payload_type, Object payload)
 			throws IOException {
 		ArrayList<Object> response_arrlst;
 		try {
@@ -77,7 +82,8 @@ public class GoNatureServer extends AbstractServer {
 		String payload_type;
 		ArrayList<Object> arr_msg;
 		ArrayList<String> arr = new ArrayList<String>();
-
+			
+		
 		// Convert to ArrayList test
 		try {
 			arr_msg = (ArrayList<Object>) msg;
@@ -357,16 +363,20 @@ public class GoNatureServer extends AbstractServer {
 					//
 					if (checkOrderTime(payload)) {
 						// prepare MySQL query prepare
-						prepared_statement = db_con.prepareStatement("INSERT INTO " + db_table
-								+ " (`visitor_id`, `parkName`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`)"
-								+ "VALUES (?, ?, ?, ?, ?, ?, 'active');");
-						prepared_statement.setString(1, visitor_id);
-						prepared_statement.setString(2, park_name);
-						prepared_statement.setString(3, time_of_visit);
-						prepared_statement.setString(4, visitor_number);
-						prepared_statement.setString(5, visitor_email);
-						prepared_statement.setString(6, visitor_phone);
-						prepared_statement.executeUpdate();
+						PreparedStatement preparedStatement = db_con.prepareStatement("INSERT INTO " + db_table
+						        + " (`visitor_id`, `parkName`, `time_of_visit`, `visitor_number`, `visitor_email`, `visitor_phone`, `status`, `paid`, `reminderMsgSend`, `visitorConfirmedOrder`)"
+						        + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+						preparedStatement.setString(1, visitor_id);
+						preparedStatement.setString(2, park_name);
+						preparedStatement.setString(3, time_of_visit);
+						preparedStatement.setString(4, visitor_number);
+						preparedStatement.setString(5, visitor_email);
+						preparedStatement.setString(6, visitor_phone);
+						preparedStatement.setString(7, "Active"); // Status should be 'Active'
+						preparedStatement.setBoolean(8, false); // paid
+						preparedStatement.setBoolean(9, false); // reminderMsgSend
+						preparedStatement.setBoolean(10, false); // visitorConfirmedOrder
+						preparedStatement.executeUpdate();
 						// -------------------------------------------------
 
 						prepared_statement = null;
@@ -378,6 +388,12 @@ public class GoNatureServer extends AbstractServer {
 									new String("couldnt get max from DB"));
 						}
 						orderId = result_set.getInt("max");
+						
+						/// OREN SMS DEVELOPING:
+						clients_with_orders.put(String.valueOf(orderId),client);
+						System.out.println("[OrderCreate | INFO]: client:" + client + " was added to clients_with_orders map with ORDERID: " + orderId);
+						
+						////////////////
 					}
 
 					// Catch Problems
@@ -1399,6 +1415,7 @@ public class GoNatureServer extends AbstractServer {
 						ArrayList<String> response_arr = new ArrayList<>(Arrays.asList(result_set.getString("capacity"),result_set.getString("currentVisitors")));
 						try {
 							send_response(client, endpoint, new String("ArrayList<String>"), response_arr);
+						
 							return;
 						} catch (IOException e) {
 							System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending ErrorString to client");
@@ -1700,6 +1717,11 @@ public class GoNatureServer extends AbstractServer {
 		discounts.put(new String("discount_payment_in_advance"), new Integer(12));
 
 		/////////////////////////////////////////////////////////////////
+		
+		
+		/// Start SMS simulator thread
+		OrderNotificationThread notificationThread = new OrderNotificationThread(this, db_con);
+        notificationThread.start();
 	}
 
 	/**
@@ -1733,6 +1755,8 @@ public class GoNatureServer extends AbstractServer {
 		//////////////////////
 		System.out.println("[clientConnected|INFO]: adding client to gui list");
 		controller.addClient(client);
+		
+		
 		return;
 	}
 

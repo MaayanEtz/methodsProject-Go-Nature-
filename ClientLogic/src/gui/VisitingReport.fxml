@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" stylesheets="@design.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.VisitingReportController">
+   <children>
+      <ImageView fitHeight="100.0" fitWidth="101.0" layoutX="14.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Pictures/go_Nature_logo-removebg-preview.png" />
+         </image>
+      </ImageView>
+      <Button fx:id="btnBack" layoutX="514.0" layoutY="45.0" mnemonicParsing="false" onAction="#pressBack" text="Back" />
+      <Label layoutX="235.0" layoutY="44.0" prefHeight="30.0" prefWidth="130.0" text="Visitng report" textFill="#1e5d38">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Text fx:id="indvidualTxt" layoutX="40.0" layoutY="413.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="519.9999145507811">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <PieChart fx:id="visitorsPie" layoutX="21.0" layoutY="115.0" prefHeight="270.0" prefWidth="558.0" />
+      <Text fx:id="subscriberTxt" layoutX="40.0" layoutY="443.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="519.9999145507811">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="organizedTxt" layoutX="40.0" layoutY="473.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="519.9999145507811">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+   </children>
+</AnchorPane>

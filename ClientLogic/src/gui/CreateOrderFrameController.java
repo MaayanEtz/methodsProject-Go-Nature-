@@ -23,7 +23,7 @@ import javafx.scene.control.DateCell;
 public class CreateOrderFrameController {
 	
 	public static final int GUIDED_GROUP_MAX_VISITORS_NUMBER = 15;
-
+	
     @FXML
     private DatePicker SelectDayDp;
 
@@ -219,9 +219,9 @@ public class CreateOrderFrameController {
 				
 				//Check and set if want to pay in advance
 				if(this.ckbPayInAdvance.isSelected())
-					paymentInAdvance = new String("0");
-				else
 					paymentInAdvance = new String("1");
+				else
+					paymentInAdvance = new String("0");
 				
 				ArrayList<String> payMsg = new ArrayList<>();
 				payMsg.add(ChatClient.dataFromServer.get(0));

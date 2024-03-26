@@ -1,5 +1,7 @@
 package entity;
 
+import java.util.ArrayList;
+
 import gui.*;
 import gui.FindOrderFrameController.Action;
 import javafx.event.ActionEvent;
@@ -127,6 +129,14 @@ public class NextPage {
 				if (data instanceof String)
 					parkManagerController.loadData((String)data);
 				break;}
+			
+			case "ParkManagerReportsPageController": {
+				ParkManagerReportsPageController parkManagerReportsPageController = loader.getController();
+				if (data instanceof String)
+					parkManagerReportsPageController.loadData((String)data);
+				break;}
+			
+
 			
 			default: {System.out.println("No such controller in NextPage: Next");}
 		}

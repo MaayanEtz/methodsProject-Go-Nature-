@@ -10,15 +10,17 @@
 
 <AnchorPane prefHeight="413.0" prefWidth="497.0" stylesheets="@design.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.DepartmentManagerController">
    <children>
-      <Label layoutX="198.0" layoutY="44.0" prefHeight="30.0" prefWidth="251.0" text="Department Manager Menu" textFill="#1e5d38">
+      <Label layoutX="179.0" layoutY="44.0" prefHeight="30.0" prefWidth="274.0" text="Department Manager Request" textFill="#1e5d38">
          <font>
             <Font size="20.0" />
-         </font></Label>
+         </font>
+      </Label>
       <Label id="lblSurname" layoutX="53.0" layoutY="210.0" prefHeight="22.0" prefWidth="156.0" text="Configure gap in park :" textFill="#1e5d38">
          <font>
             <Font size="15.0" />
-         </font></Label>
-      <Button fx:id="btnLogout" layoutX="369.0" layoutY="347.0" mnemonicParsing="false" onAction="#pressLogout" text="Logout" />
+         </font>
+      </Label>
+      <Button fx:id="btnBack" layoutX="397.0" layoutY="347.0" mnemonicParsing="false" onAction="#pressBack" text="Back" />
       <ImageView fitHeight="121.0" fitWidth="135.0" layoutX="29.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@Pictures/go_Nature_logo-removebg-preview.png" />
@@ -35,17 +37,21 @@
             <Font size="15.0" />
          </font>
       </Label>
-      <Label id="lblSurname" layoutX="53.0" layoutY="255.0" prefHeight="22.0" prefWidth="171.0" text="The time the park closes :" textFill="#1e5d38">
+      <Label id="lblSurname" layoutX="53.0" layoutY="255.0" prefHeight="22.0" prefWidth="171.0" text="Time of stay in the park :" textFill="#1e5d38">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
-      <Button fx:id="btnApprove" layoutX="90.0" layoutY="347.0" mnemonicParsing="false" onAction="#pressApprove" text="Approve" />
+      <Button fx:id="btnApprove" layoutX="60.0" layoutY="347.0" mnemonicParsing="false" onAction="#pressApprove" text="Approve" />
       <Text fx:id="maxCapacityTxt" layoutX="258.0" layoutY="182.0" stroke="#a16666" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="188.0" />
       <Text fx:id="configureGapTxt" layoutX="258.0" layoutY="227.0" stroke="#a16666" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="188.0" />
       <Text fx:id="closesParkTxt" layoutX="258.0" layoutY="271.0" stroke="#a16666" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="188.0" />
       <Text fx:id="availableSpaceTxt" layoutX="258.0" layoutY="316.0" stroke="#a16666" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="188.0" />
-      <Button fx:id="btnDeny" layoutX="235.0" layoutY="347.0" mnemonicParsing="false" onAction="#pressDeny" text="Deny" />
+      <Button fx:id="btnDeny" layoutX="236.0" layoutY="347.0" mnemonicParsing="false" onAction="#pressDeny" text="Deny" />
       <Button fx:id="btnRefresh" layoutX="397.0" layoutY="297.0" mnemonicParsing="false" onAction="#pressRefreshbtn" text="Refresh" />
+      <Text fx:id="promptTxt" fill="RED" layoutX="84.0" layoutY="148.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="346.13670349121094">
+         <font>
+            <Font size="14.0" />
+         </font></Text>
    </children>
 </AnchorPane>

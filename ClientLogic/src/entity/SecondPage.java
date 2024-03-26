@@ -1,10 +1,11 @@
 package entity;
 
 import gui.InvoiceController;
+import gui.TotalVisitorsNumberReportPageController;
+import gui.UsageReportPageController;
+import gui.ChoiceWindowController;
 
 import java.util.ArrayList;
-
-import gui.ChoiceWindowController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -54,6 +55,16 @@ public class SecondPage {
 				case "ChoiceWindowController": {
 					ChoiceWindowController choiceWindowController = secondLoader.getController();
 					choiceWindowController.loadData((ArrayList<String>)data);
+					break;}
+				
+				case "TotalVisitorsNumberReportPageController": {
+					TotalVisitorsNumberReportPageController totalVisitorsNumberReportPageController = secondLoader.getController();
+					totalVisitorsNumberReportPageController.loadData((ArrayList<String>)data);
+					break;}
+				
+				case "UsageReportPageController": {
+					UsageReportPageController usageReportPageController = secondLoader.getController();
+					usageReportPageController.loadData((ArrayList<String>)data);
 					break;}
 			}
 			

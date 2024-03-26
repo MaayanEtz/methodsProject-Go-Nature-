@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
@@ -10,43 +9,49 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="413.0" prefWidth="497.0" stylesheets="@design.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ParkManagerController">
+<AnchorPane prefHeight="450.0" prefWidth="500.0" stylesheets="@design.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ParkManagerController">
    <children>
       <Label layoutX="235.0" layoutY="44.0" prefHeight="30.0" prefWidth="188.0" text="Park Manager Menu" textFill="#1e5d38">
          <font>
             <Font size="20.0" />
          </font></Label>
-      <Label id="lblSurname" layoutX="53.0" layoutY="210.0" prefHeight="22.0" prefWidth="156.0" text="Configure gap in park :" textFill="#1e5d38">
+      <Label id="lblSurname" layoutX="50.0" layoutY="193.0" prefHeight="22.0" prefWidth="156.0" text="Configure gap in park :" textFill="#1e5d38">
          <font>
             <Font size="15.0" />
          </font></Label>
-      <TextField fx:id="txtCapacity" layoutX="250.0" layoutY="165.0" prefHeight="25.0" prefWidth="204.0" promptText="Capacity int park" />
-      <TextField fx:id="txtGapInPark" layoutX="250.0" layoutY="210.0" prefHeight="25.0" prefWidth="204.0" promptText="Gap in the park" />
-      <Button fx:id="btnLogout" layoutX="369.0" layoutY="347.0" mnemonicParsing="false" onAction="#pressLogOut" text="Logout" />
+      <TextField fx:id="txtCapacity" layoutX="260.0" layoutY="141.0" prefHeight="25.0" prefWidth="200.0" promptText="Capacity int park" />
+      <TextField fx:id="txtGapInPark" layoutX="260.0" layoutY="191.0" prefHeight="25.0" prefWidth="200.0" promptText="Gap in the park" />
+      <Button fx:id="btnLogout" layoutX="402.0" layoutY="343.0" mnemonicParsing="false" onAction="#pressLogOut" text="Logout" />
       <ImageView fitHeight="121.0" fitWidth="135.0" layoutX="29.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@Pictures/go_Nature_logo-removebg-preview.png" />
          </image>
       </ImageView>
-      <Label id="lblSurname" layoutX="57.0" layoutY="165.0" prefHeight="22.0" prefWidth="178.0" text="Max capacity in the park :" textFill="#1e5d38">
+      <Label id="lblSurname" layoutX="50.0" layoutY="143.0" prefHeight="22.0" prefWidth="178.0" text="Max capacity in the park :" textFill="#1e5d38">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
       <Label layoutX="225.0" layoutY="85.0" text="Please fill all the required information" textFill="#1e5d38" />
-      <Label id="lblSurname" layoutX="57.0" layoutY="300.0" prefHeight="22.0" prefWidth="188.0" text="Available space in the park :" textFill="#1e5d38">
+      <Label id="lblSurname" layoutX="50.0" layoutY="293.0" prefHeight="22.0" prefWidth="188.0" text="Available space in the park :" textFill="#1e5d38">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
-      <Label id="lblSurname" layoutX="53.0" layoutY="255.0" prefHeight="22.0" prefWidth="171.0" text="The time the park closes :" textFill="#1e5d38">
+      <Label id="lblSurname" layoutX="50.0" layoutY="243.0" prefHeight="22.0" prefWidth="171.0" text="Tims of stay in the park :" textFill="#1e5d38">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
-      <ComboBox fx:id="selectTimeCmb" layoutX="250.0" layoutY="253.0" prefHeight="25.0" prefWidth="204.0" promptText="Click to select the time" />
-      <Button fx:id="btnRefresh" layoutX="397.0" layoutY="297.0" mnemonicParsing="false" onAction="#pressRefreshbtn" text="Refresh" />
-      <Button fx:id="btnSendToApprove" layoutX="78.0" layoutY="347.0" mnemonicParsing="false" onAction="#pressSendToApprove" text="Send to approval" />
-      <Text fx:id="availableSpaceTxt" layoutX="258.0" layoutY="316.0" stroke="#a16666" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="188.0" />
+      <Button fx:id="btnRefresh" layoutX="402.0" layoutY="290.0" mnemonicParsing="false" onAction="#pressRefreshbtn" text="Refresh" />
+      <Button fx:id="btnSendToApprove" layoutX="50.0" layoutY="343.0" mnemonicParsing="false" onAction="#pressSendToApprove" text="Send to approval" />
+      <Text fx:id="availableSpaceTxt" layoutX="260.0" layoutY="309.0" stroke="#a16666" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="200.0" />
+      <Button fx:id="btnCreateReports" layoutX="234.0" layoutY="343.0" mnemonicParsing="false" onAction="#pressCreateReports" text="Create Reports" />
+      <TextField fx:id="txtTimeOfstay" layoutX="260.0" layoutY="241.0" prefHeight="25.0" prefWidth="200.0" promptText="Time of stay in minutes*" />
+      <Label fx:id="lblErrorMsg" layoutX="151.0" layoutY="126.0" prefHeight="18.0" prefWidth="246.0" textFill="#1e5d38" />
+      <Label fx:id="lblErrorMsg1" layoutX="151.0" layoutY="117.0" prefHeight="18.0" prefWidth="246.0" textFill="#1e5d38" />
+      <Label fx:id="lblErrorMsg11" layoutX="151.0" layoutY="108.0" prefHeight="18.0" prefWidth="246.0" textFill="#1e5d38" />
+      <Label layoutX="115.0" layoutY="390.0" text="* Time need to be in minutes: &quot;120 means 2 hours&quot;" textFill="#1e5d38" />
+      <Text fill="#1e5d38" layoutX="60.0" layoutY="426.0" strokeType="OUTSIDE" strokeWidth="0.0" text="For any technical question contact us by email: helpdesk@gonature.co.il" />
    </children>
 </AnchorPane>

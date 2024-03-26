@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="575.0" prefWidth="536.0" stylesheets="@design.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.TotalVisitorsNumberReportPageController">
+   <children>
+      <Button fx:id="btnClose" layoutX="463.0" layoutY="534.0" mnemonicParsing="false" onAction="#pressCloseBtn" text="Close" />
+      <TableView fx:id="tblVistitorsNum" layoutX="19.0" layoutY="92.0" prefHeight="426.0" prefWidth="499.0">
+        <columns>
+          <TableColumn fx:id="colDate" prefWidth="100.0" text="Date" />
+          <TableColumn fx:id="colPrivFamVisit" prefWidth="200.0" text="Private or family visit" />
+            <TableColumn fx:id="colGuidedVisit" prefWidth="200.0" text="Guided group visit" />
+        </columns>
+      </TableView>
+      <ImageView fitHeight="80.0" fitWidth="77.0" layoutX="20.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Pictures/go_Nature_logo-removebg-preview.png" />
+         </image>
+      </ImageView>
+      <Text fill="#1e5d38" layoutX="124.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="Total visitors number report" textAlignment="CENTER" wrappingWidth="344.4755859375">
+         <font>
+            <Font size="25.0" />
+         </font>
+      </Text>
+      <Text fill="#1e5d38" layoutX="133.0" layoutY="78.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="Month:" textAlignment="CENTER" wrappingWidth="65.4755859375">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Text>
+      <Text fill="#1e5d38" layoutX="343.0" layoutY="77.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="Year:" textAlignment="CENTER" wrappingWidth="47.0">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtMonth" layoutX="198.0" layoutY="77.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" textAlignment="CENTER" wrappingWidth="65.4755859375">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtYear" layoutX="390.0" layoutY="78.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" textAlignment="CENTER" wrappingWidth="65.4755859375">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Text>
+   </children>
+</AnchorPane>

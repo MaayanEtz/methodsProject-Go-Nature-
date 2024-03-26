@@ -263,13 +263,7 @@ public class ParkWorkerMenuController {
 				arrmsg.add(new String("getPaidInAdvance"));
 				arrmsg.add(new String("String"));
 				arrmsg.add(ChatClient.order.getOrderNumber());
-				
-				///////////OPEN////////////////////
-				//ClientUI.chat.accept(arrmsg);
-				
-				///////////ONLY FOR CHEK/////////////////
-				ChatClient.result = true;
-				//ChatClient.result = false;
+				ClientUI.chat.accept(arrmsg);
 				
 				if(ChatClient.result == true)
 					isPaidInAdvance = true;

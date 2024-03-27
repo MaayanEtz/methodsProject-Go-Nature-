@@ -69,11 +69,13 @@ public class HomePageController {
 		String address = txtIpAddress.getText(), portNum = txtPortNumber.getText();
 
 		if (address.trim().isEmpty() || portNum.trim().isEmpty()) {
-			System.out.println("You must enter ip address and port number");
-			errorTxt.setText("you must enter ip address and port number in order to connect to server");
-			txtIpAddress.setText("");
-			txtPortNumber.setText("");
-		} else {
+//			System.out.println("You must enter ip address and port number");
+//			errorTxt.setText("you must enter ip address and port number in order to connect to server");
+//			txtIpAddress.setText("");
+//			txtPortNumber.setText("");
+			address = "localhost";
+			portNum = "5555";
+		} //else {
 			try {
 				ClientUI.chat = new ClientController(address, Integer.valueOf(portNum));
 				// ClientUI.chat.accept("connect");
@@ -102,7 +104,7 @@ public class HomePageController {
 			} else {
 				System.out.println("couldnt connect to server");
 			}
-		}
+		//}
 
 	}
 

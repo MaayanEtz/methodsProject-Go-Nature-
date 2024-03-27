@@ -1,5 +1,6 @@
 package GoNatureServer;
 
+import java.util.*;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,11 +11,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+<<<<<<< Updated upstream
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+=======
+>>>>>>> Stashed changes
 
 import gui.ServerPortFrameController;
 import jdbc.MysqlConnection;
@@ -29,6 +33,7 @@ public class GoNatureServer extends AbstractServer {
 	private String db_user;
 	private String db_pass;
 	public static ServerPortFrameController controller;
+	private DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 	private Map<String, ConnectionToClient> logged_in_clients = new HashMap<>();
 	private Map<String, Integer> discounts = new LinkedHashMap<>();
@@ -623,8 +628,14 @@ public class GoNatureServer extends AbstractServer {
 					return;
 				}
 				// add order parameters to ArrayList to send to client
+<<<<<<< Updated upstream
 				arr.add(new String("" + rs.getInt("orderId")));
 				arr.add(new String(rs.getString("parkName")));
+=======
+				arr.add(new String(String.valueOf(rs.getInt("orderId"))));
+				arr.add(new String("" + rs.getInt("visitor_id")));
+				arr.add(new String(rs.getString("park_name")));
+>>>>>>> Stashed changes
 				arr.add(new String(rs.getString("time_of_visit")));
 				arr.add(new String("" + rs.getInt("visitor_number")));
 				arr.add(new String(rs.getString("visitor_email")));
@@ -919,6 +930,7 @@ public class GoNatureServer extends AbstractServer {
 					e.printStackTrace();
 				}
 			}
+<<<<<<< Updated upstream
 
 			return;
 
@@ -1007,6 +1019,9 @@ public class GoNatureServer extends AbstractServer {
 				System.out.println("[GetPrices |ERROR ]: Failed sending message to client");
 				e.printStackTrace();
 			}
+=======
+
+>>>>>>> Stashed changes
 			return;
 
 		case "EnterWaitList":
@@ -1034,7 +1049,20 @@ public class GoNatureServer extends AbstractServer {
 					send_response(client, endpoint, new String("ErrorString"),
 							new String("couldnt insert order into orders table as waitList"));
 				} else {
-					send_response(client, endpoint, "Boolean", new Boolean(true));
+					ps = null;
+					ps = db_con.prepareStatement(
+							"SELECT MAX(orderId) AS max FROM orders WHERE visitor_id = ? AND park_name = ? AND time_of_visit = ? AND visitor_number = ? AND visitor_email = ? AND visitor_phone = ? AND status = 'WaitList'");
+					for (int i = 0; i < arr.size(); i++)
+						ps.setString(i + 1, arr.get(i));
+					ResultSet rs = ps.executeQuery();
+					if (!rs.next()) {
+						//couldnt find max?
+						System.out.println("couldnt find max in db");
+						send_response(client, endpoint, new String("ErrorString"),
+								new String("couldnt find order id?"));
+					}
+					String ID = String.valueOf(rs.getInt("max"));
+					send_response(client, endpoint, "String", new String(ID));
 					System.out.println("[EnterWaitList | INFO]: sent client answear of true");
 				}
 
@@ -1045,6 +1073,7 @@ public class GoNatureServer extends AbstractServer {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			return;
 
 		case "getPaidInAdvance":
 			System.out.println("[" + endpoint + " |INFO]: " + endpoint + " enpoint trigered");
@@ -1446,6 +1475,13 @@ public class GoNatureServer extends AbstractServer {
 			
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");
+			try {
+				send_response(client, new String("DEFAULT"), new String("ErrorString"),
+						new String("default endpoint triggered!"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return;
 
@@ -1480,13 +1516,14 @@ public class GoNatureServer extends AbstractServer {
 			// get amount of orders in timeframe
 			String startTime = arr.get(2);
 			ps = db_con.prepareStatement(
-					"SELECT SUM(visitor_number) AS sum FROM orders WHERE status = 'Active' AND time_of_visit BETWEEN ? AND ?");
-			ps.setString(1, startTime);
+					"SELECT SUM(visitor_number) AS sum FROM orders WHERE park_name = ? status = 'Active' AND time_of_visit BETWEEN ? AND ?");
+			ps.setString(1, arr.get(1));
+			ps.setString(2, startTime);
 			DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			LocalDateTime endTime = LocalDateTime.parse(startTime, f);
 			endTime = endTime.plusMinutes(timeToAdd);
 			String endTimeFormatted = endTime.format(f);
-			ps.setString(2, endTimeFormatted);
+			ps.setString(3, endTimeFormatted);
 			rs = ps.executeQuery();
 			if (!rs.next()) {
 				System.out.println("couldnt sum?");
@@ -1500,9 +1537,10 @@ public class GoNatureServer extends AbstractServer {
 			preStart = preStart.minusMinutes(timeToAdd);
 			String preStartFormatted = preStart.format(f);
 			ps = db_con.prepareStatement(
-					"SELECT SUM(visitor_number) AS sum FROM orders WHERE time_of_visit BETWEEN ? AND ?");
-			ps.setString(1, preStartFormatted);
-			ps.setString(2, startTime);
+					"SELECT SUM(visitor_number) AS sum FROM orders WHERE park_name = ? AND status = 'Active' AND time_of_visit BETWEEN ? AND ?");
+			ps.setString(1, arr.get(1));
+			ps.setString(2, preStartFormatted);
+			ps.setString(3, startTime);
 			rs = ps.executeQuery();
 			if (!rs.next()) {
 				System.out.println("couldnt sum?");
@@ -1709,12 +1747,21 @@ public class GoNatureServer extends AbstractServer {
 		}
 
 		// Initiate discounts
+<<<<<<< Updated upstream
 		discounts.put(new String("full_price"), new Integer(50));
 		discounts.put(new String("discount_private_family_planned"), new Integer(15));
 		discounts.put(new String("discount_private_family_unplanned"), new Integer(0));
 		discounts.put(new String("discount_group_planned"), new Integer(25));
 		discounts.put(new String("discount_group_unplanned"), new Integer(10));
 		discounts.put(new String("discount_payment_in_advance"), new Integer(12));
+=======
+		discounts.put(new String("full_price"), new Double(50.0));
+		discounts.put(new String("discount_private_family_planned"), new Double(15.0));
+		discounts.put(new String("discount_private_family_unplanned"), new Double(0));
+		discounts.put(new String("discount_group_planned"), new Double(25.0));
+		discounts.put(new String("discount_group_unplanned"), new Double(10.0));
+		discounts.put(new String("discount_payment_in_advance"), new Double(12.0));
+>>>>>>> Stashed changes
 
 		/////////////////////////////////////////////////////////////////
 		

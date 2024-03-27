@@ -69,6 +69,39 @@ public class FindOrderFrameController {
 			FXMLLoader loader = new FXMLLoader();
 			Stage primaryStage = new Stage();
 			
+			//test cancel
+//			String orderId = orderNumber.trim();
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add("OrderCancel");
+//			arrmsg.add("String");
+//			arrmsg.add(orderId);
+			
+			//test get
+//			String orderId = orderNumber.trim();
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add("OrderGet");
+//			arrmsg.add("String");
+//			arrmsg.add(orderId);
+			
+			//test parks list get
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add("ParksListGet");
+//			arrmsg.add("");
+//			arrmsg.add("");
+			
+			//testing enter wait list
+			String visitor_id = "123456789";
+			String park_name = "Hyde Park";
+			String time_of_visit = "2024-04-01 10:00:00";
+			String visitor_number = "17";
+			String visitor_email = "asdf@asdf.com";
+			String visitor_phone = "+01234567890";
+			ArrayList<Object> arrmsg = new ArrayList<>();
+			arrmsg.add(new String("EnterWaitList"));
+			arrmsg.add(new String("ArrayList<String>"));
+			arrmsg.add(new ArrayList<String>(Arrays.asList(visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
+			System.out.println("sent: " + arrmsg);
+			
 			// Oren Testing Connect
 //			String username =  orderNumber.split(",")[0];
 //			String password =  orderNumber.split(",")[1];
@@ -105,7 +138,7 @@ public class FindOrderFrameController {
 //					arrmsg.add(username);
 //				}
 //			
-//			}
+//			} -WORKING!!
 			
 			
 			// OREN TEST EXIT REGISTRATION
@@ -172,10 +205,11 @@ public class FindOrderFrameController {
 //			arrmsg.add(new ArrayList<String>(Arrays.asList(order_id,visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
 			//
 			
-			// Test Guid
-//			arrmsg.add(new String("GroupGuideCheck"));
+			// Test Guide
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("GuideRegistration"));
 //			arrmsg.add(new String("String"));
-//			arrmsg.add(update_test);
+//			arrmsg.add("9876");
 			
 			// Test GetPrices:
 //			ArrayList<Object> arrmsg;

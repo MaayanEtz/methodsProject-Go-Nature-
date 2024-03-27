@@ -104,12 +104,21 @@ public class FindOrderFrameController {
 //			System.out.println("sent: " + arrmsg);
 			
 			//testing createNumberOfVisitorsReport
+//			String parkName = orderNumber.trim();
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add("CreateNumberOfVisitorReport");
+//			arrmsg.add("String");
+//			arrmsg.add(parkName);
+//			System.out.println("sent");
+			
+			//testing GetVisitorsNumReport
 			String parkName = orderNumber.trim();
+			ArrayList<String> msg = new ArrayList<>(Arrays.asList(parkName, "3", "2024"));
 			ArrayList<Object> arrmsg = new ArrayList<>();
-			arrmsg.add("CreateNumberOfVisitorReport");
-			arrmsg.add("String");
-			arrmsg.add(parkName);
-			System.out.println("sent");
+			arrmsg.add("GetVisitorsNumReport");
+			arrmsg.add("ArrayList<String>");
+			arrmsg.add(msg);
+			
 			
 			// Oren Testing Connect
 //			String username =  orderNumber.split(",")[0];

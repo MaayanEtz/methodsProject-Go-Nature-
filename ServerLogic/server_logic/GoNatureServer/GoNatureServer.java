@@ -1491,7 +1491,7 @@ public class GoNatureServer extends AbstractServer {
 				} else {
 					group = rs.getInt("sum");
 				}
-				
+
 			} catch (SQLException e) {
 				System.out.println("[" + endpoint + "_ep |ERROR ]: Failed executing query");
 				e.printStackTrace();
@@ -1500,23 +1500,25 @@ public class GoNatureServer extends AbstractServer {
 			try {
 				ps = db_con.prepareStatement(
 						"INSERT INTO numberofvisitorsreport (month, year, parkName, amountOfNonGroup, amountOfGroup) VALUES (?, ?, ?, ?, ?) ");
-			ps.setString(1, "" + current.getMonthValue());
-			ps.setString(2, "" + current.getYear());
-			ps.setString(3, parkName);
-			ps.setInt(4, nonGroup);
-			ps.setInt(5, group);
-			int affectedRows = ps.executeUpdate();
-			if (affectedRows != 1) { // couldnt update table??
-				System.out.println(
-						String.format("[%s | Error]: report could not be inserted into report table", endpoint));
-				send_response(client, endpoint, new String("Boolean"), new Boolean(false));
-			}
-			// report was inserted into table
-			send_response(client, endpoint, new String("Boolean"), new Boolean(true));
-			System.out.println(String
-					.format("[%s | INFO]: sent response of true to client, table updated succesfully", parkName));
+				ps.setString(1, "" + current.getMonthValue());
+				ps.setString(2, "" + current.getYear());
+				ps.setString(3, parkName);
+				ps.setInt(4, nonGroup);
+				ps.setInt(5, group);
+				int affectedRows = ps.executeUpdate();
+				if (affectedRows != 1) { // couldnt update table??
+					System.out.println(
+							String.format("[%s | Error]: report could not be inserted into report table", endpoint));
+					send_response(client, endpoint, new String("Boolean"), new Boolean(false));
+					return;
+				}
+				// report was inserted into table
+				send_response(client, endpoint, new String("Boolean"), new Boolean(true));
+				System.out.println(String
+						.format("[%s | INFO]: sent response of true to client, table updated succesfully", parkName));
 			} catch (SQLException e) {
-				System.out.println("[" + endpoint + "_ep |ERROR ]: Failed executing query, user must have tried to create an existing report");
+				System.out.println("[" + endpoint
+						+ "_ep |ERROR ]: Failed executing query, user must have tried to create an existing report");
 				try {
 					send_response(client, endpoint, new String("Boolean"), new Boolean(false));
 				} catch (IOException e1) {
@@ -1529,6 +1531,43 @@ public class GoNatureServer extends AbstractServer {
 				e.printStackTrace();
 			}
 
+			return;
+
+		case "GetVisitorsNumReport":
+			try {
+				checkType(client, payload_type, "ArrayList<String>", endpoint);
+			} catch (IOException e) {
+				System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending error to client");
+				e.printStackTrace();
+			}
+			ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
+
+			ps = null;
+			try {
+				ps = db_con.prepareStatement(
+						"SELECT amountOfNonGroup, amountOfGroup FROM numberofvisitorsreport WHERE month = ? AND year = ? AND parkName = ?");
+				ps.setString(1, payload.get(1));
+				ps.setString(2, payload.get(2));
+				ps.setString(3, payload.get(0));
+				ResultSet rs = ps.executeQuery();
+				if (!rs.next()) {
+					// report was not yet created
+					System.out.println(String.format("[%s | INFO]: report requested does not exist", endpoint));
+					send_response(client, endpoint, new String("String"), new String("null"));
+					return;
+				}
+				nonGroup = rs.getInt("amountOfNonGroup");
+				group = rs.getInt("amountOfGroup");
+				ArrayList<String> response = new ArrayList<>(Arrays.asList("" + nonGroup, "" + group));
+				send_response(client, endpoint, new String("ArrayList<String>"), response);
+				System.out.println(String.format("[%s | INFO]: report information sent back to client", endpoint));
+			} catch (SQLException e) {
+				System.out.println("sql exception in " + endpoint);
+				e.printStackTrace();
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send response to client", endpoint));
+				e.printStackTrace();
+			}
 
 			return;
 
@@ -1538,7 +1577,7 @@ public class GoNatureServer extends AbstractServer {
 				send_response(client, new String("DEFAULT"), new String("ErrorString"),
 						new String("default endpoint triggered!"));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				System.out.println("default endpoint: could not send response to client!");
 				e.printStackTrace();
 			}
 		}

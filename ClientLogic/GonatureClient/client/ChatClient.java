@@ -24,6 +24,7 @@ public class ChatClient extends AbstractClient {
 	public static String userName;
 	public static Order order;
 	public static ArrayList<String> dataFromServer;
+	public static ArrayList<ArrayList<Integer>> intDataFromServer;
 	public static boolean result = false;
 	public static boolean awaitResponse = false;
 

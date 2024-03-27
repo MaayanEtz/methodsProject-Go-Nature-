@@ -1,43 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.Light.Distant?>
+<?import javafx.scene.effect.Lighting?>
+<?import javafx.scene.effect.Shadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" stylesheets="@design.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.VisitingReportController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" stylesheets="@design.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.VisitingReportController">
    <children>
       <ImageView fitHeight="100.0" fitWidth="101.0" layoutX="14.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@Pictures/go_Nature_logo-removebg-preview.png" />
          </image>
       </ImageView>
-      <Button fx:id="btnBack" layoutX="514.0" layoutY="45.0" mnemonicParsing="false" onAction="#pressBack" text="Back" />
-      <Label layoutX="235.0" layoutY="44.0" prefHeight="30.0" prefWidth="130.0" text="Visitng report" textFill="#1e5d38">
+      <Button fx:id="btnBack" layoutX="582.0" layoutY="441.0" mnemonicParsing="false" onAction="#pressBack" prefHeight="27.0" prefWidth="55.0" text="Back" />
+      <Label layoutX="285.0" layoutY="28.0" prefHeight="30.0" prefWidth="134.0" text="Visitng report" textFill="#1e5d38">
          <font>
-            <Font size="20.0" />
+            <Font name="System Bold" size="20.0" />
          </font>
       </Label>
-      <Text fx:id="indvidualTxt" layoutX="40.0" layoutY="413.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="519.9999145507811">
+      <Text fx:id="txtError" layoutX="92.0" layoutY="410.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="519.9999145507811">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <PieChart fx:id="visitorsPie" layoutX="21.0" layoutY="115.0" prefHeight="270.0" prefWidth="558.0" />
-      <Text fx:id="subscriberTxt" layoutX="40.0" layoutY="443.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="519.9999145507811">
+      <Text fill="#1e5d38" layoutX="187.0" layoutY="115.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="Month:" textAlignment="CENTER" wrappingWidth="65.4755859375">
          <font>
-            <Font size="14.0" />
+            <Font size="15.0" />
          </font>
       </Text>
-      <Text fx:id="organizedTxt" layoutX="40.0" layoutY="473.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="519.9999145507811">
+      <Text fill="#1e5d38" layoutX="397.0" layoutY="114.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="Year:" textAlignment="CENTER" wrappingWidth="47.0">
          <font>
-            <Font size="14.0" />
+            <Font size="15.0" />
          </font>
       </Text>
+      <Text fx:id="txtMonth" layoutX="252.0" layoutY="114.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" textAlignment="CENTER" wrappingWidth="65.4755859375">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtYear" layoutX="444.0" layoutY="115.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" textAlignment="CENTER" wrappingWidth="65.4755859375">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Text>
+      <BarChart fx:id="chart" layoutX="20.0" layoutY="128.0" prefHeight="257.0" prefWidth="659.0">
+         <xAxis>
+            <CategoryAxis fx:id="X" side="BOTTOM" />
+         </xAxis>
+         <yAxis>
+            <NumberAxis fx:id="Y" label="Visitors" side="LEFT" />
+         </yAxis>
+         <effect>
+            <Lighting diffuseConstant="2.0">
+               <bumpInput>
+                  <Shadow />
+               </bumpInput>
+               <light>
+                  <Light.Distant azimuth="100.0" />
+               </light>
+            </Lighting>
+         </effect>
+      </BarChart>
    </children>
 </AnchorPane>

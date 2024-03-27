@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="400.0" prefWidth="390.0" stylesheets="@design.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.DepartmentManagerReportsPageController">
+   <children>
+      <Button fx:id="btnBack" layoutX="302.0" layoutY="347.0" mnemonicParsing="false" onAction="#pressBackBtn" prefHeight="25.0" prefWidth="94.0" text="Back" />
+      <Label id="lblSurname" layoutX="35.0" layoutY="136.0" prefHeight="21.0" prefWidth="110.0" text="1. Select report:" textFill="#1e5d38">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Label id="lblSurname" layoutX="35.0" layoutY="192.0" prefHeight="21.0" prefWidth="110.0" text="2. Select month:" textFill="#1e5d38">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Label id="lblSurname" layoutX="35.0" layoutY="253.0" prefHeight="21.0" prefWidth="110.0" text="3. Select year:" textFill="#1e5d38">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="cmbReportType" layoutX="151.0" layoutY="134.0" prefHeight="25.0" prefWidth="245.0" />
+      <ComboBox fx:id="cmbMonth" layoutX="151.0" layoutY="192.0" prefHeight="25.0" prefWidth="245.0" />
+      <ComboBox fx:id="cmbYear" layoutX="151.0" layoutY="251.0" prefHeight="25.0" prefWidth="245.0" />
+      <Button fx:id="btnCreateReport" layoutX="43.0" layoutY="347.0" mnemonicParsing="false" onAction="#pressCreateReportBtn" prefHeight="25.0" prefWidth="94.0" text="Create report" />
+      <ImageView fitHeight="116.0" fitWidth="94.0" layoutX="23.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Pictures/go_Nature_logo-removebg-preview.png" />
+         </image>
+      </ImageView>
+      <Text fill="#1e5d38" layoutX="181.0" layoutY="67.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="Reports" textAlignment="CENTER" wrappingWidth="152.4755859375">
+         <font>
+            <Font size="25.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtError" fill="RED" layoutX="37.0" layoutY="325.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="401.13671875">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Text>
+   </children>
+</AnchorPane>

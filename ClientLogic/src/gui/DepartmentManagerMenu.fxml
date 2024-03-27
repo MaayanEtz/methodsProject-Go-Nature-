@@ -29,7 +29,7 @@
             <Image url="@Pictures/go_Nature_logo-removebg-preview.png" />
          </image>
       </ImageView>
-      <ComboBox fx:id="parkBox" layoutX="93.0" layoutY="224.0" onAction="#pressParkBox" prefWidth="150.0" promptText="Choose Park" />
+      <ComboBox fx:id="parkBox" layoutX="93.0" layoutY="224.0" prefWidth="150.0" promptText="Choose Park" />
       <Button fx:id="btnLogout" layoutX="243.0" layoutY="371.0" mnemonicParsing="false" onAction="#pressLogout" text="Logout" />
    </children>
 </AnchorPane>

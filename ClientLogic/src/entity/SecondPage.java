@@ -3,6 +3,8 @@ package entity;
 import gui.InvoiceController;
 import gui.TotalVisitorsNumberReportPageController;
 import gui.UsageReportPageController;
+import gui.VisitingReportController;
+import gui.CancellationReportController;
 import gui.ChoiceWindowController;
 
 import java.util.ArrayList;
@@ -65,6 +67,16 @@ public class SecondPage {
 				case "UsageReportPageController": {
 					UsageReportPageController usageReportPageController = secondLoader.getController();
 					usageReportPageController.loadData((ArrayList<String>)data);
+					break;}
+				
+				case "VisitingReportController": {
+					VisitingReportController visitingReportController = secondLoader.getController();
+					visitingReportController.loadData((ArrayList<String>)data);
+					break;}
+				
+				case "CancellationReportController": {
+					CancellationReportController cancellationReportController = secondLoader.getController();
+					cancellationReportController.loadData((ArrayList<String>)data);
 					break;}
 			}
 			

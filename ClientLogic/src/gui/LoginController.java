@@ -78,8 +78,8 @@ public class LoginController {
 						// if user name and password are correct and the type of the employee is
 						// DepartmentManager
 						ChatClient.userName = username;
-						NextPage page = new NextPage(event, "/gui/DepartmentManager.fxml", "Department manager page",
-								"DepartmentManagerController", "Login", ChatClient.dataFromServer.get(1)); // need to add path and title
+						NextPage page = new NextPage(event, "/gui/DepartmentManagerMenu.fxml", "Department manager page",
+								"DepartmentManagerMenuController", "Login", ChatClient.dataFromServer.get(1)); // need to add path and title
 						page.Next();
 						break;
 					}

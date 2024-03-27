@@ -71,18 +71,19 @@ public class UsageReportPageController {
 			arrmsg.add(new String("GetDatesUsageReport"));
 			arrmsg.add(new String("ArrayList<String>"));
 			arrmsg.add(new String("Get"));
-			ClientUI.chat.accept(dataForRep);
+			//ClientUI.chat.accept(dataForRep);
 			
 			////////////////CHECK//////////////////////
 			ObservableList<ReportData> reportData = FXCollections.observableArrayList();
-			if(!ChatClient.dataFromServer.get(0).equals("null")) {
+			/*if(!ChatClient.dataFromServer.get(0).equals("null")) {
 				for(String data : ChatClient.dataFromServer) {
 					reportData.add(new ReportData(data));
 				}	
 			}
-			this.loadTableData(reportData);
+			this.loadTableData(reportData);*/
 			
-			//reportData.add(new ReportData("21-12-1998"));
+			reportData.add(new ReportData("21-12-1998"));
+			this.loadTableData(reportData);
 		
 		} catch (Exception e) {
 			System.out.println("Error in UsageReportPageController: loadData");

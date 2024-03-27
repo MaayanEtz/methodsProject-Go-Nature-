@@ -123,6 +123,18 @@ public class NextPage {
 					departmentManagerController.loadData((String)data);
 				break;}
 			
+			case "DepartmentManagerMenuController": {
+				DepartmentManagerMenuController departmentManagerMenuController = loader.getController();
+				if (data instanceof String)
+					departmentManagerMenuController.loadData((String)data);
+				break;}
+			
+			case "DepartmentManagerReportsPageController": {
+				DepartmentManagerReportsPageController departmentManagerReportsPageController = loader.getController();
+				if (data instanceof String)
+					departmentManagerReportsPageController.loadData((String)data);
+				break;}
+			
 			case "ParkManagerController":{
 				ParkManagerController parkManagerController = loader.getController();
 				//send the name of the park!

@@ -47,7 +47,7 @@ public class DepartmentManagerMenuController {
     @FXML
     void pressReportsBtn(ActionEvent event) {
     	try {
-        	NextPage page = new NextPage(event, "/gui/DepartmentManagerReports.fxml", "Department Manager Reports Page", "DepartmentManagerReportsController", "pressReportsBtn", this.parkBox.getValue()); 
+        	NextPage page = new NextPage(event, "/gui/DepartmentManagerReportsPage.fxml", "Department Manager Reports Page", "DepartmentManagerReportsPageController", "pressReportsBtn", this.parkBox.getValue()); 
         	page.Next();
     	}catch (Exception e) {
     		System.out.println("Error in DepartmentManagerMenuController: pressReportsBtn");

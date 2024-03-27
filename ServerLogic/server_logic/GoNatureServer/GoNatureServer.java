@@ -1464,10 +1464,9 @@ public class GoNatureServer extends AbstractServer {
 				System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending error to client");
 				e.printStackTrace();
 			}
-			LocalDateTime current = LocalDateTime.now(), start = current.withDayOfMonth(1),
-					end = current.withDayOfMonth(current.getMonth().length(current.toLocalDate().isLeapYear()));
+			LocalDateTime current = LocalDateTime.now(), start = current.withDayOfMonth(1);// assuming last days of
+																							// month are irrelevant
 			start = start.withHour(9).withMinute(0).withSecond(0);
-			end = end.withHour(17).withMinute(0).withSecond(0);
 			String parkName = (String) arr_msg.get(2);
 			int nonGroup = 0, group = 0;
 			try {
@@ -1477,7 +1476,7 @@ public class GoNatureServer extends AbstractServer {
 				ps.setString(1, parkName);
 				ps.setBoolean(2, false);// get non group amount
 				ps.setString(3, start.format(f));
-				ps.setString(4, end.format(f));
+				ps.setString(4, current.format(f));
 				ResultSet rs = ps.executeQuery();
 				if (!rs.next()) { // no non group visitors found
 					nonGroup = 0;// precaution
@@ -1539,6 +1538,7 @@ public class GoNatureServer extends AbstractServer {
 			} catch (IOException e) {
 				System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending error to client");
 				e.printStackTrace();
+				return;
 			}
 			ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
 
@@ -1571,6 +1571,50 @@ public class GoNatureServer extends AbstractServer {
 
 			return;
 
+		case "CreateDatesUsageReport":
+			System.out.println("[CreateDatesUsageReport | INFO]: endpoint triggered!");
+			try {
+				checkType(client, payload_type, "String", endpoint);
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send error response to client", endpoint));
+				e.printStackTrace();
+				return;
+			}
+			parkName = (String) arr_msg.get(2);
+			System.out.println("park name is " + parkName);
+			boolean result = createUsageReport(parkName);
+			System.out.println("returned!!!!!");
+			System.out.println("result is: " + result);
+			try {
+				send_response(client, endpoint, new String("Boolean"), new Boolean(result));
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send response to client", endpoint));
+				e.printStackTrace();
+			}
+
+			return;
+
+		case "GetDatesUsageReport":
+			try {
+				checkType(client, payload_type, "ArrayList<String>", endpoint);
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send error response to client", endpoint));
+				e.printStackTrace();
+			}
+			arr = (ArrayList<String>) arr_msg.get(2);
+			parkName = arr.get(0);
+			String month = arr.get(1);
+			String Year = arr.get(2);
+			ArrayList<String> response = getUsageReport(parkName, month, Year);
+			try {
+				send_response(client, endpoint, new String("ArrayList<String>"), response);
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send response to client", endpoint));
+				e.printStackTrace();
+			}
+
+			return;
+
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");
 			try {
@@ -1582,6 +1626,85 @@ public class GoNatureServer extends AbstractServer {
 			}
 		}
 		return;
+
+	}
+
+	private ArrayList<String> getUsageReport(String parkName, String month, String year) {
+		ArrayList<String> result = new ArrayList<>();
+		String fileName = String.format("usageReport_%s_%s_%s.txt", month, year, parkName.replace(' ', '_'));
+		try (BufferedReader file = new BufferedReader(new FileReader(fileName))) {
+			String line;
+			while ((line = file.readLine()) != null) {
+				result.add(line);
+				System.out.println("added " + line);
+			}
+		} catch (IOException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	private boolean createUsageReport(String parkName) {
+		System.out.println("[createUsageReport | INFO]: was called");
+		LocalDateTime end = LocalDateTime.now(), current = end.withDayOfMonth(1);
+		System.out.println(current.format(f) + end.format(f));
+		PreparedStatement ps;
+		ResultSet rs;
+		System.out.println("Debug!!!!!!!!!!");
+		System.out.println(String.format("usageReport_%d_%d_%s.txt", current.getMonthValue(), current.getYear(),
+				parkName.replace(' ', '_')));
+		String filePath = String.format("usageReport_%d_%d_%s.txt", current.getMonthValue(), current.getYear(),
+				parkName.replace(' ', '_'));
+		int capacity = getParkCapacity(parkName, false);
+		System.out.println(capacity);
+		try {
+			System.out.println("[createUsageReport | INFO]: entered try");
+			BufferedWriter file = new BufferedWriter(new FileWriter(filePath));
+			while (current.getDayOfMonth() <= end.getDayOfMonth()) {
+				boolean wasFull = false;
+				current = current.withHour(9).withMinute(0).withSecond(0);
+				while (current.getHour() < 17) {
+					System.out.println("[createUsageReport | INFO]: checking " + current.format(f));
+					ps = db_con.prepareStatement(
+							"SELECT SUM(numberOfVisitors) AS sum FROM visits WHERE parkName = ? AND timeOfEntrence <= ? AND timeOfExit > ?");
+					ps.setString(1, parkName);
+					ps.setString(3, current.format(f));
+					current = current.plusHours(1);
+					ps.setString(2, current.format(f));
+					rs = ps.executeQuery();
+					if (rs.next()) {
+						int sum = rs.getInt("sum");
+						if (sum >= capacity) {// assuming that if at any given hour park was more than capacity, it was
+												// full at this time(sum will include both people entering during that
+												// hour and people exiting during that hour)
+							wasFull = true; // raise flag
+							break;
+						}
+					}
+				}
+				System.out
+						.println("[createUsageReport | INFO]: " + (wasFull ? "today was full" : "today was not full"));
+				if (!wasFull)
+					file.write(current.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "\n"); // if park did not
+																									// fill up add to
+																									// txt file of
+																									// report data
+				current = current.plusDays(1);// advance loop
+			}
+			file.close();
+			System.out.println("closed file");
+			return true;// report was created
+		} catch (SQLException e) {
+			System.out.println("[createUsageReport | ERROR]: couldnt execute query");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("[createUsageReport | ERROR]: couldnt create file");
+			e.printStackTrace();
+		}
+
+		return false;
 
 	}
 
@@ -1676,7 +1799,7 @@ public class GoNatureServer extends AbstractServer {
 
 		ArrayList<ArrayList<String>> arr = new ArrayList<>();
 		// get capacity of park
-		int capacity = getParkCapacity(parkName);
+		int capacity = getParkCapacity(parkName, true);
 		int visitTime = getParkTime(parkName);
 		// get start and end times affected by orderTime cancellation
 		DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -1730,8 +1853,8 @@ public class GoNatureServer extends AbstractServer {
 		return arr;
 	}
 
-	private int getParkCapacity(String parkName) {
-
+	private int getParkCapacity(String parkName, boolean withDiff) {
+		System.out.println("debug: getParkCapacity was called");
 		int capacity, diff;
 		PreparedStatement ps;
 		ResultSet rs;
@@ -1743,7 +1866,13 @@ public class GoNatureServer extends AbstractServer {
 				return -1;
 			capacity = rs.getInt("capacity");
 			diff = rs.getInt("diff");
-			return capacity - diff;
+			if (withDiff) {
+				System.out.println("returned " + (capacity - diff));
+				return capacity - diff;
+			} else {
+				System.out.println("returned " + capacity);
+				return capacity;
+			}
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

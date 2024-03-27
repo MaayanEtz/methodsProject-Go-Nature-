@@ -17,13 +17,14 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import gui.ServerPortFrameController;
+import import_simulator.ImportSimulator;
 import jdbc.MysqlConnection;
 import ocsf.server.*;
 
 public class GoNatureServer extends AbstractServer {
 	// Let GoNatureServer keep DB connection objects to allow more flexibility
 	private Connection db_con;
-	private MysqlConnection ms_conn;
+	//private MysqlConnection ms_conn;
 	private String db_name;
 	private String db_host;
 	private String db_user;
@@ -1743,7 +1744,7 @@ public class GoNatureServer extends AbstractServer {
 		// ORENB_TODO: DB should stay connected all the time?
 		// ms_conn = new MysqlConnection(db_name, db_host, db_user, db_pass);
 		System.out.println("[SERVER]: trying to connect to DataBase");
-		this.db_con = ms_conn.connectDB();
+		this.db_con = MysqlConnection.connectDB();
 		if (db_con != null) {
 			System.out.println("[SERVER]: Succesfully connected DB");
 		} else {
@@ -1764,6 +1765,13 @@ public class GoNatureServer extends AbstractServer {
 		/// Start SMS simulator thread
 		OrderNotificationThread notificationThread = new OrderNotificationThread(this, db_con);
         notificationThread.start();
+        
+        
+        // Call import module - special case: both src and dest tables are at the same db.
+        ImportSimulator is = new ImportSimulator(db_con,db_con);
+        if(!is.importData()) {
+        	System.out.println("[SERVER]: import module failed");
+        }
 	}
 
 	/**

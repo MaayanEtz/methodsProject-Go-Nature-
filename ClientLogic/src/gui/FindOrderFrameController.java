@@ -90,17 +90,26 @@ public class FindOrderFrameController {
 //			arrmsg.add("");
 			
 			//testing enter wait list
-			String visitor_id = "123456789";
-			String park_name = "Hyde Park";
-			String time_of_visit = "2024-04-01 10:00:00";
-			String visitor_number = "17";
-			String visitor_email = "asdf@asdf.com";
-			String visitor_phone = "+01234567890";
+//			String visitor_id = "123456789";
+//			String park_name = "Hyde Park";
+//			String time_of_visit = "2024-04-01 10:00:00";
+//			String visitor_number = "17";
+//			String visitor_email = "asdf@asdf.com";
+//			String visitor_phone = "+01234567890";
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("EnterWaitList"));
+//			arrmsg.add(new String("ArrayList<String>"));
+//			arrmsg.add(new ArrayList<String>(Arrays.asList(visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
+//			
+//			System.out.println("sent: " + arrmsg);
+			
+			//testing createNumberOfVisitorsReport
+			String parkName = orderNumber.trim();
 			ArrayList<Object> arrmsg = new ArrayList<>();
-			arrmsg.add(new String("EnterWaitList"));
-			arrmsg.add(new String("ArrayList<String>"));
-			arrmsg.add(new ArrayList<String>(Arrays.asList(visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
-			System.out.println("sent: " + arrmsg);
+			arrmsg.add("CreateNumberOfVisitorReport");
+			arrmsg.add("String");
+			arrmsg.add(parkName);
+			System.out.println("sent");
 			
 			// Oren Testing Connect
 //			String username =  orderNumber.split(",")[0];
@@ -179,16 +188,16 @@ public class FindOrderFrameController {
 			//String order_id = orderNumber.split(",")[0];
 			
 			// CREAT TEST
-			String visitor_id = orderNumber.split(",")[0];
-			String park_name = orderNumber.split(",")[1];
-			String time_of_visit = orderNumber.split(",")[2];
-			String visitor_number = orderNumber.split(",")[3];
-			String visitor_email = orderNumber.split(",")[4];
-			String visitor_phone = orderNumber.split(",")[5];
-			ArrayList<Object> arrmsg = new ArrayList<>();
-			arrmsg.add(new String("OrderCreate"));
-			arrmsg.add(new String("ArrayList<String>"));
-			arrmsg.add(new ArrayList<String>(Arrays.asList(visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
+//			String visitor_id = orderNumber.split(",")[0];
+//			String park_name = orderNumber.split(",")[1];
+//			String time_of_visit = orderNumber.split(",")[2];
+//			String visitor_number = orderNumber.split(",")[3];
+//			String visitor_email = orderNumber.split(",")[4];
+//			String visitor_phone = orderNumber.split(",")[5];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("OrderCreate"));
+//			arrmsg.add(new String("ArrayList<String>"));
+//			arrmsg.add(new ArrayList<String>(Arrays.asList(visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
 			//
 			
 			// UPDATE TEST

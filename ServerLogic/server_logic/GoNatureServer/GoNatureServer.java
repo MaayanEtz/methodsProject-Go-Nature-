@@ -11,14 +11,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-<<<<<<< Updated upstream
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-=======
->>>>>>> Stashed changes
 
 import gui.ServerPortFrameController;
 import jdbc.MysqlConnection;
@@ -39,10 +31,10 @@ public class GoNatureServer extends AbstractServer {
 	private Map<String, Integer> discounts = new LinkedHashMap<>();
 
 	/// By oren temporal
-	//ArrayList<ConnectionToClient, String> clients_with_orders = new ArrayList<>();
-	public Map<String,ConnectionToClient> clients_with_orders = new HashMap<>();
+	// ArrayList<ConnectionToClient, String> clients_with_orders = new
+	/// ArrayList<>();
+	public Map<String, ConnectionToClient> clients_with_orders = new HashMap<>();
 
-	
 	/// time outs ///
 	int db_conn_validation_timeout_milisecs = 10000;
 
@@ -87,12 +79,12 @@ public class GoNatureServer extends AbstractServer {
 		String payload_type;
 		ArrayList<Object> arr_msg;
 		ArrayList<String> arr = new ArrayList<String>();
-			
-		
+
 		// Convert to ArrayList test
 		try {
 			arr_msg = (ArrayList<Object>) msg;
 			System.out.println("[handleMessageFromClient | DEBUG]: converted msg to arr list");
+			System.out.println(msg);
 		} catch (ClassCastException e_clas) {
 			controller.removeClient(client);
 			System.out.println(
@@ -135,7 +127,7 @@ public class GoNatureServer extends AbstractServer {
 		case "UserLogin":
 			System.out.println("[UserLogin|INFO]: UserLogin enpoint trigered");
 			String user_type_from_db = "null";
-			String park_name_from_db = "null";
+			String parkName_from_db = "null";
 			if (payload_type.equals("ArrayList<String>")) {
 				boolean user_test_succeeded = false;
 				db_table = "users";
@@ -166,10 +158,10 @@ public class GoNatureServer extends AbstractServer {
 
 					} else {
 						user_type_from_db = result_set.getString("type");
-						park_name_from_db = result_set.getString("parkName");
+						parkName_from_db = result_set.getString("parkName");
 						System.out.println("[loginUser|INFO]:ResultSet is not empty " + username_from_client
 								+ " was found returning to client: " + user_type_from_db + " and park name: "
-								+ park_name_from_db);
+								+ parkName_from_db);
 
 						/// LOGIN and already logged in test
 						if (logged_in_clients.get(username_from_client) == null) {
@@ -202,7 +194,7 @@ public class GoNatureServer extends AbstractServer {
 				// Response to client
 				try {
 					send_response(client, new String("UserLogin"), new String("ArrayList<String>"),
-							new ArrayList<String>(Arrays.asList(user_type_from_db, park_name_from_db)));
+							new ArrayList<String>(Arrays.asList(user_type_from_db, parkName_from_db)));
 				} catch (IOException e) {
 					System.out.println("[UserLogin_ep |ERROR ]: Failed UserLogin");
 					e.printStackTrace();
@@ -358,7 +350,7 @@ public class GoNatureServer extends AbstractServer {
 					// Extract pay-load
 					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
 					String visitor_id = payload.get(0);
-					String park_name = payload.get(1);
+					String parkName = payload.get(1);
 					String time_of_visit = payload.get(2);
 					String visitor_number = payload.get(3);
 					String visitor_email = payload.get(4);
@@ -369,10 +361,10 @@ public class GoNatureServer extends AbstractServer {
 					if (checkOrderTime(payload)) {
 						// prepare MySQL query prepare
 						PreparedStatement preparedStatement = db_con.prepareStatement("INSERT INTO " + db_table
-						        + " (`visitor_id`, `parkName`, `time_of_visit`, `visitor_number`, `visitor_email`, `visitor_phone`, `status`, `paid`, `reminderMsgSend`, `visitorConfirmedOrder`)"
-						        + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+								+ " (`visitor_id`, `parkName`, `time_of_visit`, `visitor_number`, `visitor_email`, `visitor_phone`, `status`, `paid`, `reminderMsgSend`, `visitorConfirmedOrder`)"
+								+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 						preparedStatement.setString(1, visitor_id);
-						preparedStatement.setString(2, park_name);
+						preparedStatement.setString(2, parkName);
 						preparedStatement.setString(3, time_of_visit);
 						preparedStatement.setString(4, visitor_number);
 						preparedStatement.setString(5, visitor_email);
@@ -393,11 +385,12 @@ public class GoNatureServer extends AbstractServer {
 									new String("couldnt get max from DB"));
 						}
 						orderId = result_set.getInt("max");
-						
+
 						/// OREN SMS DEVELOPING:
-						clients_with_orders.put(String.valueOf(orderId),client);
-						System.out.println("[OrderCreate | INFO]: client:" + client + " was added to clients_with_orders map with ORDERID: " + orderId);
-						
+						clients_with_orders.put(String.valueOf(orderId), client);
+						System.out.println("[OrderCreate | INFO]: client:" + client
+								+ " was added to clients_with_orders map with ORDERID: " + orderId);
+
 						////////////////
 					}
 
@@ -448,7 +441,7 @@ public class GoNatureServer extends AbstractServer {
 					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
 					String order_id = payload.get(0);
 					String visitor_id = payload.get(1);
-					String park_name = payload.get(2);
+					String parkName = payload.get(2);
 					String time_of_visit = payload.get(3);
 					String visitor_number = payload.get(4);
 					String visitor_email = payload.get(5);
@@ -493,7 +486,7 @@ public class GoNatureServer extends AbstractServer {
 								+ " WHERE `orderId`=?;");
 
 						prepared_statement.setString(1, visitor_id);
-						prepared_statement.setString(2, park_name);
+						prepared_statement.setString(2, parkName);
 						prepared_statement.setString(3, time_of_visit);
 						prepared_statement.setString(4, visitor_number);
 						prepared_statement.setString(5, visitor_email);
@@ -618,7 +611,7 @@ public class GoNatureServer extends AbstractServer {
 				return;
 			}
 			try {
-			    ps = db_con.prepareStatement("SELECT * FROM orders WHERE orderId = ?");
+				ps = db_con.prepareStatement("SELECT * FROM orders WHERE orderId = ?");
 				ps.setString(1, (String) arr_msg.get(2));
 				ResultSet rs = ps.executeQuery();
 				if (!rs.next()) { // order not found in DB
@@ -628,14 +621,9 @@ public class GoNatureServer extends AbstractServer {
 					return;
 				}
 				// add order parameters to ArrayList to send to client
-<<<<<<< Updated upstream
-				arr.add(new String("" + rs.getInt("orderId")));
-				arr.add(new String(rs.getString("parkName")));
-=======
 				arr.add(new String(String.valueOf(rs.getInt("orderId"))));
 				arr.add(new String("" + rs.getInt("visitor_id")));
-				arr.add(new String(rs.getString("park_name")));
->>>>>>> Stashed changes
+				arr.add(new String(rs.getString("parkName")));
 				arr.add(new String(rs.getString("time_of_visit")));
 				arr.add(new String("" + rs.getInt("visitor_number")));
 				arr.add(new String(rs.getString("visitor_email")));
@@ -656,7 +644,7 @@ public class GoNatureServer extends AbstractServer {
 
 		case "ParksListGet":
 			try {
-				 ps = db_con.prepareStatement("Select parkName FROM parks");
+				ps = db_con.prepareStatement("Select parkName FROM parks");
 				ResultSet rs = ps.executeQuery();
 				while (rs.next()) {
 					arr.add(rs.getString("parkName"));
@@ -817,7 +805,7 @@ public class GoNatureServer extends AbstractServer {
 				db_table = "parks";
 				try {
 					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
-					String park_name_extracted = payload.get(0);
+					String parkName_extracted = payload.get(0);
 					String unplanned_visitors = payload.get(1);
 
 					//////// ORENB TODO - Maayan will provide the function for testing if number of
@@ -828,7 +816,7 @@ public class GoNatureServer extends AbstractServer {
 						PreparedStatement preparedStatement = db_con.prepareStatement(
 								"UPDATE " + db_table + " SET currentVisitors = currentVisitors + ? WHERE parkName=?;");
 						preparedStatement.setInt(1, Integer.parseInt(unplanned_visitors));
-						preparedStatement.setString(2, park_name_extracted);
+						preparedStatement.setString(2, parkName_extracted);
 						int rowsAffected = preparedStatement.executeUpdate();
 						if (rowsAffected > 0) {
 							System.out.println("[UnplannedEnter|INFO]: updated parks, rows effected: " + rowsAffected);
@@ -882,14 +870,14 @@ public class GoNatureServer extends AbstractServer {
 				db_table = "parks";
 				try {
 					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
-					String park_name_extracted = payload.get(0);
+					String parkName_extracted = payload.get(0);
 					String exiting_visitors_extracted = payload.get(1);
 
 					// prepare MySQL query - update parks currentVisitors
 					PreparedStatement preparedStatement = db_con.prepareStatement(
 							"UPDATE " + db_table + " SET currentVisitors = currentVisitors - ? WHERE parkName=?;");
 					preparedStatement.setInt(1, Integer.parseInt(exiting_visitors_extracted));
-					preparedStatement.setString(2, park_name_extracted);
+					preparedStatement.setString(2, parkName_extracted);
 					int rowsAffected = preparedStatement.executeUpdate();
 					if (rowsAffected > 0) {
 						System.out.println("[ExitRegistration|INFO]: updated parks, rows effected: " + rowsAffected);
@@ -930,7 +918,6 @@ public class GoNatureServer extends AbstractServer {
 					e.printStackTrace();
 				}
 			}
-<<<<<<< Updated upstream
 
 			return;
 
@@ -1019,9 +1006,6 @@ public class GoNatureServer extends AbstractServer {
 				System.out.println("[GetPrices |ERROR ]: Failed sending message to client");
 				e.printStackTrace();
 			}
-=======
-
->>>>>>> Stashed changes
 			return;
 
 		case "EnterWaitList":
@@ -1036,7 +1020,7 @@ public class GoNatureServer extends AbstractServer {
 			arr = (ArrayList<String>) arr_msg.get(2);
 			// insert order in payload as waitlist
 			try {
-				 ps = db_con.prepareStatement(
+				ps = db_con.prepareStatement(
 						"INSERT INTO `orders`(`visitor_id`, `parkName`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`) VALUES (?,?, ?, ?, ?, ?, 'WaitList');");
 				ps.setInt(1, Integer.valueOf(arr.get(0)));
 				ps.setString(2, arr.get(1));
@@ -1051,12 +1035,12 @@ public class GoNatureServer extends AbstractServer {
 				} else {
 					ps = null;
 					ps = db_con.prepareStatement(
-							"SELECT MAX(orderId) AS max FROM orders WHERE visitor_id = ? AND park_name = ? AND time_of_visit = ? AND visitor_number = ? AND visitor_email = ? AND visitor_phone = ? AND status = 'WaitList'");
+							"SELECT MAX(orderId) AS max FROM orders WHERE visitor_id = ? AND parkName = ? AND time_of_visit = ? AND visitor_number = ? AND visitor_email = ? AND visitor_phone = ? AND status = 'WaitList'");
 					for (int i = 0; i < arr.size(); i++)
 						ps.setString(i + 1, arr.get(i));
 					ResultSet rs = ps.executeQuery();
 					if (!rs.next()) {
-						//couldnt find max?
+						// couldnt find max?
 						System.out.println("couldnt find max in db");
 						send_response(client, endpoint, new String("ErrorString"),
 								new String("couldnt find order id?"));
@@ -1134,7 +1118,7 @@ public class GoNatureServer extends AbstractServer {
 			if (payload_type.equals("ArrayList<String>")) {
 				boolean setPaidInAdvance = false;
 				db_table = "orders";
-				
+
 				try {
 					ArrayList<String> extracted_arrlist = (ArrayList<String>) arr_msg.get(2);
 					ps = db_con.prepareStatement("UPDATE " + db_table + " SET `paid` = ? WHERE `orderId` = ?;");
@@ -1173,7 +1157,7 @@ public class GoNatureServer extends AbstractServer {
 			System.out.println("[" + endpoint + " |INFO]: " + endpoint + " enpoint trigered");
 			if (payload_type.equals("String")) {
 				db_table = "parks";
-				
+
 				try {
 					String extracted_parkName = (String) arr_msg.get(2);
 					ps = db_con.prepareStatement("SELECT `capacity`,`diff`,`visitTimeInMinutes` FROM " + db_table
@@ -1231,7 +1215,7 @@ public class GoNatureServer extends AbstractServer {
 			if (payload_type.equals("ArrayList<String>")) {
 				boolean ParkCurrentParamsUpdate = false;
 				db_table = "parks";
-				 
+
 				try {
 					ArrayList<String> extracted_arrlist = (ArrayList<String>) arr_msg.get(2);
 					ps = db_con.prepareStatement("UPDATE " + db_table
@@ -1423,9 +1407,10 @@ public class GoNatureServer extends AbstractServer {
 			if (payload_type.equals("String")) {
 				db_table = "parks";
 				try {
-					
+
 					String extracted_parkName = (String) arr_msg.get(2);
-					ps = db_con.prepareStatement("SELECT `capacity`,`currentVisitors` FROM " + db_table+ " WHERE `parkName` = ?;");
+					ps = db_con.prepareStatement(
+							"SELECT `capacity`,`currentVisitors` FROM " + db_table + " WHERE `parkName` = ?;");
 					ps.setString(1, extracted_parkName);
 					result_set = ps.executeQuery();
 
@@ -1441,10 +1426,11 @@ public class GoNatureServer extends AbstractServer {
 						}
 						return;
 					} else {
-						ArrayList<String> response_arr = new ArrayList<>(Arrays.asList(result_set.getString("capacity"),result_set.getString("currentVisitors")));
+						ArrayList<String> response_arr = new ArrayList<>(Arrays.asList(result_set.getString("capacity"),
+								result_set.getString("currentVisitors")));
 						try {
 							send_response(client, endpoint, new String("ArrayList<String>"), response_arr);
-						
+
 							return;
 						} catch (IOException e) {
 							System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending ErrorString to client");
@@ -1471,8 +1457,81 @@ public class GoNatureServer extends AbstractServer {
 
 			return;
 
-			
-			
+		case "CreateNumberOfVisitorReport":
+			try {
+				checkType(client, payload_type, "String", endpoint);
+			} catch (IOException e) {
+				System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending error to client");
+				e.printStackTrace();
+			}
+			LocalDateTime current = LocalDateTime.now(), start = current.withDayOfMonth(1),
+					end = current.withDayOfMonth(current.getMonth().length(current.toLocalDate().isLeapYear()));
+			start = start.withHour(9).withMinute(0).withSecond(0);
+			end = end.withHour(17).withMinute(0).withSecond(0);
+			String parkName = (String) arr_msg.get(2);
+			int nonGroup = 0, group = 0;
+			try {
+				ps = null;
+				ps = db_con.prepareStatement(
+						"SELECT SUM(numberOfVisitors) AS sum FROM visits WHERE parkName = ? AND isGroup = ? AND timeOfEntrence BETWEEN ? AND ?");
+				ps.setString(1, parkName);
+				ps.setBoolean(2, false);// get non group amount
+				ps.setString(3, start.format(f));
+				ps.setString(4, end.format(f));
+				ResultSet rs = ps.executeQuery();
+				if (!rs.next()) { // no non group visitors found
+					nonGroup = 0;// precaution
+				} else {
+					nonGroup = rs.getInt("sum");
+				}
+				ps.setBoolean(2, true);// get group amount
+				rs = ps.executeQuery();
+				if (!rs.next()) {
+					group = 0; // precaution
+				} else {
+					group = rs.getInt("sum");
+				}
+				
+			} catch (SQLException e) {
+				System.out.println("[" + endpoint + "_ep |ERROR ]: Failed executing query");
+				e.printStackTrace();
+			}
+			ps = null;
+			try {
+				ps = db_con.prepareStatement(
+						"INSERT INTO numberofvisitorsreport (month, year, parkName, amountOfNonGroup, amountOfGroup) VALUES (?, ?, ?, ?, ?) ");
+			ps.setString(1, "" + current.getMonthValue());
+			ps.setString(2, "" + current.getYear());
+			ps.setString(3, parkName);
+			ps.setInt(4, nonGroup);
+			ps.setInt(5, group);
+			int affectedRows = ps.executeUpdate();
+			if (affectedRows != 1) { // couldnt update table??
+				System.out.println(
+						String.format("[%s | Error]: report could not be inserted into report table", endpoint));
+				send_response(client, endpoint, new String("Boolean"), new Boolean(false));
+			}
+			// report was inserted into table
+			send_response(client, endpoint, new String("Boolean"), new Boolean(true));
+			System.out.println(String
+					.format("[%s | INFO]: sent response of true to client, table updated succesfully", parkName));
+			} catch (SQLException e) {
+				System.out.println("[" + endpoint + "_ep |ERROR ]: Failed executing query, user must have tried to create an existing report");
+				try {
+					send_response(client, endpoint, new String("Boolean"), new Boolean(false));
+				} catch (IOException e1) {
+					System.out.println(String.format("[%s | ERROR]: couldnt send response to client", endpoint));
+					e1.printStackTrace();
+				}
+				e.printStackTrace();
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send response to client", endpoint));
+				e.printStackTrace();
+			}
+
+
+			return;
+
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");
 			try {
@@ -1516,7 +1575,7 @@ public class GoNatureServer extends AbstractServer {
 			// get amount of orders in timeframe
 			String startTime = arr.get(2);
 			ps = db_con.prepareStatement(
-					"SELECT SUM(visitor_number) AS sum FROM orders WHERE park_name = ? status = 'Active' AND time_of_visit BETWEEN ? AND ?");
+					"SELECT SUM(visitor_number) AS sum FROM orders WHERE parkName = ? status = 'Active' AND time_of_visit BETWEEN ? AND ?");
 			ps.setString(1, arr.get(1));
 			ps.setString(2, startTime);
 			DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -1537,7 +1596,7 @@ public class GoNatureServer extends AbstractServer {
 			preStart = preStart.minusMinutes(timeToAdd);
 			String preStartFormatted = preStart.format(f);
 			ps = db_con.prepareStatement(
-					"SELECT SUM(visitor_number) AS sum FROM orders WHERE park_name = ? AND status = 'Active' AND time_of_visit BETWEEN ? AND ?");
+					"SELECT SUM(visitor_number) AS sum FROM orders WHERE parkName = ? AND status = 'Active' AND time_of_visit BETWEEN ? AND ?");
 			ps.setString(1, arr.get(1));
 			ps.setString(2, preStartFormatted);
 			ps.setString(3, startTime);
@@ -1747,28 +1806,18 @@ public class GoNatureServer extends AbstractServer {
 		}
 
 		// Initiate discounts
-<<<<<<< Updated upstream
 		discounts.put(new String("full_price"), new Integer(50));
 		discounts.put(new String("discount_private_family_planned"), new Integer(15));
 		discounts.put(new String("discount_private_family_unplanned"), new Integer(0));
 		discounts.put(new String("discount_group_planned"), new Integer(25));
 		discounts.put(new String("discount_group_unplanned"), new Integer(10));
 		discounts.put(new String("discount_payment_in_advance"), new Integer(12));
-=======
-		discounts.put(new String("full_price"), new Double(50.0));
-		discounts.put(new String("discount_private_family_planned"), new Double(15.0));
-		discounts.put(new String("discount_private_family_unplanned"), new Double(0));
-		discounts.put(new String("discount_group_planned"), new Double(25.0));
-		discounts.put(new String("discount_group_unplanned"), new Double(10.0));
-		discounts.put(new String("discount_payment_in_advance"), new Double(12.0));
->>>>>>> Stashed changes
 
 		/////////////////////////////////////////////////////////////////
-		
-		
+
 		/// Start SMS simulator thread
 		OrderNotificationThread notificationThread = new OrderNotificationThread(this, db_con);
-        notificationThread.start();
+		notificationThread.start();
 	}
 
 	/**
@@ -1802,8 +1851,7 @@ public class GoNatureServer extends AbstractServer {
 		//////////////////////
 		System.out.println("[clientConnected|INFO]: adding client to gui list");
 		controller.addClient(client);
-		
-		
+
 		return;
 	}
 

@@ -37,18 +37,34 @@ public class OrderNotificationThread extends Thread {
 				System.out.println(
 						"[OrderNotificationThread | INFO ]: SMS simulation mechanism started: will rerun every "
 								+ repeat_milisecs / 1000 + " seconds");
-				LocalDateTime twoHoursLater = LocalDateTime.now().plusHours(2);
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-				String formattedCurrentTime = LocalDateTime.now().format(formatter);
-				String formattedTwoHoursLater = twoHoursLater.format(formatter);
+				
+				///////// CODE FOR 2 Hours
+//				LocalDateTime twoHoursLater = LocalDateTime.now().plusHours(24);
+//				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//				String formattedCurrentTime = LocalDateTime.now().format(formatter);
+//				String formattedTwoHoursLater = twoHoursLater.format(formatter);
+//
+//				PreparedStatement statement = db_con.prepareStatement(
+//						"SELECT orderID, time_of_visit FROM orders WHERE time_of_visit >= ? AND time_of_visit <= ? AND reminderMsgSend = ?");
+//				statement.setString(1, formattedCurrentTime); // Start time: current time formatted
+//				statement.setString(2, formattedTwoHoursLater); // End time: current time plus 2 hours formatted
+//				statement.setBoolean(3, false);
+//				ResultSet resultSet = statement.executeQuery();
 
-				PreparedStatement statement = db_con.prepareStatement(
-						"SELECT orderID, time_of_visit FROM orders WHERE time_of_visit >= ? AND time_of_visit <= ? AND reminderMsgSend = ?");
-				statement.setString(1, formattedCurrentTime); // Start time: current time formatted
-				statement.setString(2, formattedTwoHoursLater); // End time: current time plus 2 hours formatted
-				statement.setBoolean(3, false);
-				ResultSet resultSet = statement.executeQuery();
+				// Extract orders of tomorrow
+	            LocalDateTime oneDayLater = LocalDateTime.now().plusDays(1); // Get time 1 day from now
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String formattedCurrentTime = LocalDateTime.now().format(formatter);
+                String formattedOneDayLater = oneDayLater.format(formatter);
 
+                PreparedStatement statement = db_con
+                        .prepareStatement("SELECT orderID, time_of_visit FROM orders WHERE time_of_visit >= ? AND time_of_visit <= ? AND reminderMsgSend = ?");
+                statement.setString(1, formattedCurrentTime); // Start time: current time formatted
+                statement.setString(2, formattedOneDayLater); // End time: current time plus 1 day formatted
+                statement.setBoolean(3, false);
+                ResultSet resultSet = statement.executeQuery();
+				
+				
 				// Iterate through the result set
 				while (resultSet.next()) {
 

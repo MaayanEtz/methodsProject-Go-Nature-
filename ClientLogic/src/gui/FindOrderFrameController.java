@@ -146,16 +146,16 @@ public class FindOrderFrameController {
 			//String order_id = orderNumber.split(",")[0];
 			
 			// CREAT TEST
-			String visitor_id = orderNumber.split(",")[0];
-			String park_name = orderNumber.split(",")[1];
-			String time_of_visit = orderNumber.split(",")[2];
-			String visitor_number = orderNumber.split(",")[3];
-			String visitor_email = orderNumber.split(",")[4];
-			String visitor_phone = orderNumber.split(",")[5];
-			ArrayList<Object> arrmsg = new ArrayList<>();
-			arrmsg.add(new String("OrderCreate"));
-			arrmsg.add(new String("ArrayList<String>"));
-			arrmsg.add(new ArrayList<String>(Arrays.asList(visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
+//			String visitor_id = orderNumber.split(",")[0];
+//			String park_name = orderNumber.split(",")[1];
+//			String time_of_visit = orderNumber.split(",")[2];
+//			String visitor_number = orderNumber.split(",")[3];
+//			String visitor_email = orderNumber.split(",")[4];
+//			String visitor_phone = orderNumber.split(",")[5];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("OrderCreate"));
+//			arrmsg.add(new String("ArrayList<String>"));
+//			arrmsg.add(new ArrayList<String>(Arrays.asList(visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
 			//
 			
 			// UPDATE TEST
@@ -260,8 +260,16 @@ public class FindOrderFrameController {
 //			arrmsg.add(new String("ArrayList<String>"));
 //			arrmsg.add(new ArrayList<String>(Arrays.asList(park_name,capacity, diff, visit_time)));
 			
+			
+			// Test OrderApprove
+			String or =  orderNumber.split(",")[0];
+			ArrayList<Object> arrmsg1 = new ArrayList<>();
+			arrmsg1.add(new String("OrderApprove"));
+			arrmsg1.add(new String("String"));
+			arrmsg1.add(or);
+			
 			// TEST HERE
-			ClientUI.chat.accept(arrmsg);
+			ClientUI.chat.accept(arrmsg1);
 			
 //			if(orderNumber.trim().isEmpty()) {
 //				System.out.println("You must enter an order number");

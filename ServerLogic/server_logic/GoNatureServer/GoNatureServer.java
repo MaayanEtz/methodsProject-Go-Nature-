@@ -1442,7 +1442,49 @@ public class GoNatureServer extends AbstractServer {
 
 			return;
 
-			
+		// ---------------------------------- Visitor has to approve the order
+		case "OrderApprove":
+			System.out.println("[" + endpoint + " |INFO]: " + endpoint + " enpoint trigered");
+			if (payload_type.equals("String")) {
+				boolean OrderApprove = false;
+				db_table = "orders";
+				try {
+					String extracted_orderId = (String) arr_msg.get(2);
+					ps = db_con.prepareStatement("UPDATE " + db_table
+							+ " SET  `visitorConfirmedOrder` = true WHERE `orderId` = ?;");
+					ps.setString(1, extracted_orderId);
+
+
+					int rowsAffected = ps.executeUpdate();
+					if (rowsAffected != 1) {
+						System.out.println("[" + endpoint + " | ERROR]: couldn't update " + db_table + " table");
+
+					} else {
+						System.out.println("[" + endpoint + " | INFO]: sent client answer of true");
+						OrderApprove = true;
+					}
+					send_response(client, endpoint, "Boolean", OrderApprove);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+			} else {
+				// Client asked GroupGuideCheck end-point but sent bad payload-type
+				try {
+					send_response(client, endpoint, new String("ErrorString"), new String(
+							"Client asked " + endpoint + " end point but payload-type was not String!"));
+				} catch (IOException e) {
+					System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending ErrorString to client");
+					e.printStackTrace();
+				}
+			}
+
+			return;
+
+
+			// ------------------------------------------------ Mostly for the use of
+			// department manager
 			
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");

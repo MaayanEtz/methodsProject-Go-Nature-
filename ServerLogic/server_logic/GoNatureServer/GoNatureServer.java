@@ -5,12 +5,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -733,7 +736,7 @@ public class GoNatureServer extends AbstractServer {
 				try {
 					String payload = (String) arr_msg.get(2);
 
-					// prepare MySQL query prepare
+					// Get the relevant order from DB
 					prepared_statement = db_con
 							.prepareStatement("SELECT parkName,visitor_number  FROM " + db_table + " WHERE orderId=?;");
 					prepared_statement.setString(1, payload);
@@ -746,25 +749,51 @@ public class GoNatureServer extends AbstractServer {
 
 					} else {
 						System.out.println("[OrderedEnter|INFO]:ResultSet is not empty " + payload + " was found");
-						String parkNameExtracted = result_set.getString(1);
-						String visitor_number_extracted = result_set.getString(2);
-						System.out.println("[OrderedEnter|DEBUG]:extacted park name: " + parkNameExtracted);
-						db_table = "parks";
 
-						// prepare MySQL query
-						PreparedStatement preparedStatement = db_con.prepareStatement(
-								"UPDATE " + db_table + " SET currentVisitors = currentVisitors + ? WHERE parkName=?;");
-						preparedStatement.setInt(1, Integer.parseInt(visitor_number_extracted));
-						preparedStatement.setString(2, parkNameExtracted);
-						int rowsAffected = preparedStatement.executeUpdate();
+						/// OREN UPDATE FOR CANCELLATION REPORT
+						// change status of relevant order to 'Entered'
+						PreparedStatement update_order_status_stmt = db_con
+								.prepareStatement("UPDATE " + db_table + " SET status = 'Entered'  WHERE orderId=?;");
+						update_order_status_stmt.setInt(1, Integer.parseInt(payload));
+						int rowsAffected = update_order_status_stmt.executeUpdate();
 						if (rowsAffected > 0) {
-							System.out.println("[OrderedEnter|INFO]: updated parks, rows effected: " + rowsAffected);
-							ordered_enterance_test_succeeded = true;
-
-						} else {
 							System.out.println(
-									"[OrderedEnter|ERROR]:failed to update parks, rows effected: " + rowsAffected);
+									"[OrderedEnter |INFO]: updated " + db_table + " , rows effected: " + rowsAffected);
+						} else {
+							System.out.println("[OrderedEnter|ERROR]:failed to updated " + db_table
+									+ " , rows effected: " + rowsAffected);
+							try {
+								send_response(client, new String("OrderedEnter"), new String("ErrorString"),
+										new String("Server was not able to update order  " + payload
+												+ " to status - entered and aborted"));
+
+							} catch (IOException e) {
+								System.out.println("[OrderedEnter_ep |ERROR ]: Failed sending ErrorString to client");
+								e.printStackTrace();
+							}
+							return;
 						}
+					}
+					////////////////// OREN UPDATE FOR CANCELATION REPORT END
+
+					String parkNameExtracted = result_set.getString(1);
+					String visitor_number_extracted = result_set.getString(2);
+					System.out.println("[OrderedEnter|DEBUG]:extacted park name: " + parkNameExtracted);
+					db_table = "parks";
+
+					// Update the relevant park with the entrance data
+					PreparedStatement preparedStatement = db_con.prepareStatement(
+							"UPDATE " + db_table + " SET currentVisitors = currentVisitors + ? WHERE parkName=?;");
+					preparedStatement.setInt(1, Integer.parseInt(visitor_number_extracted));
+					preparedStatement.setString(2, parkNameExtracted);
+					int rowsAffected = preparedStatement.executeUpdate();
+					if (rowsAffected > 0) {
+						System.out.println("[OrderedEnter|INFO]: updated parks, rows effected: " + rowsAffected);
+						ordered_enterance_test_succeeded = true;
+
+					} else {
+						System.out
+								.println("[OrderedEnter|ERROR]:failed to update parks, rows effected: " + rowsAffected);
 					}
 
 					// Catch problematic Payload
@@ -1679,6 +1708,263 @@ public class GoNatureServer extends AbstractServer {
 		// ---------------------------------- ADDING MAAYANs REPORTS HERE
 		// -------------END
 
+		// --------------------------------- ADDING Oren Reports:
+//		case "ShowCancellationReport":
+//			System.out.println("[" + endpoint + " |INFO]: " + endpoint + " enpoint trigered");
+//			if (payload_type.equals("ArrayList<String>")) {
+//
+//				// Vars:
+//				ArrayList<Integer> cancelledOrders = new ArrayList<>();
+//				ArrayList<Integer> missedOrders = new ArrayList<>();
+//				int cancalledAVG = 0;
+//				int missedAVG = 0;
+//				
+//				// Extract data from client payload
+//				ArrayList<String> from_and_to_extracted = (ArrayList<String>) arr_msg.get(2);
+//				String cancel_report_parkName = from_and_to_extracted.get(0);
+//				int dayFrom = Integer.valueOf(from_and_to_extracted.get(1));
+//				int monthFrom = Integer.valueOf(from_and_to_extracted.get(2));
+//				int yearFrom = Integer.valueOf(from_and_to_extracted.get(3));
+//				int dayTo = Integer.valueOf(from_and_to_extracted.get(4));
+//				int monthTo = Integer.valueOf(from_and_to_extracted.get(5));
+//				int yearTo = Integer.valueOf(from_and_to_extracted.get(6));
+//
+//				//////// Use LocalDateTime to format the time
+//				// Assuming Start time for all parks 9:00 AM
+//				LocalDateTime startTime = LocalDateTime.of(yearFrom, monthFrom, dayFrom, 9, 0, 0);
+//
+//				// Assuming End time for all parks 5:00 PM
+//				LocalDateTime endTime = LocalDateTime.of(yearTo, monthTo, dayTo, 17, 0, 0);
+//
+//				// Format the date and time strings
+//				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//				String startTimeString = startTime.format(formatter);
+//				String endTimeString = endTime.format(formatter);
+//				System.out.println("[" + endpoint + " | INFO]: Formatted the start time: " + startTimeString + "'");
+//				System.out.println("[" + endpoint + " | INFO]: Formatted the end time:" + endTimeString + "'");
+//				////////////////////////////////////////////////
+//
+//				///////////////// Deal With Cancelled Orders
+//				PreparedStatement cancalledOrdersByPark;
+//				try {
+//					cancalledOrdersByPark = db_con.prepareStatement(
+//							"SELECT DATE(time_of_visit) AS visit_date, COUNT(*) AS cancelled_orders_count FROM orders WHERE parkName = ? AND status = 'Cancelled' AND time_of_visit >= ? AND time_of_visit <= ? GROUP BY DATE(time_of_visit);");
+//					cancalledOrdersByPark.setString(1, cancel_report_parkName);
+//					cancalledOrdersByPark.setString(2, startTimeString);
+//					cancalledOrdersByPark.setString(3, endTimeString);
+//					ResultSet rs = cancalledOrdersByPark.executeQuery();
+//					if (!rs.next()) {
+//						// RS is empty - bad park or maybe no canceled orders at all in this dates
+//						System.out.println(String.format("[%s | INFO]: report requested does not exist", endpoint));
+//						send_response(client, endpoint, new String("ArrayList<ArrayList<Integer>>"), null);
+//						return;
+//					} else {
+//						while (rs.next()) {
+//							// Adding number of cancels per day to list
+//							cancelledOrders.add(rs.getInt("cancelled_orders_count"));
+//						}
+//
+//						// Calculate AVG of cancelled
+//						
+//						for (Integer cancalledInspesificDay : cancelledOrders) {
+//							cancalledAVG += cancalledInspesificDay;
+//						}
+//						cancalledAVG = cancalledAVG / cancelledOrders.size();
+//					}
+//				} catch (SQLException | IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				//////////////////////////////////////////////////// Deal With Cancelled Orders END
+//				
+//				
+//				///////////////// Deal With missed Orders
+//				try {
+//
+//					cancalledOrdersByPark = db_con.prepareStatement(
+//						    "SELECT DATE(time_of_visit) AS visit_date, COUNT(*) AS missed_orders_count " +
+//						    "FROM orders " +
+//						    "WHERE parkName = ? " +
+//						    "AND status = 'Active' " + 
+//						    "AND time_of_visit <= NOW() " + 
+//						    "AND time_of_visit >= ? " + 
+//						    "AND time_of_visit <= ? " + 
+//						    "GROUP BY DATE(time_of_visit);");
+//						cancalledOrdersByPark.setString(1, cancel_report_parkName);
+//						cancalledOrdersByPark.setString(2, startTimeString);
+//						cancalledOrdersByPark.setString(3, endTimeString);
+//						ResultSet rs = cancalledOrdersByPark.executeQuery();
+//			
+//					if (!rs.next()) {
+//						// RS is empty - bad park or maybe no canceled orders at all in this dates
+//						System.out.println(String.format("[%s | INFO]: report requested does not exist", endpoint));
+//						send_response(client, endpoint, new String("ArrayList<ArrayList<Integer>>"), null);
+//						return;
+//					} else {
+//						while (rs.next()) {
+//							// Adding number of missed per day to list
+//							missedOrders.add(rs.getInt("missed_orders_count"));
+//						}
+//
+//						// Calculate AVG of cancelled
+//						
+//						for (Integer missedInspesificDay : missedOrders) {
+//							missedAVG += missedInspesificDay;
+//						}
+//						missedAVG = missedAVG / missedOrders.size();
+//					}
+//				} catch (SQLException | IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				///////////////// Deal With missed Orders ---------------- END
+//				
+//				
+//				// Building the result
+//				ArrayList<ArrayList<Integer>> cancelResult = new ArrayList<>();
+//				
+//				// Add avarages list.
+//				cancelResult.add(new ArrayList<Integer>(Arrays.asList(cancalledAVG,missedAVG)));
+//				
+//				// Add days to result array - cancelled and missed might be different sizes:
+//				int maxOfArrs = Math.max(missedOrders.size(), cancelledOrders.size());
+//				for (int i = 0; i< maxOfArrs; i++) {
+//					ArrayList<Integer> someDay = new ArrayList<>();
+//					if (i < cancelledOrders.size()) {
+//						someDay.add(cancelledOrders.get(i));
+//					}
+//					else {
+//						someDay.add(0);
+//					}
+//					if (i < missedOrders.size()) {
+//						someDay.add(missedOrders.get(i));
+//					}
+//					else {
+//						someDay.add(0);
+//					}
+//					cancelResult.add(someDay);
+//				}
+//				
+//				
+//				// Send result to client
+//				try {
+//					send_response(client, endpoint, new String("ArrayList<ArrayList<Integer>>"), cancelResult);
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//
+//				return;
+//
+//			}
+//
+//			else {
+//				try {
+//					send_response(client, endpoint, new String("ErrorString"), new String(
+//							"Client asked " + endpoint + " end point but payload-type was not ArrayList<String>!"));
+//				} catch (IOException e) {
+//					System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending ErrorString to client");
+//					e.printStackTrace();
+//				}
+//			}
+//
+//			return;
+
+		//// OREN TRY NUMBER 2:
+		case "ShowCancellationReport":
+			System.out.println("[" + endpoint + " |INFO]: " + endpoint + " enpoint trigered");
+			if (payload_type.equals("ArrayList<String>")) {
+				try {
+					List<ArrayList<Integer>> statusCounts = new ArrayList<>();
+					// Extract data from client payload
+					ArrayList<String> from_and_to_extracted = (ArrayList<String>) arr_msg.get(2);
+					String cancel_report_parkName = from_and_to_extracted.get(0);
+					int dayFrom = Integer.valueOf(from_and_to_extracted.get(1));
+					int monthFrom = Integer.valueOf(from_and_to_extracted.get(2));
+					int yearFrom = Integer.valueOf(from_and_to_extracted.get(3));
+					int dayTo = Integer.valueOf(from_and_to_extracted.get(4));
+					int monthTo = Integer.valueOf(from_and_to_extracted.get(5));
+					int yearTo = Integer.valueOf(from_and_to_extracted.get(6));
+
+					//////// Use LocalDateTime to format the time
+					// Assuming Start time for all parks 9:00 AM
+//				LocalDateTime startTime = LocalDateTime.of(yearFrom, monthFrom, dayFrom, 9, 0, 0);
+//
+//				// Assuming End time for all parks 5:00 PM
+//				LocalDateTime endTime = LocalDateTime.of(yearTo, monthTo, dayTo, 17, 0, 0);
+
+					LocalDate startDate = LocalDate.of(yearFrom, monthFrom, dayFrom);
+					LocalDate endDate = LocalDate.of(yearTo, monthTo, dayTo);
+					LocalDate currentDate = startDate;
+					// Get current time
+					LocalDateTime currentTime = LocalDateTime.now();
+
+				
+
+					while (!currentDate.isAfter(endDate)) {
+						LocalDateTime startTime = LocalDateTime.of(currentDate, LocalTime.MIN);
+						LocalDateTime endTime = LocalDateTime.of(currentDate, LocalTime.MAX);
+
+						// Query for canceled orders count
+						int cancelledCount;
+
+						cancelledCount = getCount(db_con, cancel_report_parkName, startTime, endTime, "Cancelled");
+
+						// Query for active orders count with time_of_visit in the past relative to now
+						int activePastCount = getActivePastCount(db_con, cancel_report_parkName, currentTime, startTime,
+								endTime);
+
+						ArrayList<Integer> counts = new ArrayList<>();
+						counts.add(cancelledCount);
+						counts.add(activePastCount);
+
+						statusCounts.add(counts);
+
+						currentDate = currentDate.plusDays(1); // Move to the next date
+
+					}
+					
+					
+					// calc avgs:
+					int totalCancelledCount = 0;
+				    int totalActivePastCount = 0;
+					for (ArrayList<Integer> arrlist_curr : statusCounts) {
+						totalCancelledCount += arrlist_curr.get(0);
+						totalActivePastCount += arrlist_curr.get(1);
+					}
+					totalCancelledCount = totalCancelledCount / statusCounts.size();
+					totalActivePastCount = totalActivePastCount / statusCounts.size();
+					
+					ArrayList<Integer> avgs = new ArrayList<>(Arrays.asList(totalCancelledCount,totalActivePastCount));
+					statusCounts.add(0,avgs); // add to arraylist head
+					
+					
+					// Send result to client
+					try {
+						send_response(client, endpoint, new String("ArrayList<ArrayList<Integer>>"), statusCounts);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				try {
+					send_response(client, endpoint, new String("ErrorString"), new String(
+							"Client asked " + endpoint + " end point but payload-type was not ArrayList<String>!"));
+				} catch (IOException e) {
+					System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending ErrorString to client");
+					e.printStackTrace();
+				}
+			}
+
+			return;
+
+		//////////////////////////
+
 		// ---------------------------------- Visitor has to approve the order
 		case "OrderApprove":
 			System.out.println("[" + endpoint + " |INFO]: " + endpoint + " enpoint trigered");
@@ -1718,9 +2004,6 @@ public class GoNatureServer extends AbstractServer {
 
 			return;
 
-		// ------------------------------------------------ Mostly for the use of
-		// department manager
-
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");
 		}
@@ -1729,6 +2012,42 @@ public class GoNatureServer extends AbstractServer {
 	}
 
 	/////////////////////// METHODS
+	///////////// ORENB - for cancallation report
+	private static int getCount(Connection connection, String parkName, LocalDateTime startTime, LocalDateTime endTime,
+			String status) throws SQLException {
+		String query = "SELECT COUNT(*) FROM orders WHERE parkName = ? "
+				+ "AND status = ? AND time_of_visit >= ? AND time_of_visit <= ?";
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setString(1, parkName);
+			statement.setString(2, status);
+			statement.setString(3, startTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+			statement.setString(4, endTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+			ResultSet resultSet = statement.executeQuery();
+			if (resultSet.next()) {
+				return resultSet.getInt(1);
+			}
+			return 0;
+		}
+	}
+
+	///////////// ORENB - for cancallation report
+	private static int getActivePastCount(Connection connection, String parkName, LocalDateTime currentTime,
+			LocalDateTime startTime, LocalDateTime endTime) throws SQLException {
+		String query = "SELECT COUNT(*) FROM orders WHERE parkName = ? "
+				+ "AND status = 'Active' AND time_of_visit >= ? AND time_of_visit <= ? " + "AND time_of_visit <= ?";
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setString(1, parkName);
+			statement.setString(2, startTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+			statement.setString(3, endTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+			statement.setString(4, currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+			ResultSet resultSet = statement.executeQuery();
+			if (resultSet.next()) {
+				return resultSet.getInt(1);
+			}
+			return 0;
+		}
+	}
+
 	private ArrayList<ArrayList<Integer>> getVisitsReport(String parkName, String day, String month, String year)
 			throws FileNotFoundException {
 		ArrayList<ArrayList<Integer>> result = new ArrayList<>();

@@ -127,7 +127,7 @@ public class FindOrderFrameController {
 //			ArrayList<Object> arrmsg = new ArrayList<>();
 //			arrmsg.add(new String("OrderedEnter"));
 //			arrmsg.add(new String("String"));
-//			arrmsg.add("21");
+//			arrmsg.add("27");
 			
 //			// OREN TESTING UnplannedEnter
 //			ArrayList<Object> arrmsg = new ArrayList<>();
@@ -146,16 +146,16 @@ public class FindOrderFrameController {
 			//String order_id = orderNumber.split(",")[0];
 			
 			// CREAT TEST
-			String visitor_id = orderNumber.split(",")[0];
-			String park_name = orderNumber.split(",")[1];
-			String time_of_visit = orderNumber.split(",")[2];
-			String visitor_number = orderNumber.split(",")[3];
-			String visitor_email = orderNumber.split(",")[4];
-			String visitor_phone = orderNumber.split(",")[5];
-			ArrayList<Object> arrmsg = new ArrayList<>();
-			arrmsg.add(new String("OrderCreate"));
-			arrmsg.add(new String("ArrayList<String>"));
-			arrmsg.add(new ArrayList<String>(Arrays.asList(visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
+//			String visitor_id = orderNumber.split(",")[0];
+//			String park_name = orderNumber.split(",")[1];
+//			String time_of_visit = orderNumber.split(",")[2];
+//			String visitor_number = orderNumber.split(",")[3];
+//			String visitor_email = orderNumber.split(",")[4];
+//			String visitor_phone = orderNumber.split(",")[5];
+//			ArrayList<Object> arrmsg = new ArrayList<>();
+//			arrmsg.add(new String("OrderCreate"));
+//			arrmsg.add(new String("ArrayList<String>"));
+//			arrmsg.add(new ArrayList<String>(Arrays.asList(visitor_id,park_name,time_of_visit,visitor_number,visitor_email,visitor_phone)));
 			//
 			
 			// UPDATE TEST
@@ -267,6 +267,23 @@ public class FindOrderFrameController {
 //			arrmsg1.add(new String("OrderApprove"));
 //			arrmsg1.add(new String("String"));
 //			arrmsg1.add(or);
+			
+			
+			// Test Cemcallation report:
+			String park_name =  "Hyde Park";
+			ArrayList<Object> arrmsg = new ArrayList<>();
+			arrmsg.add(new String("ShowCancellationReport"));
+			arrmsg.add(new String("ArrayList<String>"));
+			ArrayList<String> inp = new ArrayList<>();
+			inp.add(park_name);
+			inp.add("31");
+			inp.add("03");
+			inp.add("2024");
+			inp.add("01");
+			inp.add("04");
+			inp.add("2024");
+			arrmsg.add(inp);
+
 			
 			// TEST HERE
 			ClientUI.chat.accept(arrmsg);

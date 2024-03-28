@@ -4,6 +4,7 @@
 	<classpathentry kind="src" path="server_logic"/>
 	<classpathentry kind="src" path="OCSF"/>
 	<classpathentry kind="src" path="server_gui"/>
+	<classpathentry kind="src" path="ImportSimulator"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-8.0.13.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

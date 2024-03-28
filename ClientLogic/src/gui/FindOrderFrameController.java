@@ -178,7 +178,7 @@ public class FindOrderFrameController {
 //			ArrayList<Object> arrmsg = new ArrayList<>();
 //			arrmsg.add(new String("OrderedEnter"));
 //			arrmsg.add(new String("String"));
-//			arrmsg.add("21");
+//			arrmsg.add("27");
 			
 //			// OREN TESTING UnplannedEnter
 //			ArrayList<Object> arrmsg = new ArrayList<>();
@@ -311,6 +311,31 @@ public class FindOrderFrameController {
 //			arrmsg.add(new String("ParkNewParamsUpdate"));
 //			arrmsg.add(new String("ArrayList<String>"));
 //			arrmsg.add(new ArrayList<String>(Arrays.asList(park_name,capacity, diff, visit_time)));
+			
+			
+			// Test OrderApprove
+//			String or =  orderNumber.split(",")[0];
+//			ArrayList<Object> arrmsg1 = new ArrayList<>();
+//			arrmsg1.add(new String("OrderApprove"));
+//			arrmsg1.add(new String("String"));
+//			arrmsg1.add(or);
+			
+			
+			// Test Cemcallation report:
+			String park_name =  "Hyde Park";
+			ArrayList<Object> arrmsg = new ArrayList<>();
+			arrmsg.add(new String("ShowCancellationReport"));
+			arrmsg.add(new String("ArrayList<String>"));
+			ArrayList<String> inp = new ArrayList<>();
+			inp.add(park_name);
+			inp.add("31");
+			inp.add("03");
+			inp.add("2024");
+			inp.add("01");
+			inp.add("04");
+			inp.add("2024");
+			arrmsg.add(inp);
+
 			
 			// TEST HERE
 			ClientUI.chat.accept(arrmsg);

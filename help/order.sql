@@ -69,6 +69,24 @@ CREATE TABLE `numberOfVisitorsReport` (
 	CONSTRAINT `numReport_ibfk_1` FOREIGN KEY (`parkName`) REFERENCES `parks` (`parkName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `externaluserinfo` (
+	`workerId` varchar(255) NOT NULL,
+	`firstName` varchar(90) DEFAULT NULL,
+	`lastName` varchar(90) DEFAULT NULL,
+	`email` varchar(90) DEFAULT NULL,
+	`type` varchar(90) DEFAULT NULL,
+	PRIMARY KEY (`workerId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `internaluserinfo` (
+	`workerId` varchar(255) NOT NULL,
+	`firstName` varchar(90) DEFAULT NULL,
+	`lastName` varchar(90) DEFAULT NULL,
+	`email` varchar(90) DEFAULT NULL,
+	`type` varchar(90) DEFAULT NULL,
+	PRIMARY KEY (`workerId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 INSERT INTO `parks` (`parkName`, `capacity`, `diff`, `visitTimeInMinutes`, `currentVisitors`) VALUES
     ('Central Park', 1000, 100, 4*60, 0),
     ('Hyde Park', 800, 40, 4*60, 0),

@@ -1604,10 +1604,63 @@ public class GoNatureServer extends AbstractServer {
 			arr = (ArrayList<String>) arr_msg.get(2);
 			parkName = arr.get(0);
 			String month = arr.get(1);
-			String Year = arr.get(2);
-			ArrayList<String> response = getUsageReport(parkName, month, Year);
+			String year = arr.get(2);
+			ArrayList<String> response = getUsageReport(parkName, month, year);
 			try {
 				send_response(client, endpoint, new String("ArrayList<String>"), response);
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send response to client", endpoint));
+				e.printStackTrace();
+			}
+
+			return;
+
+		case "CreateVisitsReport":
+			try {
+				checkType(client, payload_type, "ArrayList<String>", endpoint);
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send error response to client", endpoint));
+				e.printStackTrace();
+			}
+			arr = (ArrayList<String>) arr_msg.get(2);
+			parkName = arr.get(0);
+			String day = arr.get(1);
+			month = arr.get(2);
+			year = arr.get(3);
+			result = createVisitsReport(parkName, day, month, year);
+			System.out.println("result is " + result);
+			try {
+				send_response(client, endpoint, new String("Boolean"), new Boolean(result));
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send response to client", endpoint));
+				e.printStackTrace();
+			}
+			return;
+
+		case "ShowVisitsReport":
+			try {
+				checkType(client, payload_type, "ArrayList<String>", endpoint);
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send error response to client", endpoint));
+				e.printStackTrace();
+			}
+			arr = (ArrayList<String>) arr_msg.get(2);
+			parkName = arr.get(0);
+			day = arr.get(1);
+			month = arr.get(2);
+			year = arr.get(3);
+			try {
+				ArrayList<ArrayList<Integer>> visitsReportData = getVisitsReport(parkName, day, month, year);
+				send_response(client, endpoint, new String("ArrayList<ArrayList<Integer>"), visitsReportData);
+			} catch (FileNotFoundException e) {
+				System.out.println("file not found!, report was not created!");
+				try {
+					send_response(client, endpoint, new String("ErrorString"), new String("file was not created!"));
+				} catch (IOException e1) {
+					System.out.println(String.format("[%s | ERROR]: couldnt send error response to client", endpoint));
+					e1.printStackTrace();
+				}
+				e.printStackTrace();
 			} catch (IOException e) {
 				System.out.println(String.format("[%s | ERROR]: couldnt send response to client", endpoint));
 				e.printStackTrace();
@@ -1629,9 +1682,83 @@ public class GoNatureServer extends AbstractServer {
 
 	}
 
+	private ArrayList<ArrayList<Integer>> getVisitsReport(String parkName, String day, String month, String year)
+			throws FileNotFoundException {
+		ArrayList<ArrayList<Integer>> result = new ArrayList<>();
+		String fileName = String.format("reports/visitsReport_%s_%s_%s_%s.txt", day, month, year,
+				parkName.replace(' ', '_'));
+		try (BufferedReader file = new BufferedReader(new FileReader(fileName))) {
+			String line;
+			while ((line = file.readLine()) != null) {
+				ArrayList<Integer> pair = new ArrayList<>();
+				pair.add(Integer.valueOf(line.split(",")[0]));
+				pair.add(Integer.valueOf(line.split(",")[1]));
+				result.add(pair);
+				System.out.println("added " + pair);
+			}
+		} catch (FileNotFoundException e) {
+			throw e;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	private boolean createVisitsReport(String parkName, String day, String month, String year) {
+		String filePath = String.format("reports/visitsReport_%s_%s_%s_%s.txt", day, month, year,
+				parkName.replace(' ', '_'));
+		PreparedStatement ps;
+		ResultSet rs;
+		LocalDateTime dayToCheck = LocalDateTime.of(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day),
+				9, 0);
+		int nonGroup = 0, group = 0;
+		try {
+			BufferedWriter file = new BufferedWriter(new FileWriter(filePath));
+			while (dayToCheck.getHour() <= 17) {
+				ps = db_con.prepareStatement(
+						"SELECT SUM(numberOfVisitors) AS sum FROM visits WHERE parkName = ? AND timeOfEntrence < ? AND timeOfExit >= ? AND isGroup = 0");
+				ps.setString(1, parkName);
+				ps.setString(3, dayToCheck.format(f));
+				ps.setString(2, dayToCheck.plusHours(1).format(f));
+
+				rs = ps.executeQuery();
+				if (rs.next()) {
+					nonGroup = rs.getInt("sum");
+				} else
+					nonGroup = 0;
+				ps = null;
+				ps = db_con.prepareStatement(
+						"SELECT SUM(numberOfVisitors) AS sum FROM visits WHERE parkName = ? AND timeOfEntrence < ? AND timeOfExit >= ? AND isGroup = 1");
+				ps.setString(1, parkName);
+				ps.setString(3, dayToCheck.format(f));
+				dayToCheck = dayToCheck.plusHours(1); // advance loop
+				ps.setString(2, dayToCheck.format(f));
+				rs = ps.executeQuery();
+				if (rs.next()) {
+					group = rs.getInt("sum");
+				} else
+					group = 0;
+				file.write("" + nonGroup + "," + group + "\n");
+			}
+			System.out.println("finished writing day to file");
+			file.close();
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
 	private ArrayList<String> getUsageReport(String parkName, String month, String year) {
 		ArrayList<String> result = new ArrayList<>();
-		String fileName = String.format("usageReport_%s_%s_%s.txt", month, year, parkName.replace(' ', '_'));
+		String fileName = String.format("reports/usageReport_%s_%s_%s.txt", month, year, parkName.replace(' ', '_'));
 		try (BufferedReader file = new BufferedReader(new FileReader(fileName))) {
 			String line;
 			while ((line = file.readLine()) != null) {
@@ -1647,15 +1774,11 @@ public class GoNatureServer extends AbstractServer {
 	}
 
 	private boolean createUsageReport(String parkName) {
-		System.out.println("[createUsageReport | INFO]: was called");
 		LocalDateTime end = LocalDateTime.now(), current = end.withDayOfMonth(1);
 		System.out.println(current.format(f) + end.format(f));
 		PreparedStatement ps;
 		ResultSet rs;
-		System.out.println("Debug!!!!!!!!!!");
-		System.out.println(String.format("usageReport_%d_%d_%s.txt", current.getMonthValue(), current.getYear(),
-				parkName.replace(' ', '_')));
-		String filePath = String.format("usageReport_%d_%d_%s.txt", current.getMonthValue(), current.getYear(),
+		String filePath = String.format("reports/usageReport_%d_%d_%s.txt", current.getMonthValue(), current.getYear(),
 				parkName.replace(' ', '_'));
 		int capacity = getParkCapacity(parkName, false);
 		System.out.println(capacity);

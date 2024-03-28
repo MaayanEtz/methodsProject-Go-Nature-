@@ -24,21 +24,23 @@ import ocsf.server.*;
 public class GoNatureServer extends AbstractServer {
 	// Let GoNatureServer keep DB connection objects to allow more flexibility
 	private Connection db_con;
-	//private MysqlConnection ms_conn;
+	// private MysqlConnection ms_conn;
 	private String db_name;
 	private String db_host;
 	private String db_user;
 	private String db_pass;
 	public static ServerPortFrameController controller;
 
+	private DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 	private Map<String, ConnectionToClient> logged_in_clients = new HashMap<>();
 	private Map<String, Integer> discounts = new LinkedHashMap<>();
 
 	/// By oren temporal
-	//ArrayList<ConnectionToClient, String> clients_with_orders = new ArrayList<>();
-	public Map<String,ConnectionToClient> clients_with_orders = new HashMap<>();
+	// ArrayList<ConnectionToClient, String> clients_with_orders = new
+	/// ArrayList<>();
+	public Map<String, ConnectionToClient> clients_with_orders = new HashMap<>();
 
-	
 	/// time outs ///
 	int db_conn_validation_timeout_milisecs = 10000;
 
@@ -83,8 +85,7 @@ public class GoNatureServer extends AbstractServer {
 		String payload_type;
 		ArrayList<Object> arr_msg;
 		ArrayList<String> arr = new ArrayList<String>();
-			
-		
+
 		// Convert to ArrayList test
 		try {
 			arr_msg = (ArrayList<Object>) msg;
@@ -131,7 +132,7 @@ public class GoNatureServer extends AbstractServer {
 		case "UserLogin":
 			System.out.println("[UserLogin|INFO]: UserLogin enpoint trigered");
 			String user_type_from_db = "null";
-			String park_name_from_db = "null";
+			String parkName_from_db = "null";
 			if (payload_type.equals("ArrayList<String>")) {
 				boolean user_test_succeeded = false;
 				db_table = "users";
@@ -162,10 +163,10 @@ public class GoNatureServer extends AbstractServer {
 
 					} else {
 						user_type_from_db = result_set.getString("type");
-						park_name_from_db = result_set.getString("parkName");
+						parkName_from_db = result_set.getString("parkName");
 						System.out.println("[loginUser|INFO]:ResultSet is not empty " + username_from_client
 								+ " was found returning to client: " + user_type_from_db + " and park name: "
-								+ park_name_from_db);
+								+ parkName_from_db);
 
 						/// LOGIN and already logged in test
 						if (logged_in_clients.get(username_from_client) == null) {
@@ -198,7 +199,7 @@ public class GoNatureServer extends AbstractServer {
 				// Response to client
 				try {
 					send_response(client, new String("UserLogin"), new String("ArrayList<String>"),
-							new ArrayList<String>(Arrays.asList(user_type_from_db, park_name_from_db)));
+							new ArrayList<String>(Arrays.asList(user_type_from_db, parkName_from_db)));
 				} catch (IOException e) {
 					System.out.println("[UserLogin_ep |ERROR ]: Failed UserLogin");
 					e.printStackTrace();
@@ -354,7 +355,7 @@ public class GoNatureServer extends AbstractServer {
 					// Extract pay-load
 					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
 					String visitor_id = payload.get(0);
-					String park_name = payload.get(1);
+					String parkName = payload.get(1);
 					String time_of_visit = payload.get(2);
 					String visitor_number = payload.get(3);
 					String visitor_email = payload.get(4);
@@ -365,10 +366,10 @@ public class GoNatureServer extends AbstractServer {
 					if (checkOrderTime(payload)) {
 						// prepare MySQL query prepare
 						PreparedStatement preparedStatement = db_con.prepareStatement("INSERT INTO " + db_table
-						        + " (`visitor_id`, `parkName`, `time_of_visit`, `visitor_number`, `visitor_email`, `visitor_phone`, `status`, `paid`, `reminderMsgSend`, `visitorConfirmedOrder`)"
-						        + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+								+ " (`visitor_id`, `parkName`, `time_of_visit`, `visitor_number`, `visitor_email`, `visitor_phone`, `status`, `paid`, `reminderMsgSend`, `visitorConfirmedOrder`)"
+								+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 						preparedStatement.setString(1, visitor_id);
-						preparedStatement.setString(2, park_name);
+						preparedStatement.setString(2, parkName);
 						preparedStatement.setString(3, time_of_visit);
 						preparedStatement.setString(4, visitor_number);
 						preparedStatement.setString(5, visitor_email);
@@ -389,11 +390,12 @@ public class GoNatureServer extends AbstractServer {
 									new String("couldnt get max from DB"));
 						}
 						orderId = result_set.getInt("max");
-						
+
 						/// OREN SMS DEVELOPING:
-						clients_with_orders.put(String.valueOf(orderId),client);
-						System.out.println("[OrderCreate | INFO]: client:" + client + " was added to clients_with_orders map with ORDERID: " + orderId);
-						
+						clients_with_orders.put(String.valueOf(orderId), client);
+						System.out.println("[OrderCreate | INFO]: client:" + client
+								+ " was added to clients_with_orders map with ORDERID: " + orderId);
+
 						////////////////
 					}
 
@@ -444,7 +446,7 @@ public class GoNatureServer extends AbstractServer {
 					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
 					String order_id = payload.get(0);
 					String visitor_id = payload.get(1);
-					String park_name = payload.get(2);
+					String parkName = payload.get(2);
 					String time_of_visit = payload.get(3);
 					String visitor_number = payload.get(4);
 					String visitor_email = payload.get(5);
@@ -489,7 +491,7 @@ public class GoNatureServer extends AbstractServer {
 								+ " WHERE `orderId`=?;");
 
 						prepared_statement.setString(1, visitor_id);
-						prepared_statement.setString(2, park_name);
+						prepared_statement.setString(2, parkName);
 						prepared_statement.setString(3, time_of_visit);
 						prepared_statement.setString(4, visitor_number);
 						prepared_statement.setString(5, visitor_email);
@@ -552,6 +554,7 @@ public class GoNatureServer extends AbstractServer {
 			return;
 
 		// -------------------------------------------------------------------------------------
+
 		// ORDER CANCEL
 		case "OrderCancel":
 			if (payload_type.equals("String")) {
@@ -614,7 +617,7 @@ public class GoNatureServer extends AbstractServer {
 				return;
 			}
 			try {
-			    ps = db_con.prepareStatement("SELECT * FROM orders WHERE orderId = ?");
+				ps = db_con.prepareStatement("SELECT * FROM orders WHERE orderId = ?");
 				ps.setString(1, (String) arr_msg.get(2));
 				ResultSet rs = ps.executeQuery();
 				if (!rs.next()) { // order not found in DB
@@ -624,7 +627,8 @@ public class GoNatureServer extends AbstractServer {
 					return;
 				}
 				// add order parameters to ArrayList to send to client
-				arr.add(new String("" + rs.getInt("orderId")));
+				arr.add(new String(String.valueOf(rs.getInt("orderId"))));
+				arr.add(new String("" + rs.getInt("visitor_id")));
 				arr.add(new String(rs.getString("parkName")));
 				arr.add(new String(rs.getString("time_of_visit")));
 				arr.add(new String("" + rs.getInt("visitor_number")));
@@ -646,7 +650,7 @@ public class GoNatureServer extends AbstractServer {
 
 		case "ParksListGet":
 			try {
-				 ps = db_con.prepareStatement("Select parkName FROM parks");
+				ps = db_con.prepareStatement("Select parkName FROM parks");
 				ResultSet rs = ps.executeQuery();
 				while (rs.next()) {
 					arr.add(rs.getString("parkName"));
@@ -807,7 +811,7 @@ public class GoNatureServer extends AbstractServer {
 				db_table = "parks";
 				try {
 					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
-					String park_name_extracted = payload.get(0);
+					String parkName_extracted = payload.get(0);
 					String unplanned_visitors = payload.get(1);
 
 					//////// ORENB TODO - Maayan will provide the function for testing if number of
@@ -818,7 +822,7 @@ public class GoNatureServer extends AbstractServer {
 						PreparedStatement preparedStatement = db_con.prepareStatement(
 								"UPDATE " + db_table + " SET currentVisitors = currentVisitors + ? WHERE parkName=?;");
 						preparedStatement.setInt(1, Integer.parseInt(unplanned_visitors));
-						preparedStatement.setString(2, park_name_extracted);
+						preparedStatement.setString(2, parkName_extracted);
 						int rowsAffected = preparedStatement.executeUpdate();
 						if (rowsAffected > 0) {
 							System.out.println("[UnplannedEnter|INFO]: updated parks, rows effected: " + rowsAffected);
@@ -872,14 +876,14 @@ public class GoNatureServer extends AbstractServer {
 				db_table = "parks";
 				try {
 					ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
-					String park_name_extracted = payload.get(0);
+					String parkName_extracted = payload.get(0);
 					String exiting_visitors_extracted = payload.get(1);
 
 					// prepare MySQL query - update parks currentVisitors
 					PreparedStatement preparedStatement = db_con.prepareStatement(
 							"UPDATE " + db_table + " SET currentVisitors = currentVisitors - ? WHERE parkName=?;");
 					preparedStatement.setInt(1, Integer.parseInt(exiting_visitors_extracted));
-					preparedStatement.setString(2, park_name_extracted);
+					preparedStatement.setString(2, parkName_extracted);
 					int rowsAffected = preparedStatement.executeUpdate();
 					if (rowsAffected > 0) {
 						System.out.println("[ExitRegistration|INFO]: updated parks, rows effected: " + rowsAffected);
@@ -1022,7 +1026,7 @@ public class GoNatureServer extends AbstractServer {
 			arr = (ArrayList<String>) arr_msg.get(2);
 			// insert order in payload as waitlist
 			try {
-				 ps = db_con.prepareStatement(
+				ps = db_con.prepareStatement(
 						"INSERT INTO `orders`(`visitor_id`, `parkName`, `time_of_visit`,`visitor_number`,`visitor_email`, `visitor_phone`, `status`) VALUES (?,?, ?, ?, ?, ?, 'WaitList');");
 				ps.setInt(1, Integer.valueOf(arr.get(0)));
 				ps.setString(2, arr.get(1));
@@ -1035,7 +1039,20 @@ public class GoNatureServer extends AbstractServer {
 					send_response(client, endpoint, new String("ErrorString"),
 							new String("couldnt insert order into orders table as waitList"));
 				} else {
-					send_response(client, endpoint, "Boolean", new Boolean(true));
+					ps = null;
+					ps = db_con.prepareStatement(
+							"SELECT MAX(orderId) AS max FROM orders WHERE visitor_id = ? AND parkName = ? AND time_of_visit = ? AND visitor_number = ? AND visitor_email = ? AND visitor_phone = ? AND status = 'WaitList'");
+					for (int i = 0; i < arr.size(); i++)
+						ps.setString(i + 1, arr.get(i));
+					ResultSet rs = ps.executeQuery();
+					if (!rs.next()) {
+						// couldnt find max?
+						System.out.println("couldnt find max in db");
+						send_response(client, endpoint, new String("ErrorString"),
+								new String("couldnt find order id?"));
+					}
+					String ID = String.valueOf(rs.getInt("max"));
+					send_response(client, endpoint, "String", new String(ID));
 					System.out.println("[EnterWaitList | INFO]: sent client answear of true");
 				}
 
@@ -1046,6 +1063,7 @@ public class GoNatureServer extends AbstractServer {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			return;
 
 		case "getPaidInAdvance":
 			System.out.println("[" + endpoint + " |INFO]: " + endpoint + " enpoint trigered");
@@ -1106,7 +1124,7 @@ public class GoNatureServer extends AbstractServer {
 			if (payload_type.equals("ArrayList<String>")) {
 				boolean setPaidInAdvance = false;
 				db_table = "orders";
-				
+
 				try {
 					ArrayList<String> extracted_arrlist = (ArrayList<String>) arr_msg.get(2);
 					ps = db_con.prepareStatement("UPDATE " + db_table + " SET `paid` = ? WHERE `orderId` = ?;");
@@ -1145,7 +1163,7 @@ public class GoNatureServer extends AbstractServer {
 			System.out.println("[" + endpoint + " |INFO]: " + endpoint + " enpoint trigered");
 			if (payload_type.equals("String")) {
 				db_table = "parks";
-				
+
 				try {
 					String extracted_parkName = (String) arr_msg.get(2);
 					ps = db_con.prepareStatement("SELECT `capacity`,`diff`,`visitTimeInMinutes` FROM " + db_table
@@ -1203,7 +1221,7 @@ public class GoNatureServer extends AbstractServer {
 			if (payload_type.equals("ArrayList<String>")) {
 				boolean ParkCurrentParamsUpdate = false;
 				db_table = "parks";
-				 
+
 				try {
 					ArrayList<String> extracted_arrlist = (ArrayList<String>) arr_msg.get(2);
 					ps = db_con.prepareStatement("UPDATE " + db_table
@@ -1395,9 +1413,10 @@ public class GoNatureServer extends AbstractServer {
 			if (payload_type.equals("String")) {
 				db_table = "parks";
 				try {
-					
+
 					String extracted_parkName = (String) arr_msg.get(2);
-					ps = db_con.prepareStatement("SELECT `capacity`,`currentVisitors` FROM " + db_table+ " WHERE `parkName` = ?;");
+					ps = db_con.prepareStatement(
+							"SELECT `capacity`,`currentVisitors` FROM " + db_table + " WHERE `parkName` = ?;");
 					ps.setString(1, extracted_parkName);
 					result_set = ps.executeQuery();
 
@@ -1413,10 +1432,11 @@ public class GoNatureServer extends AbstractServer {
 						}
 						return;
 					} else {
-						ArrayList<String> response_arr = new ArrayList<>(Arrays.asList(result_set.getString("capacity"),result_set.getString("currentVisitors")));
+						ArrayList<String> response_arr = new ArrayList<>(Arrays.asList(result_set.getString("capacity"),
+								result_set.getString("currentVisitors")));
 						try {
 							send_response(client, endpoint, new String("ArrayList<String>"), response_arr);
-						
+
 							return;
 						} catch (IOException e) {
 							System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending ErrorString to client");
@@ -1443,6 +1463,222 @@ public class GoNatureServer extends AbstractServer {
 
 			return;
 
+		// ---------------------------------- ADDING MAAYANs REPORTS HERE
+
+		case "CreateNumberOfVisitorReport":
+			try {
+				checkType(client, payload_type, "String", endpoint);
+			} catch (IOException e) {
+				System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending error to client");
+				e.printStackTrace();
+			}
+			LocalDateTime current = LocalDateTime.now(), start = current.withDayOfMonth(1);// assuming last days of
+																							// month are irrelevant
+			start = start.withHour(9).withMinute(0).withSecond(0);
+			String parkName = (String) arr_msg.get(2);
+			int nonGroup = 0, group = 0;
+			try {
+				ps = null;
+				ps = db_con.prepareStatement(
+						"SELECT SUM(numberOfVisitors) AS sum FROM visits WHERE parkName = ? AND isGroup = ? AND timeOfEntrence BETWEEN ? AND ?");
+				ps.setString(1, parkName);
+				ps.setBoolean(2, false);// get non group amount
+				ps.setString(3, start.format(f));
+				ps.setString(4, current.format(f));
+				ResultSet rs = ps.executeQuery();
+				if (!rs.next()) { // no non group visitors found
+					nonGroup = 0;// precaution
+				} else {
+					nonGroup = rs.getInt("sum");
+				}
+				ps.setBoolean(2, true);// get group amount
+				rs = ps.executeQuery();
+				if (!rs.next()) {
+					group = 0; // precaution
+				} else {
+					group = rs.getInt("sum");
+				}
+
+			} catch (SQLException e) {
+				System.out.println("[" + endpoint + "_ep |ERROR ]: Failed executing query");
+				e.printStackTrace();
+			}
+			ps = null;
+			try {
+				ps = db_con.prepareStatement(
+						"INSERT INTO numberofvisitorsreport (month, year, parkName, amountOfNonGroup, amountOfGroup) VALUES (?, ?, ?, ?, ?) ");
+				ps.setString(1, "" + current.getMonthValue());
+				ps.setString(2, "" + current.getYear());
+				ps.setString(3, parkName);
+				ps.setInt(4, nonGroup);
+				ps.setInt(5, group);
+				int affectedRows = ps.executeUpdate();
+				if (affectedRows != 1) { // couldnt update table??
+					System.out.println(
+							String.format("[%s | Error]: report could not be inserted into report table", endpoint));
+					send_response(client, endpoint, new String("Boolean"), new Boolean(false));
+					return;
+				}
+				// report was inserted into table
+				send_response(client, endpoint, new String("Boolean"), new Boolean(true));
+				System.out.println(String
+						.format("[%s | INFO]: sent response of true to client, table updated succesfully", parkName));
+			} catch (SQLException e) {
+				System.out.println("[" + endpoint
+						+ "_ep |ERROR ]: Failed executing query, user must have tried to create an existing report");
+				try {
+					send_response(client, endpoint, new String("Boolean"), new Boolean(false));
+				} catch (IOException e1) {
+					System.out.println(String.format("[%s | ERROR]: couldnt send response to client", endpoint));
+					e1.printStackTrace();
+				}
+				e.printStackTrace();
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send response to client", endpoint));
+				e.printStackTrace();
+			}
+
+			return;
+
+		case "GetVisitorsNumReport":
+			try {
+				checkType(client, payload_type, "ArrayList<String>", endpoint);
+			} catch (IOException e) {
+				System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending error to client");
+				e.printStackTrace();
+				return;
+			}
+			ArrayList<String> payload = (ArrayList<String>) arr_msg.get(2);
+
+			ps = null;
+			try {
+				ps = db_con.prepareStatement(
+						"SELECT amountOfNonGroup, amountOfGroup FROM numberofvisitorsreport WHERE month = ? AND year = ? AND parkName = ?");
+				ps.setString(1, payload.get(1));
+				ps.setString(2, payload.get(2));
+				ps.setString(3, payload.get(0));
+				ResultSet rs = ps.executeQuery();
+				if (!rs.next()) {
+					// report was not yet created
+					System.out.println(String.format("[%s | INFO]: report requested does not exist", endpoint));
+					send_response(client, endpoint, new String("String"), new String("null"));
+					return;
+				}
+				nonGroup = rs.getInt("amountOfNonGroup");
+				group = rs.getInt("amountOfGroup");
+				ArrayList<String> response = new ArrayList<>(Arrays.asList("" + nonGroup, "" + group));
+				send_response(client, endpoint, new String("ArrayList<String>"), response);
+				System.out.println(String.format("[%s | INFO]: report information sent back to client", endpoint));
+			} catch (SQLException e) {
+				System.out.println("sql exception in " + endpoint);
+				e.printStackTrace();
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send response to client", endpoint));
+				e.printStackTrace();
+			}
+
+			return;
+
+		case "CreateDatesUsageReport":
+			System.out.println("[CreateDatesUsageReport | INFO]: endpoint triggered!");
+			try {
+				checkType(client, payload_type, "String", endpoint);
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send error response to client", endpoint));
+				e.printStackTrace();
+				return;
+			}
+			parkName = (String) arr_msg.get(2);
+			System.out.println("park name is " + parkName);
+			boolean result = createUsageReport(parkName);
+			System.out.println("returned!!!!!");
+			System.out.println("result is: " + result);
+			try {
+				send_response(client, endpoint, new String("Boolean"), new Boolean(result));
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send response to client", endpoint));
+				e.printStackTrace();
+			}
+
+			return;
+
+		case "GetDatesUsageReport":
+			try {
+				checkType(client, payload_type, "ArrayList<String>", endpoint);
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send error response to client", endpoint));
+				e.printStackTrace();
+			}
+			arr = (ArrayList<String>) arr_msg.get(2);
+			parkName = arr.get(0);
+			String month = arr.get(1);
+			String year = arr.get(2);
+			ArrayList<String> response = getUsageReport(parkName, month, year);
+			try {
+				send_response(client, endpoint, new String("ArrayList<String>"), response);
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send response to client", endpoint));
+				e.printStackTrace();
+			}
+
+			return;
+
+		case "CreateVisitsReport":
+			try {
+				checkType(client, payload_type, "ArrayList<String>", endpoint);
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send error response to client", endpoint));
+				e.printStackTrace();
+			}
+			arr = (ArrayList<String>) arr_msg.get(2);
+			parkName = arr.get(0);
+			String day = arr.get(1);
+			month = arr.get(2);
+			year = arr.get(3);
+			result = createVisitsReport(parkName, day, month, year);
+			System.out.println("result is " + result);
+			try {
+				send_response(client, endpoint, new String("Boolean"), new Boolean(result));
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send response to client", endpoint));
+				e.printStackTrace();
+			}
+			return;
+
+		case "ShowVisitsReport":
+			try {
+				checkType(client, payload_type, "ArrayList<String>", endpoint);
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send error response to client", endpoint));
+				e.printStackTrace();
+			}
+			arr = (ArrayList<String>) arr_msg.get(2);
+			parkName = arr.get(0);
+			day = arr.get(1);
+			month = arr.get(2);
+			year = arr.get(3);
+			try {
+				ArrayList<ArrayList<Integer>> visitsReportData = getVisitsReport(parkName, day, month, year);
+				send_response(client, endpoint, new String("ArrayList<ArrayList<Integer>"), visitsReportData);
+			} catch (FileNotFoundException e) {
+				System.out.println("file not found!, report was not created!");
+				try {
+					send_response(client, endpoint, new String("ErrorString"), new String("file was not created!"));
+				} catch (IOException e1) {
+					System.out.println(String.format("[%s | ERROR]: couldnt send error response to client", endpoint));
+					e1.printStackTrace();
+				}
+				e.printStackTrace();
+			} catch (IOException e) {
+				System.out.println(String.format("[%s | ERROR]: couldnt send response to client", endpoint));
+				e.printStackTrace();
+			}
+
+			return;
+
+		// ---------------------------------- ADDING MAAYANs REPORTS HERE
+		// -------------END
+
 		// ---------------------------------- Visitor has to approve the order
 		case "OrderApprove":
 			System.out.println("[" + endpoint + " |INFO]: " + endpoint + " enpoint trigered");
@@ -1451,10 +1687,9 @@ public class GoNatureServer extends AbstractServer {
 				db_table = "orders";
 				try {
 					String extracted_orderId = (String) arr_msg.get(2);
-					ps = db_con.prepareStatement("UPDATE " + db_table
-							+ " SET  `visitorConfirmedOrder` = true WHERE `orderId` = ?;");
+					ps = db_con.prepareStatement(
+							"UPDATE " + db_table + " SET  `visitorConfirmedOrder` = true WHERE `orderId` = ?;");
 					ps.setString(1, extracted_orderId);
-
 
 					int rowsAffected = ps.executeUpdate();
 					if (rowsAffected != 1) {
@@ -1473,8 +1708,8 @@ public class GoNatureServer extends AbstractServer {
 			} else {
 				// Client asked GroupGuideCheck end-point but sent bad payload-type
 				try {
-					send_response(client, endpoint, new String("ErrorString"), new String(
-							"Client asked " + endpoint + " end point but payload-type was not String!"));
+					send_response(client, endpoint, new String("ErrorString"),
+							new String("Client asked " + endpoint + " end point but payload-type was not String!"));
 				} catch (IOException e) {
 					System.out.println("[" + endpoint + "_ep |ERROR ]: Failed sending ErrorString to client");
 					e.printStackTrace();
@@ -1483,14 +1718,163 @@ public class GoNatureServer extends AbstractServer {
 
 			return;
 
+		// ------------------------------------------------ Mostly for the use of
+		// department manager
 
-			// ------------------------------------------------ Mostly for the use of
-			// department manager
-			
 		default:
 			System.out.println("[handleMessageFromClient|info]: default enpoint");
 		}
 		return;
+
+	}
+
+	/////////////////////// METHODS
+	private ArrayList<ArrayList<Integer>> getVisitsReport(String parkName, String day, String month, String year)
+			throws FileNotFoundException {
+		ArrayList<ArrayList<Integer>> result = new ArrayList<>();
+		String fileName = String.format("reports/visitsReport_%s_%s_%s_%s.txt", day, month, year,
+				parkName.replace(' ', '_'));
+		try (BufferedReader file = new BufferedReader(new FileReader(fileName))) {
+			String line;
+			while ((line = file.readLine()) != null) {
+				ArrayList<Integer> pair = new ArrayList<>();
+				pair.add(Integer.valueOf(line.split(",")[0]));
+				pair.add(Integer.valueOf(line.split(",")[1]));
+				result.add(pair);
+				System.out.println("added " + pair);
+			}
+		} catch (FileNotFoundException e) {
+			throw e;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	private boolean createVisitsReport(String parkName, String day, String month, String year) {
+		String filePath = String.format("reports/visitsReport_%s_%s_%s_%s.txt", day, month, year,
+				parkName.replace(' ', '_'));
+		PreparedStatement ps;
+		ResultSet rs;
+		LocalDateTime dayToCheck = LocalDateTime.of(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day),
+				9, 0);
+		int nonGroup = 0, group = 0;
+		try {
+			BufferedWriter file = new BufferedWriter(new FileWriter(filePath));
+			while (dayToCheck.getHour() <= 17) {
+				ps = db_con.prepareStatement(
+						"SELECT SUM(numberOfVisitors) AS sum FROM visits WHERE parkName = ? AND timeOfEntrence < ? AND timeOfExit >= ? AND isGroup = 0");
+				ps.setString(1, parkName);
+				ps.setString(3, dayToCheck.format(f));
+				ps.setString(2, dayToCheck.plusHours(1).format(f));
+
+				rs = ps.executeQuery();
+				if (rs.next()) {
+					nonGroup = rs.getInt("sum");
+				} else
+					nonGroup = 0;
+				ps = null;
+				ps = db_con.prepareStatement(
+						"SELECT SUM(numberOfVisitors) AS sum FROM visits WHERE parkName = ? AND timeOfEntrence < ? AND timeOfExit >= ? AND isGroup = 1");
+				ps.setString(1, parkName);
+				ps.setString(3, dayToCheck.format(f));
+				dayToCheck = dayToCheck.plusHours(1); // advance loop
+				ps.setString(2, dayToCheck.format(f));
+				rs = ps.executeQuery();
+				if (rs.next()) {
+					group = rs.getInt("sum");
+				} else
+					group = 0;
+				file.write("" + nonGroup + "," + group + "\n");
+			}
+			System.out.println("finished writing day to file");
+			file.close();
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	private ArrayList<String> getUsageReport(String parkName, String month, String year) {
+		ArrayList<String> result = new ArrayList<>();
+		String fileName = String.format("reports/usageReport_%s_%s_%s.txt", month, year, parkName.replace(' ', '_'));
+		try (BufferedReader file = new BufferedReader(new FileReader(fileName))) {
+			String line;
+			while ((line = file.readLine()) != null) {
+				result.add(line);
+				System.out.println("added " + line);
+			}
+		} catch (IOException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	private boolean createUsageReport(String parkName) {
+		LocalDateTime end = LocalDateTime.now(), current = end.withDayOfMonth(1);
+		System.out.println(current.format(f) + end.format(f));
+		PreparedStatement ps;
+		ResultSet rs;
+		String filePath = String.format("reports/usageReport_%d_%d_%s.txt", current.getMonthValue(), current.getYear(),
+				parkName.replace(' ', '_'));
+		int capacity = getParkCapacity(parkName, false);
+		System.out.println(capacity);
+		try {
+			System.out.println("[createUsageReport | INFO]: entered try");
+			BufferedWriter file = new BufferedWriter(new FileWriter(filePath));
+			while (current.getDayOfMonth() <= end.getDayOfMonth()) {
+				boolean wasFull = false;
+				current = current.withHour(9).withMinute(0).withSecond(0);
+				while (current.getHour() < 17) {
+					System.out.println("[createUsageReport | INFO]: checking " + current.format(f));
+					ps = db_con.prepareStatement(
+							"SELECT SUM(numberOfVisitors) AS sum FROM visits WHERE parkName = ? AND timeOfEntrence <= ? AND timeOfExit > ?");
+					ps.setString(1, parkName);
+					ps.setString(3, current.format(f));
+					current = current.plusHours(1);
+					ps.setString(2, current.format(f));
+					rs = ps.executeQuery();
+					if (rs.next()) {
+						int sum = rs.getInt("sum");
+						if (sum >= capacity) {// assuming that if at any given hour park was more than capacity, it was
+												// full at this time(sum will include both people entering during that
+												// hour and people exiting during that hour)
+							wasFull = true; // raise flag
+							break;
+						}
+					}
+				}
+				System.out
+						.println("[createUsageReport | INFO]: " + (wasFull ? "today was full" : "today was not full"));
+				if (!wasFull)
+					file.write(current.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "\n"); // if park did not
+																									// fill up add to
+																									// txt file of
+																									// report data
+				current = current.plusDays(1);// advance loop
+			}
+			file.close();
+			System.out.println("closed file");
+			return true;// report was created
+		} catch (SQLException e) {
+			System.out.println("[createUsageReport | ERROR]: couldnt execute query");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("[createUsageReport | ERROR]: couldnt create file");
+			e.printStackTrace();
+		}
+
+		return false;
 
 	}
 
@@ -1523,13 +1907,14 @@ public class GoNatureServer extends AbstractServer {
 			// get amount of orders in timeframe
 			String startTime = arr.get(2);
 			ps = db_con.prepareStatement(
-					"SELECT SUM(visitor_number) AS sum FROM orders WHERE status = 'Active' AND time_of_visit BETWEEN ? AND ?");
-			ps.setString(1, startTime);
+					"SELECT SUM(visitor_number) AS sum FROM orders WHERE parkName = ? AND status = 'Active' AND time_of_visit BETWEEN ? AND ?");
+			ps.setString(1, arr.get(1));
+			ps.setString(2, startTime);
 			DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			LocalDateTime endTime = LocalDateTime.parse(startTime, f);
 			endTime = endTime.plusMinutes(timeToAdd);
 			String endTimeFormatted = endTime.format(f);
-			ps.setString(2, endTimeFormatted);
+			ps.setString(3, endTimeFormatted);
 			rs = ps.executeQuery();
 			if (!rs.next()) {
 				System.out.println("couldnt sum?");
@@ -1543,9 +1928,10 @@ public class GoNatureServer extends AbstractServer {
 			preStart = preStart.minusMinutes(timeToAdd);
 			String preStartFormatted = preStart.format(f);
 			ps = db_con.prepareStatement(
-					"SELECT SUM(visitor_number) AS sum FROM orders WHERE time_of_visit BETWEEN ? AND ?");
-			ps.setString(1, preStartFormatted);
-			ps.setString(2, startTime);
+					"SELECT SUM(visitor_number) AS sum FROM orders WHERE parkName = ? AND status = 'Active' AND time_of_visit BETWEEN ? AND ?");
+			ps.setString(1, arr.get(1));
+			ps.setString(2, preStartFormatted);
+			ps.setString(3, startTime);
 			rs = ps.executeQuery();
 			if (!rs.next()) {
 				System.out.println("couldnt sum?");
@@ -1583,7 +1969,7 @@ public class GoNatureServer extends AbstractServer {
 
 		ArrayList<ArrayList<String>> arr = new ArrayList<>();
 		// get capacity of park
-		int capacity = getParkCapacity(parkName);
+		int capacity = getParkCapacity(parkName, true);
 		int visitTime = getParkTime(parkName);
 		// get start and end times affected by orderTime cancellation
 		DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -1637,8 +2023,8 @@ public class GoNatureServer extends AbstractServer {
 		return arr;
 	}
 
-	private int getParkCapacity(String parkName) {
-
+	private int getParkCapacity(String parkName, boolean withDiff) {
+		System.out.println("debug: getParkCapacity was called");
 		int capacity, diff;
 		PreparedStatement ps;
 		ResultSet rs;
@@ -1650,7 +2036,13 @@ public class GoNatureServer extends AbstractServer {
 				return -1;
 			capacity = rs.getInt("capacity");
 			diff = rs.getInt("diff");
-			return capacity - diff;
+			if (withDiff) {
+				System.out.println("returned " + (capacity - diff));
+				return capacity - diff;
+			} else {
+				System.out.println("returned " + capacity);
+				return capacity;
+			}
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -1760,18 +2152,17 @@ public class GoNatureServer extends AbstractServer {
 		discounts.put(new String("discount_payment_in_advance"), new Integer(12));
 
 		/////////////////////////////////////////////////////////////////
-		
-		
+
 		/// Start SMS simulator thread
 		OrderNotificationThread notificationThread = new OrderNotificationThread(this, db_con);
-        notificationThread.start();
-        
-        
-        // Call import module - special case: both src and dest tables are at the same db.
-        ImportSimulator is = new ImportSimulator(db_con,db_con);
-        if(!is.importData()) {
-        	System.out.println("[SERVER]: import module failed");
-        }
+		notificationThread.start();
+
+		// Call import module - special case: both src and dest tables are at the same
+		// db.
+		ImportSimulator is = new ImportSimulator(db_con, db_con);
+		if (!is.importData()) {
+			System.out.println("[SERVER]: import module failed");
+		}
 	}
 
 	/**
@@ -1805,8 +2196,7 @@ public class GoNatureServer extends AbstractServer {
 		//////////////////////
 		System.out.println("[clientConnected|INFO]: adding client to gui list");
 		controller.addClient(client);
-		
-		
+
 		return;
 	}
 
